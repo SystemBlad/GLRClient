@@ -4,12 +4,10 @@
 								  splashScreenImage="@Embed('Default.png')"
 								  preloader="components.MultiDPISplashScreen"
 								  >
-	<s:ViewNavigator label="首页" width="100%" height="100%" firstView="views.View1"/>
-	<s:ViewNavigator label="频道" width="100%" height="100%" firstView="views.View2"/>
-	<s:ViewNavigator label="搜索" width="100%" height="100%" firstView="views.View3"/>
-	<s:ViewNavigator label="历史" width="100%" height="100%" firstView="views.View4"/>
-	<s:ViewNavigator label="设置" width="100%" height="100%" firstView="views.View5"/>
-	<fx:Declarations>
-		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
-	</fx:Declarations>
+	<fx:Style source="styles/style.css"/>
+	<s:ViewNavigator label="首页" width="100%" height="100%" firstView="views.HomeView" icon="@Embed(source='assets/icon-home.png')"/>
+	<s:ViewNavigator label="频道" width="100%" height="100%" firstView="views.ChannelView" icon="@Embed(source='assets/icon-channel.png')"/>
+	<s:ViewNavigator label="搜索" width="100%" height="100%" firstView="views.SearchView" icon="@Embed(source='assets/icon-search.png')"/>
+	<s:ViewNavigator label="历史" width="100%" height="100%" firstView="views.HistoryView" icon="@Embed(source='assets/icon-history.png')"/>
+	<s:ViewNavigator label="设置" width="100%" height="100%" firstView="views.ProfileView" icon="@Embed(source='assets/icon-profile.png')"/>
 </s:TabbedViewNavigatorApplication>

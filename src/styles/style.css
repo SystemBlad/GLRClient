@@ -1,0 +1,12 @@
+/* CSS file */
+@namespace s "library://ns.adobe.com/flex/spark";
+
+s|ActionBar
+{
+	chromeColor:#0C3170;
+	titleAlign:center;
+}
+s|TabbedViewNavigator #tabBar
+{
+	chromeColor:#0C3170;
+}
