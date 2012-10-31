@@ -5,6 +5,10 @@
 								  preloader="components.MultiDPISplashScreen"
 								  >
 	<fx:Style source="styles/style.css"/>
+	<fx:Script>
+		<![CDATA[
+		]]>
+	</fx:Script>
 	<s:ViewNavigator label="首页" width="100%" height="100%" firstView="views.HomeView" icon="@Embed(source='assets/icon-home.png')"/>
 	<s:ViewNavigator label="频道" width="100%" height="100%" firstView="views.ChannelView" icon="@Embed(source='assets/icon-channel.png')"/>
 	<s:ViewNavigator label="搜索" width="100%" height="100%" firstView="views.SearchView" icon="@Embed(source='assets/icon-search.png')"/>
