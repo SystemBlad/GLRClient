@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		xmlns:s="library://ns.adobe.com/flex/spark" title="登录">
+	<fx:Style>
+		@namespace s "library://ns.adobe.com/flex/spark";
+		@namespace f "spark.skins.mobile.*";
+		
+		@media (os-platform: "IOS")
+		{
+			.loginButton
+			{
+				chromeColor: #319ED7;
+				color: #FFFFFF;
+				textShadowColor: #000000;
+			}
+		}
+	</fx:Style>
+	
+	
+	<fx:Script>
+		<![CDATA[
+			import classes.DataManager;
+			
+			protected function btnLogin_clickHandler(event:MouseEvent):void
+			{
+				DataManager.instance.user.loggedIn = true;
+				navigator.popView();
+			}
+		]]>
+	</fx:Script>
+	
+	<s:Scroller width="100%" height="100%">
+		<s:Group width="100%" height="100%">
+			<s:layout>
+				<s:MultiDPIVerticalLayout sourceDPI="320"
+										  paddingTop="60" paddingBottom="20" paddingLeft="20" paddingRight="20"/>
+			</s:layout>
+			<s:VGroup width="100%" gap="30">
+				<s:HGroup width="100%">
+					<s:Label text="用户名" width="110" height="100%" verticalAlign="middle"/>
+					<s:Spacer width="10"/>
+					<s:TextInput width="100%"/>
+				</s:HGroup>
+				<s:HGroup width="100%">
+					<s:Label text="密码" width="110" height="100%" verticalAlign="middle"/>
+					<s:Spacer width="10"/>
+					<s:TextInput width="100%" displayAsPassword="true"/>
+				</s:HGroup>
+				<s:HGroup width="100%">
+					<s:Label text="" width="110"/>
+					<s:Spacer width="10"/>
+					<s:Button id="btnLogin" label="登录" width="100%" styleName="loginButton" click="btnLogin_clickHandler(event)"/>
+				</s:HGroup>
+			</s:VGroup>
+		</s:Group>
+	</s:Scroller>
+</s:View>
