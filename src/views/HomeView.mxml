@@ -1,158 +1,99 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		xmlns:s="library://ns.adobe.com/flex/spark"
-		initialize="view1_initializeHandler(event)"
-		creationComplete="listService.send()"
-		title="今日推荐">
+		viewActivate="listService.send()"
+		viewDeactivate="listService.cancel()"
+		title="今日推荐"
+		xmlns:renderers="renderers.*">
 	<fx:Script>
 		<![CDATA[
 			import classes.DataManager;
 			
-			import models.Course;
-			
-			import mx.collections.ArrayCollection;
-			import mx.events.FlexEvent;
 			import mx.rpc.events.ResultEvent;
 			
-			[Bindable]
-			private var courses:ArrayCollection = new ArrayCollection();
-			
-			protected function view1_initializeHandler(event:FlexEvent):void
-			{
-				var course:Course = new Course();
-				course.name = "人力资源行业大解读";
-				course.date = "11月03日 11:00";
-				course.speaker = "张斌";
-				course.capacity = 172;
-				course.icon = "http://www.glr.cn/attachment/uploadfiles/1351656153.jpg";
-				courses.addItem(course);
-				
-				course = new Course();
-				course.name = "外企大客户销售职场生活";
-				course.date = "11月03日 11:00";
-				course.speaker = "艾轩";
-				course.capacity = 56;
-				course.icon = "http://www.glr.cn/attachment/uploadfiles/1351240111.jpg";
-				courses.addItem(course);
-				
-				course = new Course();
-				course.name = "移动互联网时代的求职管理";
-				course.date = "11月03日 21:00";
-				course.speaker = "张有明";
-				course.capacity = 56;
-				course.icon = "http://www.glr.cn/course/cover/21351330783.jpg";
-				courses.addItem(course);
-				
-				course = new Course();
-				course.name = "外企大客户销售职场生活";
-				course.date = "11月03日 11:00";
-				course.speaker = "艾轩";
-				course.capacity = 56;
-				course.icon = "http://www.glr.cn/attachment/uploadfiles/1351592377.jpg";
-				courses.addItem(course);
-				
-				course = new Course();
-				course.name = "移动互联网时代的求职管理";
-				course.date = "11月03日 21:00";
-				course.speaker = "张有明";
-				course.capacity = 56;
-				course.icon = "http://www.glr.cn/attachment/uploadfiles/1351579963.jpg";
-				courses.addItem(course);
-				
-				course = new Course();
-				course.name = "外企大客户销售职场生活";
-				course.date = "11月03日 11:00";
-				course.speaker = "艾轩";
-				course.capacity = 56;
-				course.icon = "http://www.glr.cn/attachment/uploadfiles/1351059632.jpg";
-				courses.addItem(course);
-				
-				course = new Course();
-				course.name = "移动互联网时代的求职管理";
-				course.date = "11月03日 21:00";
-				course.speaker = "张有明";
-				course.capacity = 56;
-				course.icon = "http://www.glr.cn/attachment/uploadfiles/1350876244.jpg";
-				courses.addItem(course);
-				
-				course = new Course();
-				course.name = "外企大客户销售职场生活";
-				course.date = "11月03日 11:00";
-				course.speaker = "艾轩";
-				course.capacity = 56;
-				course.icon = "http://www.glr.cn/attachment/uploadfiles/1351222043.jpg";
-				courses.addItem(course);
-			}
+			import spark.events.IndexChangeEvent;
+			import spark.events.ViewNavigatorEvent;
 			
 			protected function listService_resultHandler(event:ResultEvent):void
 			{
 				var json:String = String(event.result);
+				trace(json);
 				var obj:Object = JSON.parse(json);
 				courseList.source = obj.datalist;
 			}
 			
+			protected function list_changeHandler(event:IndexChangeEvent):void
+			{
+				DataManager.instance.currentCourse = courseList.getItemAt(event.newIndex);
+				navigator.pushView(views.CourseDetailView);
+			}
 		]]>
 	</fx:Script>
 	<fx:Declarations>
 		<s:HTTPService id="listService" url="http://www.glr.cn/appapi/app_course_list.php" resultFormat="text" result="listService_resultHandler(event)"/>
 		<s:ArrayList id="courseList"/>
 	</fx:Declarations>
-	<s:Scroller width="100%" height="100%" verticalScrollPolicy="on">
-		<s:Group width="100%" height="100%">
-			<s:layout>
-				<s:MultiDPIVerticalLayout sourceDPI="160"
-										  paddingTop="0" paddingBottom="0" paddingLeft="0" paddingRight="0" gap="0"/>
-			</s:layout>
-			<!-- top banner -->
-			<s:Rect width="100%" height="200">
+	<s:Group width="100%" height="100%">
+		<s:layout>
+			<s:MultiDPIVerticalLayout sourceDPI="320"
+									  paddingTop="0" paddingBottom="0" paddingLeft="0" paddingRight="0" gap="0"/>
+		</s:layout>
+		<!-- top banner -->
+		<s:Rect width="100%" height="200">
+			<s:fill>
+				<s:BitmapFill source="@Embed(source='assets/top-icon-placeholder.png')" fillMode="scale"/>
+			</s:fill>
+		</s:Rect>
+		
+		<!-- list header -->
+		<s:Group width="100%" height="66">
+			<s:Rect width="100%" height="100%">
 				<s:fill>
-					<s:BitmapFill source="@Embed(source='assets/top-icon-placeholder.png')" fillMode="scale"/>
+					<s:SolidColor color="#319ED7"/>
 				</s:fill>
 			</s:Rect>
-			
-			<!-- list header -->
-			<s:Group width="100%" height="66">
-				<s:Rect width="100%" height="100%">
-					<s:fill>
-						<s:SolidColor color="#319ED7"/>
-					</s:fill>
-				</s:Rect>
-				<s:Rect width="100%" height="2">
-					<s:fill>
-						<s:SolidColor color="#ffffff" alpha="0.5"/>
-					</s:fill>
-				</s:Rect>
-				<s:Rect width="100%" bottom="0" height="2">
-					<s:fill>
-						<s:SolidColor color="#000000" alpha="0.3"/>
-					</s:fill>
-				</s:Rect>
-				<s:Label text="最新上线课程" fontSize="30" color="#FFFFFF" width="100%" height="100%" verticalAlign="middle" paddingLeft="10"/>
-			</s:Group>
-			
-			<!-- list -->
-			<s:List id="list" width="100%" height="100%" dataProvider="{courseList}">
-				<s:itemRenderer>
-					<fx:Component>
-						<s:IconItemRenderer iconWidth="180" iconHeight="120"
-											iconFillMode="clip" iconScaleMode="letterbox"
-											iconPlaceholder="@Embed('assets/icon-course-placeholder.png')"
-											iconField="pic" labelField="subject" messageField="teacher_realname"
-											styleName="rendererStyle">
-							<!-- http://glyphish.com -->
-							<!-- TODO bitmaps for 240 and 320 -->
-							<!--
-							<s:decorator>
-							<s:MultiDPIBitmapSource source160dpi="@Embed('../assets/01-arrow-east.png')"/>
-							</s:decorator>
-							-->
-						</s:IconItemRenderer>
-					</fx:Component>
-				</s:itemRenderer>
-			</s:List>
-			
+			<s:Rect width="100%" height="2">
+				<s:fill>
+					<s:SolidColor color="#ffffff" alpha="0.5"/>
+				</s:fill>
+			</s:Rect>
+			<s:Rect width="100%" bottom="0" height="2">
+				<s:fill>
+					<s:SolidColor color="#000000" alpha="0.3"/>
+				</s:fill>
+			</s:Rect>
+			<s:Label text="最新上线课程" fontSize="30" color="#FFFFFF" width="100%" height="100%" verticalAlign="middle" paddingLeft="10"/>
 		</s:Group>
-	</s:Scroller>
+		
+		<!-- list -->
+		<s:List id="list" width="100%" height="100%" dataProvider="{courseList}"
+				change="list_changeHandler(event)">
+			<s:itemRenderer>
+				<fx:Component>
+					<renderers:CourseItemRenderer iconWidth="180" iconHeight="120"
+												  iconFillMode="clip" iconScaleMode="letterbox"
+												  iconPlaceholder="@Embed('assets/icon-course-placeholder.png')"
+												  iconField="pic"
+												  labelField="subject"
+												  messageFunction="getMessage"
+												  messageStyleName="courseListItemMessage">
+						<fx:Script>
+							<![CDATA[
+								private function getMessage(item:Object):String
+								{
+									var s:String = "主讲人："+item.teacher_realname;
+									s += "\n";
+									s += "人气："+item.viewnum
+									return s;
+								}
+							]]>
+						</fx:Script>
+					</renderers:CourseItemRenderer>
+				</fx:Component>
+			</s:itemRenderer>
+		</s:List>
+		
+	</s:Group>
 	
 	<s:actionContent>
 		<s:Button id="btnLogin" label="登录" click="navigator.pushView(views.LoginView)" visible="{!DataManager.instance.user.loggedIn}" includeInLayout="{!DataManager.instance.user.loggedIn}"/>

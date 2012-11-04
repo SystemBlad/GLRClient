@@ -8,6 +8,8 @@ package classes
 		
 		[Bindable]
 		public var user:User;
+		[Bindable]
+		public var currentCourse:Object;
 		
 		public function DataManager()
 		{

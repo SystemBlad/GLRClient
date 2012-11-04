@@ -10,3 +10,24 @@ s|TabbedViewNavigator #tabBar
 {
 	chromeColor:#0C3170;
 }
+
+.courseListItemMessage
+{
+	color: #666666;
+	fontSize: 24;
+}
+#channelTags s|Label
+{
+	color:#000000;
+	fontSize:24;
+	paddingLeft:10;
+	paddingRight:10;
+	paddingTop:8;
+	paddingBottom:6;
+	verticalAlign:middle;
+}
+#channelTags s|Label.selected
+{
+	backgroundColor:#319ED7;
+	color:#FFFFFF;
+}

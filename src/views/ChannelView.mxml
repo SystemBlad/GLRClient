@@ -1,7 +1,122 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
-		xmlns:s="library://ns.adobe.com/flex/spark" title="频道">
+		xmlns:s="library://ns.adobe.com/flex/spark"
+		viewActivate="listService.send()"
+		viewDeactivate="listService.cancel()"
+		title="频道"
+		xmlns:renderers="renderers.*">
+	<fx:Script>
+		<![CDATA[
+			import classes.DataManager;
+			
+			import mx.core.UIComponent;
+			import mx.rpc.events.ResultEvent;
+			
+			import spark.events.IndexChangeEvent;
+			protected function listService_resultHandler(event:ResultEvent):void
+			{
+				var json:String = String(event.result);
+				trace(json);
+				var obj:Object = JSON.parse(json);
+				courseList.source = obj.datalist;
+			}
+			
+			protected function list_changeHandler(event:IndexChangeEvent):void
+			{
+				DataManager.instance.currentCourse = courseList.getItemAt(event.newIndex);
+				navigator.pushView(views.CourseDetailView);
+			}
+			
+			protected function channelTag_clickHandler(event:MouseEvent):void
+			{
+				var tag:UIComponent = UIComponent(event.target);
+				if (tag.styleName != "selected")
+				{
+					for (var i:int=0; i<channelTags.numElements; i++)
+					{
+						UIComponent(channelTags.getElementAt(i)).styleName = "";
+					}
+					
+					var idx:Number = tag.parent.getChildIndex(tag);
+					switch (idx)
+					{
+						case 0:
+							listService.url = "http://www.glr.cn/appapi/app_course_list.php?perpage=15";
+							courseList.removeAll();
+							listService.send();
+							break;
+						case 1:
+							listService.url = "http://www.glr.cn/appapi/app_course_list.php?perpage=15&view=1";
+							courseList.removeAll();
+							listService.send();
+							break;
+						case 2:
+							listService.url = "http://www.glr.cn/appapi/app_course_list.php?perpage=15&view=7";
+							courseList.removeAll();
+							listService.send();
+							break;
+						case 3:
+							listService.url = "http://www.glr.cn/appapi/app_course_list.php?perpage=15&view=30";
+							courseList.removeAll();
+							listService.send();
+							break;
+					}
+					tag.styleName = "selected";
+				}
+			}
+			
+		]]>
+	</fx:Script>
 	<fx:Declarations>
-		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+		<s:HTTPService id="listService" url="http://www.glr.cn/appapi/app_course_list.php?perpage=15" resultFormat="text" result="listService_resultHandler(event)"/>
+		<s:ArrayList id="courseList"/>
 	</fx:Declarations>
+	<s:Group width="100%" height="100%">
+		<s:layout>
+			<s:MultiDPIVerticalLayout sourceDPI="320"
+									  paddingTop="16" paddingBottom="0" paddingLeft="0" paddingRight="0" gap="0"/>
+		</s:layout>
+		<s:VGroup width="100%" gap="0">
+			<s:Rect width="100%" height="100%">
+				<s:fill>
+					<s:SolidColor color="#FFFFFF"/>
+				</s:fill>
+			</s:Rect>
+			<s:HGroup id="channelTags" width="100%" paddingLeft="20" paddingRight="20" textAlign="center" gap="20">
+				<s:Label text="不限时间" styleName="selected" click="channelTag_clickHandler(event)"/>
+				<s:Label text="今天" click="channelTag_clickHandler(event)"/>
+				<s:Label text="本周" click="channelTag_clickHandler(event)"/>
+				<s:Label text="本月" click="channelTag_clickHandler(event)"/>
+			</s:HGroup>
+			<s:Label backgroundColor="#319ED7" width="100%" height="2"/>
+		</s:VGroup>
+		<!-- list -->
+		<s:List id="list" width="100%" height="100%" dataProvider="{courseList}"
+				change="list_changeHandler(event)">
+			<s:itemRenderer>
+				<fx:Component>
+					<renderers:CourseItemRenderer iconWidth="180" iconHeight="120"
+												  iconFillMode="clip" iconScaleMode="letterbox"
+												  iconPlaceholder="@Embed('assets/icon-course-placeholder.png')"
+												  iconField="pic"
+												  labelField="subject"
+												  messageFunction="getMessage"
+												  messageStyleName="courseListItemMessage">
+						<fx:Script>
+							<![CDATA[
+								private function getMessage(item:Object):String
+								{
+									var s:String = "主讲人："+item.teacher_realname;
+									s += "\n";
+									s += "人气："+item.viewnum
+									return s;
+								}
+							]]>
+						</fx:Script>
+					</renderers:CourseItemRenderer>
+				</fx:Component>
+			</s:itemRenderer>
+		</s:List>
+		
+	</s:Group>
 </s:View>
