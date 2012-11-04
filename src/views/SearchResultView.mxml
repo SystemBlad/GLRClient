@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		xmlns:s="library://ns.adobe.com/flex/spark"
+		title="搜索结果"
+		xmlns:renderers="renderers.*"
+		viewActivate="view1_viewActivateHandler(event)"
+		viewDeactivate="listService.cancel()"
+		>
+	<fx:Script>
+		<![CDATA[
+			import classes.DataManager;
+			
+			import mx.rpc.events.ResultEvent;
+			
+			import spark.events.IndexChangeEvent;
+			import spark.events.ViewNavigatorEvent;
+			
+			protected function listService_resultHandler(event:ResultEvent):void
+			{
+				var json:String = String(event.result);
+				trace(json);
+				var obj:Object = JSON.parse(json);
+				courseList.source = obj.datalist;
+			}
+			
+			protected function list_changeHandler(event:IndexChangeEvent):void
+			{
+				DataManager.instance.currentCourse = courseList.getItemAt(event.newIndex);
+				navigator.pushView(views.CourseDetailView);
+			}
+			
+			protected function view1_viewActivateHandler(event:ViewNavigatorEvent):void
+			{
+				listService.url = "http://www.glr.cn/appapi/app_course_list.php?perpage=100&keyword=" + DataManager.instance.searchQuery;
+				listService.send();
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<s:HTTPService id="listService" url="" resultFormat="text" result="listService_resultHandler(event)"/>
+		<s:ArrayList id="courseList"/>
+	</fx:Declarations>
+	<s:Group width="100%" height="100%">
+		<s:layout>
+			<s:MultiDPIVerticalLayout sourceDPI="320"
+									  paddingTop="0" paddingBottom="0" paddingLeft="0" paddingRight="0" gap="0"/>
+		</s:layout>
+		<!-- list header -->
+		<s:Group width="100%" height="66">
+			<s:Rect width="100%" height="100%">
+				<s:fill>
+					<s:SolidColor color="#319ED7"/>
+				</s:fill>
+			</s:Rect>
+			<s:Rect width="100%" height="2">
+				<s:fill>
+					<s:SolidColor color="#ffffff" alpha="0.5"/>
+				</s:fill>
+			</s:Rect>
+			<s:Rect width="100%" bottom="0" height="2">
+				<s:fill>
+					<s:SolidColor color="#000000" alpha="0.3"/>
+				</s:fill>
+			</s:Rect>
+			<s:Label text="共{courseList.length}个搜索结果" fontSize="30" color="#FFFFFF" width="100%" height="100%" verticalAlign="middle" paddingLeft="10"/>
+		</s:Group>
+		
+		<!-- list -->
+		<s:List id="list" width="100%" height="100%" dataProvider="{courseList}"
+				change="list_changeHandler(event)">
+			<s:itemRenderer>
+				<fx:Component>
+					<renderers:CourseItemRenderer iconWidth="180" iconHeight="120"
+												  iconFillMode="clip" iconScaleMode="letterbox"
+												  iconPlaceholder="@Embed('assets/icon-course-placeholder.png')"
+												  iconField="pic"
+												  labelField="subject"
+												  messageFunction="getMessage"
+												  messageStyleName="courseListItemMessage">
+						<fx:Script>
+							<![CDATA[
+								private function getMessage(item:Object):String
+								{
+									var s:String = "主讲人："+item.teacher_realname;
+									s += "\n";
+									s += "人气："+item.viewnum
+									return s;
+								}
+							]]>
+						</fx:Script>
+					</renderers:CourseItemRenderer>
+				</fx:Component>
+			</s:itemRenderer>
+		</s:List>
+		
+	</s:Group>
+</s:View>
