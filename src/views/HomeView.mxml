@@ -24,8 +24,7 @@
 			
 			protected function list_changeHandler(event:IndexChangeEvent):void
 			{
-				DataManager.instance.currentCourse = courseList.getItemAt(event.newIndex);
-				navigator.pushView(views.CourseDetailView);
+				navigator.pushView(views.CourseDetailView, courseList.getItemAt(event.newIndex));
 			}
 		]]>
 	</fx:Script>
@@ -75,13 +74,12 @@
 												  iconPlaceholder="@Embed('assets/icon-course-placeholder.png')"
 												  iconField="pic"
 												  labelField="subject"
-												  messageFunction="getMessage"
 												  messageStyleName="courseListItemMessage">
 						<fx:Script>
 							<![CDATA[
 								private function getMessage(item:Object):String
 								{
-									var s:String = "主讲人："+item.teacher_realname;
+									var s:String = ""+item.teacher_realname;
 									s += "\n";
 									s += "人气："+item.viewnum
 									return s;

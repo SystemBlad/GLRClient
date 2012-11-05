@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 >
+	<fx:Script>
+		<![CDATA[
+			[Bindable]
+			public var hint:String="..."; 
+			[Bindable]
+			public var displayAsPassword:Boolean;
+			
+			public function get text():String{
+				return input.text;
+			}
+			
+			private function doFocusIn():void
+			{
+				bgLabel.text = "";
+			}
+			
+			private function doFocusOut():void
+			{
+				if (!input.text)
+					bgLabel.text = hint;
+			}
+		]]>
+	</fx:Script>
+	<s:Label id="bgLabel" color="#aaaaaa" text="{hint}"
+			 width="100%" height="100%"
+			 textAlign="center" verticalAlign="middle"/>  
+	<s:TextInput id="input" paddingTop="5"
+				 focusIn="doFocusIn()" 
+				 focusOut="doFocusOut()"
+				 contentBackgroundAlpha="0"
+				 borderVisible="false"
+				 focusAlpha="0"
+				 paddingLeft="5" width="100%"
+				 softKeyboardType="default"
+				 autoCorrect="false"
+				 autoCapitalize="none"
+				 displayAsPassword="{displayAsPassword}"
+				 />
+</s:Group>

@@ -11,8 +11,7 @@
 			
 			private function doSearch(event:SearchEvent):void
 			{
-				DataManager.instance.searchQuery = event.query;
-				navigator.pushView(views.SearchResultView);
+				navigator.pushView(views.SearchResultView, event.query);
 			}
 		]]>
 	</fx:Script>

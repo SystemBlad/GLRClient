@@ -25,13 +25,12 @@
 			
 			protected function list_changeHandler(event:IndexChangeEvent):void
 			{
-				DataManager.instance.currentCourse = courseList.getItemAt(event.newIndex);
-				navigator.pushView(views.CourseDetailView);
+				navigator.pushView(views.CourseDetailView, courseList.getItemAt(event.newIndex));
 			}
 			
 			protected function view1_viewActivateHandler(event:ViewNavigatorEvent):void
 			{
-				listService.url = "http://www.glr.cn/appapi/app_course_list.php?perpage=100&keyword=" + DataManager.instance.searchQuery;
+				listService.url = "http://www.glr.cn/appapi/app_course_list.php?perpage=100&keyword=" + data;
 				listService.send();
 			}
 			

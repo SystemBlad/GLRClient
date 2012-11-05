@@ -19,15 +19,8 @@
 			[Bindable]
 			private var _bgHint:String="输入关键字..."; 
 			
-			private var _timer:Timer;
-			private var _timerDelay:int = 200; //in ms
-			
 			public function set backgroundImage(img:Class):void{
 				_bgImage = img;
-			}
-			
-			public function set delay(amount:int):void{
-				_timerDelay = amount;
 			}
 			
 			public function get text():String{
@@ -67,7 +60,7 @@
 			<s:SolidColorStroke id="borderStroke" color="#319ED7" weight="2"/>
 		</s:stroke>
 	</s:Rect>
-	<s:Label id="bgLabel" x="50" y="0" text="{_bgHint}" height="100%" verticalAlign="middle"/>  
+	<s:Label id="bgLabel" x="50" y="0" color="#aaaaaa" text="{_bgHint}" height="100%" verticalAlign="middle"/>  
 	<s:TextInput id="input" paddingTop="5" 
 				  focusIn="doFocusIn()" 
 				  focusOut="doFocusOut()"

@@ -8,10 +8,6 @@ package classes
 		
 		[Bindable]
 		public var user:User;
-		[Bindable]
-		public var currentCourse:Object;
-		[Bindable]
-		public var searchQuery:String;
 		
 		public function DataManager()
 		{

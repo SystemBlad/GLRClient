@@ -15,7 +15,17 @@ s|TabbedViewNavigator #tabBar
 {
 	color: #666666;
 	fontSize: 24;
+	height: 28;
+	verticalAlign: bottom;
 }
+.courseListItemMessageWatchable
+{
+	color: #319ED7;
+	fontSize: 24;
+	height: 28;
+	verticalAlign: bottom;
+}
+
 #channelTags s|Label
 {
 	color:#000000;
