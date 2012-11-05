@@ -21,6 +21,8 @@
 				trace(json);
 				var obj:Object = JSON.parse(json);
 				courseList.source = obj.datalist;
+				
+				currentState = "result";
 			}
 			
 			protected function list_changeHandler(event:IndexChangeEvent):void
@@ -32,6 +34,7 @@
 			{
 				listService.url = "http://www.glr.cn/appapi/app_course_list.php?perpage=100&keyword=" + data;
 				listService.send();
+				currentState = "default";
 			}
 			
 		]]>
@@ -40,6 +43,10 @@
 		<s:HTTPService id="listService" url="" resultFormat="text" result="listService_resultHandler(event)"/>
 		<s:ArrayList id="courseList"/>
 	</fx:Declarations>
+	<s:states>
+		<s:State name="default"/>
+		<s:State name="result"/>
+	</s:states>
 	<s:Group width="100%" height="100%">
 		<s:layout>
 			<s:MultiDPIVerticalLayout sourceDPI="320"
@@ -62,7 +69,19 @@
 					<s:SolidColor color="#000000" alpha="0.3"/>
 				</s:fill>
 			</s:Rect>
-			<s:Label text="共{courseList.length}个搜索结果" fontSize="30" color="#FFFFFF" width="100%" height="100%" verticalAlign="middle" paddingLeft="10"/>
+			<s:Label text="共{courseList.length}个搜索结果"
+					 fontSize="30" color="#FFFFFF"
+					 width="100%" height="100%"
+					 verticalAlign="middle" paddingLeft="10"
+					 excludeFrom="default"/>
+			<s:HGroup height="100%" verticalAlign="middle" gap="10" excludeFrom="result">
+				<s:Label text="正在搜索"
+						 fontSize="30" color="#FFFFFF"
+						 height="100%"
+						 verticalAlign="middle" paddingLeft="10"
+						 />
+				<s:BusyIndicator symbolColor="#FFFFFF" height="40"/>
+			</s:HGroup>
 		</s:Group>
 		
 		<!-- list -->
