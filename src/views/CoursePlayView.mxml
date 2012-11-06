@@ -1,6 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		xmlns:s="library://ns.adobe.com/flex/spark"
-		title="掌上课堂">
-	
+		title="掌上课堂"
+		viewActivate="view1_viewActivateHandler(event)">
+	<fx:Script>
+		<![CDATA[
+			import com.glr.vod.Vod;
+			
+			import mx.core.UIComponent;
+			
+			import spark.events.ViewNavigatorEvent;
+			
+			protected function view1_viewActivateHandler(event:ViewNavigatorEvent):void
+			{
+				var container:UIComponent = new UIComponent();
+				container.percentWidth = 100;
+				container.percentHeight = 100;
+				var vod:Vod = new Vod(String(data));
+				container.addChild(vod);
+				group.addElement(container);
+			}
+		]]>
+	</fx:Script>
+	<s:Group id="group" width="100%" height="100%">
+		
+	</s:Group>
 </s:View>

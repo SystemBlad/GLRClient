@@ -84,7 +84,7 @@
 				</s:Rect>
 				<s:Label text="登录"
 						 width="100%" height="100%"
-						 fontSize="30"
+						 styleName="captionText"
 						 color="#FFFFFF"
 						 textAlign="center" verticalAlign="middle"
 						 click="btnLogin_clickHandler(event)"
@@ -92,7 +92,7 @@
 				<s:BusyIndicator id="busyIndicator" symbolColor="#0C3170" height="40" visible="false" right="20" top="14"/>
 			</s:Group>
 			<s:Spacer height="20"/>
-			<s:Label id="txtError" color="#ff0000" fontSize="26"/>
+			<s:Label id="txtError" color="#ff0000"/>
 		</s:Group>
 	</s:Scroller>
 </s:View>

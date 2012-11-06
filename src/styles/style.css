@@ -1,5 +1,7 @@
 /* CSS file */
 @namespace s "library://ns.adobe.com/flex/spark";
+@namespace renderers "renderers.*";
+@namespace components "components.*";
 
 s|ActionBar
 {
@@ -10,26 +12,27 @@ s|TabbedViewNavigator #tabBar
 {
 	chromeColor:#0C3170;
 }
-
 .courseListItemMessage
 {
 	color: #666666;
-	fontSize: 24;
 	height: 28;
 	verticalAlign: bottom;
 }
 .courseListItemMessageWatchable
 {
 	color: #319ED7;
-	fontSize: 24;
 	height: 28;
 	verticalAlign: bottom;
 }
-
+.courseListItemMessageLive
+{
+	color: #FF0000;
+	height: 28;
+	verticalAlign: bottom;
+}
 #channelTags s|Label
 {
 	color:#000000;
-	fontSize:30;
 	paddingLeft:10;
 	paddingRight:10;
 	paddingTop:8;
@@ -40,4 +43,16 @@ s|TabbedViewNavigator #tabBar
 {
 	backgroundColor:#319ED7;
 	color:#FFFFFF;
+}
+
+@media (application-dpi:320)
+{
+	s|TabbedViewNavigatorApplication {fontSize:24;}
+	
+	.captionText {fontSize:30;}
+	
+	renderers|CourseItemRenderer {fontSize:30;}
+	renderers|CourseItemRenderer s|Label {fontSize:24;}
+	
+	components|SearchField {fontSize:30;}
 }

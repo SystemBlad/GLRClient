@@ -64,7 +64,7 @@
 					<s:SolidColor color="#000000" alpha="0.3"/>
 				</s:fill>
 			</s:Rect>
-			<s:Label text="最新上线课程" fontSize="30" color="#FFFFFF" width="100%" height="100%" verticalAlign="middle" paddingLeft="10"/>
+			<s:Label text="最新上线课程" styleName="captionText" color="#FFFFFF" width="100%" height="100%" verticalAlign="middle" paddingLeft="10"/>
 		</s:Group>
 		
 		<!-- list -->
@@ -83,19 +83,7 @@
 													  iconFillMode="clip" iconScaleMode="letterbox"
 													  iconPlaceholder="@Embed('assets/icon-course-placeholder.png')"
 													  iconField="pic"
-													  labelField="subject"
-													  messageStyleName="courseListItemMessage">
-							<fx:Script>
-								<![CDATA[
-									private function getMessage(item:Object):String
-									{
-										var s:String = ""+item.teacher_realname;
-										s += "\n";
-										s += "人气："+item.viewnum
-										return s;
-									}
-								]]>
-							</fx:Script>
+													  labelField="subject">
 						</renderers:CourseItemRenderer>
 					</fx:Component>
 				</s:itemRenderer>

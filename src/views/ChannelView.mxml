@@ -114,19 +114,7 @@
 													  iconPlaceholder="@Embed('assets/icon-course-placeholder.png')"
 													  iconField="pic"
 													  labelField="subject"
-													  messageFunction="getMessage"
-													  messageStyleName="courseListItemMessage">
-							<fx:Script>
-								<![CDATA[
-									private function getMessage(item:Object):String
-									{
-										var s:String = "主讲人："+item.teacher_realname;
-										s += "\n";
-										s += "人气："+item.viewnum
-										return s;
-									}
-								]]>
-							</fx:Script>
+													  >
 						</renderers:CourseItemRenderer>
 					</fx:Component>
 				</s:itemRenderer>

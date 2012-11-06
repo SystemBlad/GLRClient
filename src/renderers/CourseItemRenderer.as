@@ -25,7 +25,7 @@ package renderers
 		override protected function createChildren():void
 		{
 			super.createChildren();
-			
+
 			vgroup = new VGroup();
 			vgroup.gap = 10;
 			addChild(vgroup);
@@ -89,10 +89,18 @@ package renderers
 				lblPopularity.text = data.viewnum;
 				lblButton.text = data.button_txt;
 				
-				if (data.button_txt == "即将直播")
-					lblButton.styleName = "courseListItemMessage";
-				else
-					lblButton.styleName = "courseListItemMessageWatchable";
+				switch (data.button_txt)
+				{
+					case "正在直播":
+						lblButton.styleName = "courseListItemMessageLive";
+						break;
+					case "即将直播":
+						lblButton.styleName = "courseListItemMessage";
+						break
+					default:
+						lblButton.styleName = "courseListItemMessageWatchable";
+						break;
+				}
 			}
 		}
 	}

@@ -5,6 +5,7 @@
 								  splashScreenScaleMode="zoom"
 								  preloader="components.MultiDPISplashScreen"
 								  creationComplete="creationCompleteHandler(event)"
+								  applicationDPI="320"
 								  >
 	<fx:Style source="styles/style.css"/>
 	<fx:Script>

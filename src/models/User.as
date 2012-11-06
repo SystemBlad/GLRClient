@@ -69,6 +69,11 @@ package models
 			dispatchEvent(evt);
 		}
 		
+		public function get token():String
+		{
+			return _token;
+		}
+		
 		[Bindable(event="logoutEvent")]
 		public function get loggedIn():Boolean
 		{
