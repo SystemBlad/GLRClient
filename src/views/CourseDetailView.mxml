@@ -10,6 +10,7 @@
 			import classes.DataManager;
 			
 			import mx.events.FlexEvent;
+			import mx.formatters.DateFormatter;
 			import mx.rpc.events.ResultEvent;
 			
 			protected function detailService_resultHandler(event:ResultEvent):void
@@ -38,6 +39,19 @@
 					trace("playUrlll="+url);
 					navigator.pushView(views.CoursePlayView, url);
 				}
+			}
+			
+			private function get timeDuration():String
+			{
+				var date:Date = new Date();
+				date.setTime(Number(data.start_time)*1000);
+				var df:DateFormatter = new DateFormatter();
+				df.formatString = "MM月DD日 JJ:NN";
+				
+				var ret:String = df.format(date);
+				date.setTime(Number(data.over_time)*1000);
+				df.formatString = "JJ:NN";
+				return ret + "至" + df.format(date);
 			}
 			
 			protected function view1_creationCompleteHandler(event:FlexEvent):void
@@ -79,6 +93,7 @@
 				</s:Group>
 				<s:VGroup gap="20" width="100%">
 					<s:Label text="{data.subject}" styleName="captionText"/>
+					<s:Label text="直播时间：{timeDuration}" color="#666666" verticalAlign="middle"/>
 					<s:HGroup width="100%">
 						<s:Label text="主讲人：{data.teacher_realname}" color="#666666"/>
 						<s:Spacer width="100%"/>

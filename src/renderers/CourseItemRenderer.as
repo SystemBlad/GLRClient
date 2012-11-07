@@ -1,6 +1,7 @@
 package renderers
 {
 	import mx.controls.Spacer;
+	import mx.formatters.DateFormatter;
 	
 	import spark.components.HGroup;
 	import spark.components.IconItemRenderer;
@@ -88,6 +89,12 @@ package renderers
 				lblSpeaker.text = "主讲人："+data.teacher_realname;
 				lblPopularity.text = data.viewnum;
 				lblButton.text = data.button_txt;
+				
+				var date:Date = new Date();
+				date.setTime(Number(data.start_time)*1000);
+				var df:DateFormatter = new DateFormatter();
+				df.formatString = "YY年MM月DD日 JJ:NN";
+				lblButton.text = df.format(date);
 				
 				switch (data.button_txt)
 				{

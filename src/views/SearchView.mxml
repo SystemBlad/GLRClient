@@ -11,6 +11,7 @@
 			
 			private function doSearch(event:SearchEvent):void
 			{
+				data = event.query;
 				navigator.pushView(views.SearchResultView, event.query);
 			}
 		]]>
@@ -21,7 +22,7 @@
 									  paddingTop="20" paddingBottom="0" paddingLeft="0" paddingRight="0" gap="0"/>
 		</s:layout>
 		<s:HGroup width="100%" height="60" paddingLeft="20" paddingRight="20">
-			<components:SearchField width="100%" search="doSearch(event)"/>
+			<components:SearchField width="100%" text="{data}" search="doSearch(event)"/>
 		</s:HGroup>
 	</s:Group>
 </s:View>

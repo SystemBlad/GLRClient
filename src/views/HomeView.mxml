@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		xmlns:s="library://ns.adobe.com/flex/spark"
-		viewActivate="listService.send()"
+		viewActivate="view1_viewActivateHandler(event)"
 		viewDeactivate="listService.cancel()"
 		title="今日推荐"
 		xmlns:renderers="renderers.*">
@@ -18,8 +18,8 @@
 			{
 				var json:String = String(event.result);
 				trace(json);
-				var obj:Object = JSON.parse(json);
-				courseList.source = obj.datalist;
+				data = JSON.parse(json);
+				courseList.source = data.datalist;
 				
 				list.visible = true;
 				busyIndicator.visible = busyIndicator.includeInLayout = false;
@@ -28,6 +28,20 @@
 			protected function list_changeHandler(event:IndexChangeEvent):void
 			{
 				navigator.pushView(views.CourseDetailView, courseList.getItemAt(event.newIndex));
+			}
+			
+			protected function view1_viewActivateHandler(event:ViewNavigatorEvent):void
+			{
+				if (data)
+				{
+					courseList.source = data.datalist;
+					list.visible = true;
+					busyIndicator.visible = busyIndicator.includeInLayout = false;
+				}
+				else
+				{
+					listService.send();
+				}
 			}
 		]]>
 	</fx:Script>
