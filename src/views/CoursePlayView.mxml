@@ -8,11 +8,13 @@
 		>
 	<fx:Script>
 		<![CDATA[
-			import com.glr.vod.Vod;
+			import com.GLRPlayer;
 			
 			import mx.core.UIComponent;
 			
 			import spark.events.ViewNavigatorEvent;
+			
+			private var _vod:GLRPlayer;
 			
 			protected function view1_viewActivateHandler(event:ViewNavigatorEvent):void
 			{
@@ -24,8 +26,9 @@
 				var container:UIComponent = new UIComponent();
 				container.percentWidth = 100;
 				container.percentHeight = 100;
-				var vod:Vod = new Vod(String(data));
-				container.addChild(vod);
+				
+				_vod = new GLRPlayer(String(data));
+				container.addChild(_vod);
 				group.addElement(container);
 			}
 			
@@ -36,6 +39,8 @@
 			
 			protected function view1_viewDeactivateHandler(event:ViewNavigatorEvent):void
 			{
+				_vod.exit();
+				
 				removeEventListener(MouseEvent.CLICK, onMouseClick);
 				stage.setOrientation(StageOrientation.DEFAULT);
 			}

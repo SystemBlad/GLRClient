@@ -14,6 +14,11 @@
 			import spark.events.IndexChangeEvent;
 			import spark.events.ViewNavigatorEvent;
 			
+			protected function pagedList_changeHandler(event:IndexChangeEvent):void
+			{
+				navigator.pushView(views.CourseDetailView, recommends.getItemAt(event.newIndex));
+			}
+
 			protected function listService_resultHandler(event:ResultEvent):void
 			{
 				var json:String = String(event.result);
@@ -48,18 +53,31 @@
 	<fx:Declarations>
 		<s:HTTPService id="listService" url="http://www.glr.cn/appapi/app_course_list.php" resultFormat="text" result="listService_resultHandler(event)"/>
 		<s:ArrayList id="courseList"/>
+		<fx:Model id="recommend" source="assets/recommends.xml"/>
+		<s:ArrayCollection id="recommends" source="{recommend.Course}"/>
 	</fx:Declarations>
 	<s:Group width="100%" height="100%">
 		<s:layout>
 			<s:MultiDPIVerticalLayout sourceDPI="320"
 									  paddingTop="0" paddingBottom="0" paddingLeft="0" paddingRight="0" gap="0"/>
 		</s:layout>
+		
 		<!-- top banner -->
-		<s:Rect width="100%" height="200">
-			<s:fill>
-				<s:BitmapFill source="@Embed(source='assets/top-icon-placeholder.png')" fillMode="scale"/>
-			</s:fill>
-		</s:Rect>
+		<s:List id="pagedList"
+				width="100%" height="200"
+				verticalScrollPolicy="off" horizontalScrollPolicy="on"
+				pageScrollingEnabled="true"
+				itemRenderer="renderers.RecommendCourseItemRenderer"
+				skinClass="skins.PagedListSkin"
+				change="pagedList_changeHandler(event)"
+				dataProvider="{recommends}"
+				>
+			<s:layout>
+				<s:TileLayout orientation="rows" requestedRowCount="1" 
+							  columnWidth="{pagedList.width}" rowHeight="{pagedList.height}" 
+							  verticalGap="0" horizontalGap="0"/>
+			</s:layout>
+		</s:List>
 		
 		<!-- list header -->
 		<s:Group width="100%" height="66">

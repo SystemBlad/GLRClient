@@ -44,7 +44,7 @@
 			protected function btnWeiboLogin_clickHandler(event:MouseEvent):void
 			{
 				_mb.addEventListener(MicroBlogEvent.LOGIN_RESULT, onLoginResult);
-				_mb.login(txtUser.text, txtPwd.text);
+				_mb.login();
 			}
 			
 			protected function onLoginResult(e:MicroBlogEvent):void
