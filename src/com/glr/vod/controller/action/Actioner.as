@@ -1,6 +1,5 @@
 package com.glr.vod.controller.action 
 {
-    import com.adobe.serialization.json.*;
     import com.glr.vod.*;
     import com.glr.vod.controller.*;
     import com.glr.vod.model.*;
@@ -71,7 +70,7 @@ package com.glr.vod.controller.action
 				
 				//trace(action.substr(1))
                 action = "[" + action.substr(1) + "]";
-                actionResult = com.adobe.serialization.json.JSON.decode(action);
+                actionResult = JSON.parse(action);
                 this.model.action = actionResult;
                 ev = new com.glr.vod.controller.LoadEvent(com.glr.vod.controller.LoadEvent.LOAD_COMPLETE);
                 dispatchEvent(ev);

@@ -1,6 +1,5 @@
 package com.glr.vod.controller.configer 
 {
-    import com.adobe.serialization.json.*;
     import com.glr.vod.controller.*;
     import com.letv.aiLoader.*;
     import com.letv.aiLoader.events.*;
@@ -75,7 +74,7 @@ package com.glr.vod.controller.configer
 				//var str = (event.dataProvider.content as String).replace(myPattern, "");
 				
 				//trace(str)
-                obj = com.adobe.serialization.json.JSON.decode(event.dataProvider.content);
+				obj = JSON.parse(event.dataProvider.content);
 				
 				//obj.flv_path = "aaa";
 				//obj.action_path = "bbb"

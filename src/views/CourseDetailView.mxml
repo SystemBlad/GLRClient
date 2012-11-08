@@ -13,6 +13,8 @@
 			import mx.formatters.DateFormatter;
 			import mx.rpc.events.ResultEvent;
 			
+			private var courseId:Number;
+			
 			protected function detailService_resultHandler(event:ResultEvent):void
 			{
 				var json:String = String(event.result);
@@ -20,6 +22,7 @@
 				var obj:Object = JSON.parse(json);
 				if (obj.error_occurred == false)
 				{
+					courseId = Number(obj.course_detail.course_view_id);
 					txtIntro.text = obj.course_detail.course_introduce;
 				}
 			}
@@ -32,12 +35,15 @@
 				}
 				else
 				{
-					var url:String = "http://www.glr.cn/appapi/app_course_view.php?appid=";
-					url += data.kvideoid;
-					url += "&token=";
-					url += DataManager.instance.user.token;
-					trace("playUrlll="+url);
-					navigator.pushView(views.CoursePlayView, url);
+					if (courseId)
+					{
+						var url:String = "http://www.glr.cn/appapi/app_course_view.php?appid=";
+						url += courseId;
+						url += "&token=";
+						url += DataManager.instance.user.token;
+						trace("playUrlll="+url);
+						navigator.pushView(views.CoursePlayView, url);
+					}
 				}
 			}
 			

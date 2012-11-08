@@ -2,7 +2,9 @@
 <s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		xmlns:s="library://ns.adobe.com/flex/spark"
 		title="登录"
-		backgroundColor="#95CDE7" xmlns:components="components.*">
+		backgroundColor="#95CDE7"
+		xmlns:components="components.*"
+		viewActivate="view1_viewActivateHandler(event)">
 	<fx:Style>
 		@namespace s "library://ns.adobe.com/flex/spark";
 		@namespace f "spark.skins.mobile.*";
@@ -23,13 +25,34 @@
 		<![CDATA[
 			import classes.DataManager;
 			
+			import com.sina.microblog.MicroBlog;
+			import com.sina.microblog.events.MicroBlogEvent;
+			
 			import events.LoginEvent;
+			
+			import spark.events.ViewNavigatorEvent;
+			
+			private var _mb:MicroBlog;
 			
 			protected function btnLogin_clickHandler(event:MouseEvent):void
 			{
 				txtError.text = "";
 				DataManager.instance.user.login(txtUser.text, txtPwd.text);
 				busyIndicator.visible = true;
+			}
+			
+			protected function btnWeiboLogin_clickHandler(event:MouseEvent):void
+			{
+				_mb.addEventListener(MicroBlogEvent.LOGIN_RESULT, onLoginResult);
+				_mb.login(txtUser.text, txtPwd.text);
+			}
+			
+			protected function onLoginResult(e:MicroBlogEvent):void
+			{
+				trace(e);
+				_mb.removeEventListener(MicroBlogEvent.LOGIN_RESULT, onLoginResult);
+				btnLogin.text = e.result["access_token"];
+				trace(e.result["access_token"] + "::" + e.result["expires_in"] + "::" + e.result["refresh_token"]);  
 			}
 			
 			private function loginHandler(event:LoginEvent):void
@@ -40,6 +63,15 @@
 				else
 					txtError.text = event.error;
 			}
+			
+			protected function view1_viewActivateHandler(event:ViewNavigatorEvent):void
+			{
+				_mb = new MicroBlog();
+				_mb.consumerKey = "191889720"; //申请的App Key
+				_mb.consumerSecret = "b0fec1128d444802cfa237b569f0122e"; //申请的App Secrect
+				_mb.proxyURI = "http://flashsdk.sinaapp.com/proxy/proxy.php"; //写你自己部署的代理接口地址
+			}
+			
 		]]>
 	</fx:Script>
 	<s:creationComplete>
@@ -73,6 +105,8 @@
 				<components:HintTextInput id="txtPwd" displayAsPassword="true" hint="密码" width="100%" y="63"/>
 			</s:Group>
 			<s:Spacer height="20"/>
+			
+			<!-- site user login -->
 			<s:Group width="100%" height="68">
 				<s:Rect width="100%" height="100%" radiusX="8">
 					<s:fill>
@@ -82,7 +116,7 @@
 						<s:SolidColorStroke color="#000000" alpha="0.2" weight="2"/>
 					</s:stroke>
 				</s:Rect>
-				<s:Label text="登录"
+				<s:Label id="btnLogin" text="登录"
 						 width="100%" height="100%"
 						 styleName="captionText"
 						 color="#FFFFFF"
@@ -92,7 +126,26 @@
 				<s:BusyIndicator id="busyIndicator" symbolColor="#0C3170" height="40" visible="false" right="20" top="14"/>
 			</s:Group>
 			<s:Spacer height="20"/>
-			<s:Label id="txtError" color="#ff0000"/>
+			<s:Label id="txtError" color="#ff0000" includeInLayout="false"/>
+			
+			<!-- weibo user login -->
+			<s:Group width="100%" height="68">
+				<s:Rect width="100%" height="100%" radiusX="8">
+					<s:fill>
+						<s:SolidColor color="#82CB23"/>
+					</s:fill>
+					<s:stroke>
+						<s:SolidColorStroke color="#000000" alpha="0.2" weight="2"/>
+					</s:stroke>
+				</s:Rect>
+				<s:Label text="微博登录"
+						 width="100%" height="100%"
+						 styleName="captionText"
+						 color="#FFFFFF"
+						 textAlign="center" verticalAlign="middle"
+						 click="btnWeiboLogin_clickHandler(event)"
+						 />
+			</s:Group>
 		</s:Group>
 	</s:Scroller>
 </s:View>

@@ -2,7 +2,10 @@
 <s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		xmlns:s="library://ns.adobe.com/flex/spark"
 		title="掌上课堂"
-		viewActivate="view1_viewActivateHandler(event)">
+		viewActivate="view1_viewActivateHandler(event)"
+		viewDeactivate="view1_viewDeactivateHandler(event)"
+		overlayControls="true"
+		>
 	<fx:Script>
 		<![CDATA[
 			import com.glr.vod.Vod;
@@ -13,12 +16,28 @@
 			
 			protected function view1_viewActivateHandler(event:ViewNavigatorEvent):void
 			{
+				stage.setOrientation(StageOrientation.ROTATED_LEFT);
+				actionBarVisible = tabBarVisible = false;
+				
+				addEventListener(MouseEvent.CLICK, onMouseClick); 
+				
 				var container:UIComponent = new UIComponent();
 				container.percentWidth = 100;
 				container.percentHeight = 100;
 				var vod:Vod = new Vod(String(data));
 				container.addChild(vod);
 				group.addElement(container);
+			}
+			
+			private function onMouseClick(event:MouseEvent):void
+			{
+				actionBarVisible = tabBarVisible = !tabBarVisible;
+			}
+			
+			protected function view1_viewDeactivateHandler(event:ViewNavigatorEvent):void
+			{
+				removeEventListener(MouseEvent.CLICK, onMouseClick);
+				stage.setOrientation(StageOrientation.DEFAULT);
 			}
 		]]>
 	</fx:Script>
