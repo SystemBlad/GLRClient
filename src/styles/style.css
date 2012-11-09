@@ -51,8 +51,9 @@ s|TabbedViewNavigator #tabBar
 	
 	.captionText {fontSize:30;}
 	
-	renderers|CourseItemRenderer {fontSize:30;}
-	renderers|CourseItemRenderer s|Label {fontSize:24;}
+	renderers|CourseItemRenderer, s|IconItemRenderer {fontSize:30;}
+	renderers|CourseItemRenderer s|Label, s|IconItemRenderer s|Label {fontSize:24;}
+	.historyMessage {color:#999999;fontSize:24;}
 	
 	components|SearchField {fontSize:30;}
 }

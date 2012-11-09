@@ -6,12 +6,17 @@
 								  preloader="components.MultiDPISplashScreen"
 								  creationComplete="creationCompleteHandler(event)"
 								  applicationDPI="320"
+								  preinitialize="tabbedviewnavigatorapplication1_preinitializeHandler(event)"
 								  >
 	<fx:Style source="styles/style.css"/>
 	<fx:Script>
 		<![CDATA[
-			import mx.events.FlexEvent;
+			import flash.net.registerClassAlias;
+			
+			import models.Course;
+			
 			import mx.core.IVisualElementContainer;
+			import mx.events.FlexEvent;
 			
 			import spark.components.View;
 			import spark.events.ElementExistenceEvent;
@@ -105,14 +110,19 @@
 				}
 			}
 			
+			protected function tabbedviewnavigatorapplication1_preinitializeHandler(event:FlexEvent):void
+			{
+				flash.net.registerClassAlias("course", models.Course);
+			}
+			
 		]]>
 	</fx:Script>
 	<fx:Declarations>
 		<s:Button id="backButton" label="返回" click="backButton_clickHandler(event)"/>
 	</fx:Declarations>
-	<s:ViewNavigator label="首页" width="100%" height="100%" firstView="views.HomeView" icon="@Embed(source='assets/icon-home.png')"/>
-	<s:ViewNavigator label="频道" width="100%" height="100%" firstView="views.ChannelView" icon="@Embed(source='assets/icon-channel.png')"/>
-	<s:ViewNavigator label="搜索" width="100%" height="100%" firstView="views.SearchView" icon="@Embed(source='assets/icon-search.png')"/>
-	<s:ViewNavigator label="历史" width="100%" height="100%" firstView="views.HistoryView" icon="@Embed(source='assets/icon-history.png')"/>
-	<s:ViewNavigator label="设置" width="100%" height="100%" firstView="views.ProfileView" icon="@Embed(source='assets/icon-profile.png')"/>
+	<s:ViewNavigator width="100%" height="100%" firstView="views.HomeView" icon="@Embed(source='assets/icon-home.png')"/>
+	<s:ViewNavigator width="100%" height="100%" firstView="views.ChannelView" icon="@Embed(source='assets/icon-channel.png')"/>
+	<s:ViewNavigator width="100%" height="100%" firstView="views.SearchView" icon="@Embed(source='assets/icon-search.png')"/>
+	<s:ViewNavigator width="100%" height="100%" firstView="views.HistoryView" icon="@Embed(source='assets/icon-history.png')"/>
+	<s:ViewNavigator width="100%" height="100%" firstView="views.ProfileView" icon="@Embed(source='assets/icon-profile.png')"/>
 </s:TabbedViewNavigatorApplication>

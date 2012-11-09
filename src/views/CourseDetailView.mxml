@@ -9,6 +9,9 @@
 		<![CDATA[
 			import classes.DataManager;
 			
+			import models.Course;
+			
+			import mx.core.FlexGlobals;
 			import mx.events.FlexEvent;
 			import mx.formatters.DateFormatter;
 			import mx.rpc.events.ResultEvent;
@@ -37,11 +40,13 @@
 				{
 					if (courseId)
 					{
+						DataManager.instance.insertCourseHistory(data.subject, courseId);
+						
 						var url:String = "http://www.glr.cn/appapi/app_course_view.php?appid=";
 						url += courseId;
 						url += "&token=";
 						url += DataManager.instance.user.token;
-						trace("playUrlll="+url);
+						trace("videoUrl="+url);
 						navigator.pushView(views.CoursePlayView, url);
 					}
 				}

@@ -1,7 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
-		xmlns:s="library://ns.adobe.com/flex/spark" title="历史">
+		xmlns:s="library://ns.adobe.com/flex/spark"
+		title="播放历史"
+		viewActivate="view1_viewActivateHandler(event)">
+	<fx:Script>
+		<![CDATA[
+			import classes.DataManager;
+			
+			import models.Course;
+			
+			import mx.core.FlexGlobals;
+			
+			import spark.events.IndexChangeEvent;
+			import spark.events.ViewNavigatorEvent;
+			
+			protected function view1_viewActivateHandler(event:ViewNavigatorEvent):void
+			{
+				var courses:Vector.<Course> =  FlexGlobals.topLevelApplication.persistenceManager.getProperty("history") as Vector.<Course>;
+				courseList.removeAll();
+				if (courses)
+				{
+					for (var i:int=courses.length-1; i>=0; i--)
+					{
+						courseList.addItem(courses[i]);
+					}
+				}
+			}
+			
+			protected function list_changeHandler(event:IndexChangeEvent):void
+			{
+				if (!DataManager.instance.user.loggedIn)
+				{
+					navigator.pushView(views.LoginView);
+				}
+				else
+				{
+					var course:Course = list.selectedItem as Course;
+					DataManager.instance.insertCourseHistory(course.subject, course.id);
+					
+					var url:String = "http://www.glr.cn/appapi/app_course_view.php?appid=";
+					url += course.id;
+					url += "&token=";
+					url += DataManager.instance.user.token;
+					trace("videoUrl="+url);
+					navigator.pushView(views.CoursePlayView, url);
+				}
+			}
+			
+			protected function btnClear_clickHandler(event:MouseEvent):void
+			{
+				DataManager.instance.clearCourseHistory();
+				courseList.removeAll();
+			}
+			
+		]]>
+	</fx:Script>
 	<fx:Declarations>
-		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+		<s:ArrayList id="courseList"/>
 	</fx:Declarations>
+	<s:Group width="100%" height="100%">
+		<s:List id="list" width="100%" height="100%" dataProvider="{courseList}"
+				visible="{courseList.length>0}" includeInLayout="{courseList.length>0}"
+				change="list_changeHandler(event)">
+			<s:itemRenderer>
+				<fx:Component>
+					<s:IconItemRenderer labelField="subject"
+										messageFunction="getMessage"
+										messageStyleName="historyMessage"
+										decorator="@Embed('assets/decorator-arrow.png')">
+						<fx:Script>
+							<![CDATA[
+								private function getMessage(item:Object):String
+								{
+									var date:Date = new Date();
+									var diff:Number = Math.floor(date.getTime()/1000) - item.viewTime;
+									trace(diff);
+									var minutes:Number = Math.floor(diff/60);
+									if (minutes == 0)
+										return "现在";
+									else if (minutes < 60)
+										return minutes + "分钟前";
+									else if (minutes < 60*24)
+										return Math.floor(minutes/60) + "小时前";
+									else
+										return Math.floor(minutes/60*24) + "天前";
+								}
+							]]>
+						</fx:Script>
+					</s:IconItemRenderer>
+				</fx:Component>
+			</s:itemRenderer>
+		</s:List>
+		<s:Label text="您还没有任何课程观看记录" styleName="captionText" color="#666666" width="100%" height="80" verticalAlign="middle" textAlign="center"
+				 visible="{courseList.length==0}" includeInLayout="{courseList.length==0}"/>
+	</s:Group>
+	
+	<s:actionContent>
+		<s:Button id="btnClear" label="清除" click="btnClear_clickHandler(event)" visible="{courseList.length>0}"/>
+	</s:actionContent>
 </s:View>
