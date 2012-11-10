@@ -2,17 +2,34 @@
 <s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		xmlns:s="library://ns.adobe.com/flex/spark"
 		viewActivate="view1_viewActivateHandler(event)"
-		viewDeactivate="listService.cancel()"
+		viewDeactivate="view1_viewDeactivateHandler(event)"
+		mouseUp="view1_mouseUpHandler(event)"
 		title="今日推荐"
 		xmlns:renderers="renderers.*">
 	<fx:Script>
 		<![CDATA[
 			import classes.DataManager;
 			
+			import mx.events.PropertyChangeEvent;
 			import mx.rpc.events.ResultEvent;
 			
+			import spark.core.NavigationUnit;
 			import spark.events.IndexChangeEvent;
 			import spark.events.ViewNavigatorEvent;
+			
+			private var _draggingList:Boolean;
+			private var _currentPage:Number = 1;
+			private var _totalPages:Number;
+			
+			[Bindable]
+			private var PULL_DOWN_TEXT:String = "获取更多课程...";
+			private var RELEASE_TEXT:String = "松开即刷新...";
+			
+			private function getCourseList():void
+			{
+				listService.url = "http://www.glr.cn/appapi/app_course_list.php?page=" + _currentPage;
+				listService.send();
+			}
 			
 			protected function pagedList_changeHandler(event:IndexChangeEvent):void
 			{
@@ -24,7 +41,18 @@
 				var json:String = String(event.result);
 				trace(json);
 				data = JSON.parse(json);
-				courseList.source = data.datalist;
+				_totalPages = Math.ceil(Number(data.numcont)/Number(data.perpage));
+				
+				if (!courseList.source)
+				{
+					courseList.source = data.datalist;
+				}
+				else
+				{
+					if (courseList.length > 0)
+						courseList.removeItemAt(courseList.length-1);
+					courseList.source = courseList.source.concat(data.datalist);
+				}
 				
 				list.visible = true;
 				busyIndicator.visible = busyIndicator.includeInLayout = false;
@@ -37,6 +65,7 @@
 			
 			protected function view1_viewActivateHandler(event:ViewNavigatorEvent):void
 			{
+				list.dataGroup.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, onPropertyChange);
 				if (data)
 				{
 					courseList.source = data.datalist;
@@ -45,9 +74,99 @@
 				}
 				else
 				{
-					listService.send();
+					getCourseList();
 				}
 			}
+			
+			protected function view1_viewDeactivateHandler(event:ViewNavigatorEvent):void
+			{
+				list.dataGroup.removeEventListener(PropertyChangeEvent.PROPERTY_CHANGE, onPropertyChange);
+				listService.cancel()
+			}
+			
+			protected function onPropertyChange(event:PropertyChangeEvent):void
+			{
+				if (!list.scroller.verticalScrollBar) return;
+				if (event.source == event.target && event.property == "verticalScrollPosition")
+				{
+					var vScroll:Number = list.scroller.verticalScrollBar.value;
+					if(vScroll > list.measuredHeight - list.height + 20){
+						if(!loadingGroup.visible){
+							loadingGroup.visible = true;
+							fadeIn.play();
+						}
+						loadingGroup.y = list.measuredHeight - vScroll;
+						
+						if(vScroll > list.measuredHeight - list.height + 90){
+							if(arrowImage.rotation == 0)  {
+								arrowImage.rotation = 180;
+							}
+							loadText.text = RELEASE_TEXT;
+							
+						}else{
+							if(arrowImage.rotation == 180)  {
+								arrowImage.rotation = 0;
+							}
+							loadText.text = PULL_DOWN_TEXT;
+						}
+						
+					}else{
+						loadingGroup.visible = false;
+					}
+				}
+			}
+			
+			protected function list_mouseUpHandler(event:MouseEvent):void
+			{
+				if (_draggingList)
+					_draggingList = false;
+				if (list.scroller.verticalScrollBar.value > list.measuredHeight - list.height + 90){
+					loadingGroup.visible = false;
+					courseList.addItem({text:"loading..."});
+					list.validateNow();
+					list.layout.verticalScrollPosition += list.layout.getVerticalScrollPositionDelta(NavigationUnit.END);
+					
+					if (_currentPage < _totalPages-1)
+					{
+						_currentPage++;
+						getCourseList();
+					}
+					else
+					{
+						PULL_DOWN_TEXT = RELEASE_TEXT = "已经获取所有课程列表";
+					}
+				}
+			}
+			
+			private function scrollToBottom():void {
+				// update the verticalScrollPosition to the end of the List
+				// virtual layout may require us to validate a few times
+				var delta:Number = 0;
+				var count:int = 0;
+				while (count++ < 10){
+					list.validateNow();
+					delta = list.layout.getVerticalScrollPositionDelta(NavigationUnit.END);
+					list.layout.verticalScrollPosition += delta;
+					
+					if (delta == 0)
+						break;
+				}
+			}
+			
+			protected function view1_mouseUpHandler(event:MouseEvent):void
+			{
+				if (_draggingList)
+				{
+					_draggingList = false;
+					list_mouseUpHandler(event);
+				}
+			}
+			
+			protected function list_mouseDownHandler(event:MouseEvent):void
+			{
+				_draggingList = true;
+			}
+			
 		]]>
 	</fx:Script>
 	<fx:Declarations>
@@ -55,6 +174,7 @@
 		<s:ArrayList id="courseList"/>
 		<fx:Model id="recommend" source="assets/recommends.xml"/>
 		<s:ArrayCollection id="recommends" source="{recommend.Course}"/>
+		<s:Fade id='fadeIn' target="{loadingGroup}" duration="500" alphaFrom="0" alphaTo="1"/>
 	</fx:Declarations>
 	<s:Group width="100%" height="100%">
 		<s:layout>
@@ -107,21 +227,28 @@
 				<s:BusyIndicator symbolColor="#0C3170" height="40"/>
 				<s:Spacer width="100%"/>
 			</s:HGroup>
-			<s:List visible="false" id="list" width="100%" height="100%" dataProvider="{courseList}"
-					change="list_changeHandler(event)">
+			
+			<s:List id="list" visible="false" width="100%" height="100%" dataProvider="{courseList}"
+					change="list_changeHandler(event)"
+					mouseDown="list_mouseDownHandler(event)"
+					mouseUp="list_mouseUpHandler(event)">
 				<s:itemRenderer>
 					<fx:Component>
-						<renderers:CourseItemRenderer iconWidth="180" iconHeight="120"
+						<renderers:CourseIR iconWidth="180" iconHeight="120"
 													  iconFillMode="clip" iconScaleMode="letterbox"
 													  iconPlaceholder="@Embed('assets/icon-course-placeholder.png')"
 													  iconField="pic"
 													  labelField="subject">
-						</renderers:CourseItemRenderer>
+							
+						</renderers:CourseIR>
 					</fx:Component>
 				</s:itemRenderer>
 			</s:List>
+			<s:HGroup paddingLeft="180" verticalAlign="middle" width="{list.width}" id="loadingGroup" visible="false" height="50" includeInLayout="false">
+				<s:Image id="arrowImage"  source="@Embed('assets/arrow-up.png')"/>
+				<s:Label text="{PULL_DOWN_TEXT}"  id="loadText"/>
+			</s:HGroup>
 		</s:Group>
-		
 	</s:Group>
 	
 	<s:actionContent>

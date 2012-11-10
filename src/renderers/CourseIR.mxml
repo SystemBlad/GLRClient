@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<renderers:CourseItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+							  xmlns:s="library://ns.adobe.com/flex/spark"
+							  xmlns:renderers="renderers.*"
+							  dataChange="courseitemrenderer1_dataChangeHandler(event)"
+							  creationComplete="courseitemrenderer1_creationCompleteHandler(event)"
+							  >
+	<fx:Script>
+		<![CDATA[
+			import mx.events.FlexEvent;
+			private var loadAnimCreated:Boolean = false;
+			
+			protected function courseitemrenderer1_dataChangeHandler(event:FlexEvent):void
+			{
+				if (loadAnimCreated == true && loadGroup.visible == true)
+				{
+					loadGroup.visible = false;
+				}
+				else if (loadAnimCreated == false)
+				{
+					if (data.text == "loading...")
+					{
+						trace("PAAS");
+						addChild(loadGroup);
+						loadGroup.x = 0;
+						loadGroup.y = 0;
+						loadGroup.width = this.width;
+						loadGroup.height = this.height;
+						loadAnimCreated = true;
+					}
+				}
+			}
+			
+			protected function courseitemrenderer1_creationCompleteHandler(event:FlexEvent):void
+			{
+				trace('loadAnimCreated='+loadAnimCreated);
+				if (loadAnimCreated == false)
+				{
+					if (data.text == "loading...")
+					{
+						trace("PAAS");
+						addChild(loadGroup);
+						loadGroup.x = 0;
+						loadGroup.y = 0;
+						loadGroup.width = this.width;
+						loadGroup.height = this.height;
+						loadAnimCreated = true;
+					}
+				}
+				else
+				{
+					loadGroup.visible = true;
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<s:Group id="loadGroup">
+			<s:Rect width="100%" height="100%">
+				<s:fill>
+					<s:SolidColor color="0xDDDDDD"/>
+				</s:fill>
+			</s:Rect>
+			<s:HGroup  width="100%" height="100%" contentBackgroundColor="0xFF0000" contentBackgroundAlpha="1" verticalAlign="middle" horizontalAlign="center">
+				<s:BusyIndicator width="30" height="30"/>
+				<s:Label id="loadanim" color="0x444444" text="加载更多课程..." />
+			</s:HGroup>
+		</s:Group>
+	</fx:Declarations>
+</renderers:CourseItemRenderer>
