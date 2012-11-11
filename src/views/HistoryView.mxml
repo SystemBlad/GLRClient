@@ -83,7 +83,7 @@
 									else if (minutes < 60*24)
 										return Math.floor(minutes/60) + "小时前";
 									else
-										return Math.floor(minutes/60*24) + "天前";
+										return Math.floor(minutes/(60*24)) + "天前";
 								}
 							]]>
 						</fx:Script>

@@ -19,15 +19,17 @@ package com.proxies
 		
 		private var _pageAction:Array = new Array();
 		private var _penAction:Array = new Array();
+		private var _messageAction:Array = new Array();
 		
 		private var _pageContainer:PageContanier;
 		private var _penContainer:PenContainer;
+		private var _messageContainer:MessageContainer;
 		
 		private var client:NetClient;
 		
 		public var eventDispatcher:Sprite =  new Sprite();
 	
-		public function MediaProxy(url:String, action:ActionProxy, pageContainer, penContainer)
+		public function MediaProxy(url:String, action:ActionProxy, pageContainer, penContainer, messageContainer)
 		{
 			super();
 			_url = url;
@@ -35,6 +37,7 @@ package com.proxies
 			_before = action.before;
 			_pageContainer = pageContainer;
 			_penContainer = penContainer;
+			_messageContainer = messageContainer;
 			client = new NetClient(this);
 			//_pageContainer.addEventListener(Event.COMPLETE, onPlayPageLoaded, false, 0, true);
 			
@@ -92,7 +95,15 @@ package com.proxies
 					if (action[i].type == "pen") 
 					{
 						_penAction.push(action[i]);
+						
 					}
+					
+					if(action[i].type == "onSendMsg")
+					{
+						_messageAction.push(action[i]);
+					
+					}
+					
 					++i;
 				}
 				
@@ -117,6 +128,7 @@ package com.proxies
 		
 		var currentPageActionIndex = 0;
 		var currentPenActionIndex = 0;
+		var currentMessageActionIndex = 0;
 		
 		protected function onLoop():void
 		{
@@ -126,6 +138,7 @@ package com.proxies
 			var actionList:*=null;
 			var pageActionListLength:*= _pageAction.length; 
 			var penActionListLength:*= _penAction.length; 
+			var messageActionListLength:*= _messageAction.length; 
 			
 			if (this.duration > 0) 
 			{
@@ -168,13 +181,22 @@ package com.proxies
 						//trace(this._penContainer.penX, this._penContainer.penY);
 						currentPenActionIndex++;
 					}
-					//else if(_penAction[currentPenActionIndex].time < this.videoTime)
-					//{
-						//currentPenActionIndex++;
-					//}
-					
+				
 				}
 				
+				if(currentMessageActionIndex < messageActionListLength)
+				{
+					
+					if (Math.abs(_messageAction[currentMessageActionIndex].time - this.videoTime) <= ACCURACY) 
+					{
+						//TODO: add message
+						
+						//trace("=================== add item")
+						
+						_messageContainer.addMessage(_messageAction[currentMessageActionIndex]);
+						currentMessageActionIndex++;
+					}
+				}
 			}
 			return;
 		}
@@ -197,17 +219,12 @@ package com.proxies
 				this.seekTime = keyFrame;
 				this.stream.seek(this.seekTime);
 			}
-			
-		
-
 		}
 		
 		private function refrashContent(time):void{
 			
 		  _penContainer.clearGraphic();
-			
-		
-			
+	
 			for(var i = 0;i< _pageAction.length; i++)
 			{
 				if(_pageAction[i].time > time){
@@ -221,19 +238,13 @@ package com.proxies
 				
 			}
 			
-			var currentPenActions:Array = new Array();
+	
 			
 			for(var j = 0;j< _penAction.length; j++)
 			{
 				if(currentPageActionIndex>0)
 				if(_pageAction[currentPageActionIndex-1].time < _penAction[j].time && _penAction[j].time< time){
 					
-					
-					//trace(_pageAction[currentPageActionIndex-1].time, _penAction[j].time, time)
-					
-					currentPenActions.push(_penAction[j]);
-					
-					//currentPenActionIndex = j;
 					this._penContainer.penPosition = _penAction[j].value;
 					
 					//break;
@@ -241,13 +252,9 @@ package com.proxies
 				
 			}
 			
-			
-			
 			for(var h = 0;h< _penAction.length; h++)
 			{
 				if( _penAction[h].time> time){
-					
-					currentPenActions.push(_penAction[h]);
 					
 					currentPenActionIndex = h;
 					
@@ -255,7 +262,23 @@ package com.proxies
 				}
 				
 			}
-		  
+			
+			var currentMessageActions:Array = new Array();
+			
+			for(var l = 0; l<_messageAction.length; l++)
+			{
+				if( _messageAction[l].time< time){
+					
+					currentMessageActions.push(_messageAction[l]);
+					
+					currentMessageActionIndex = l + 1;
+					//trace(_messageAction[l].value.value);
+					//break;
+				}
+				
+			}
+			
+			_messageContainer.refreshMessage(currentMessageActions);
 			
 			
 		}

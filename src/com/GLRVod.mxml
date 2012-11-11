@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" width="100%" height="100%" addedToStage="onAdded(event)" creationComplete="creationCompleteHandler(event)">
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.components.*;
+			import com.components.HScrollView;
+			import com.proxies.ActionProxy;
+			import com.proxies.ConfigProxy;
+			import com.proxies.MediaProxy;
+			import com.utils.DataObjectEvent;
+			import com.greensock.TweenLite;
+			
+			import flash.display.Sprite;
+			import flash.events.Event;
+			import flash.events.StageOrientationEvent;
+			
+			import mx.core.UIComponent;
+			import mx.events.FlexEvent;
+           
+			
+			var _url;
+			
+			var configProxy:ConfigProxy;
+			var actionProxy:ActionProxy;
+			var mediaProxy:MediaProxy;
+			
+			
+			var contentContainer:HScrollView;
+			var pageContainer:PageContanier;
+			var penContainer:PenContainer;
+			var messageContainer:MessageContainer;
+			
+			var loadingPage:LoadingPage;
+			
+			var controlPanel:ControlPanelUI;
+			
+			var uiComponent:UIComponent;
+			
+
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				// TODO Auto-generated method stub
+				uiComponent = new UIComponent();
+				
+				contentContainer = new HScrollView();
+				
+				contentContainer.percentWidth = 100;
+				contentContainer.percentHeight = 100;
+				
+				
+				pageContainer = new PageContanier();
+				penContainer = new PenContainer();
+				messageContainer = new MessageContainer();
+				
+				loadingPage = new LoadingPage();
+				
+				this.addElement(contentContainer);
+				
+				this.addElement(messageContainer);
+				
+				//messageContainer.visible = false;
+				messageContainer.x = stage.stageWidth;
+				
+			    this.addElement(uiComponent);
+				
+				
+				contentContainer.addFlashChild(pageContainer);
+				contentContainer.addFlashChild(penContainer);
+			    
+				
+				uiComponent.addChild(loadingPage);
+				
+				
+				
+				pageContainer.addEventListener("page_loaded", onPageLoaded);
+				pageContainer.addEventListener(Event.RESIZE, onResize);
+				
+				stage.addEventListener(MouseEvent.CLICK, showHideControls);
+				
+				stage.addEventListener(StageOrientationEvent.ORIENTATION_CHANGE, orientationChanged);
+				
+				
+			}
+
+			public function start(_url:String):void{
+				
+				configProxy = new ConfigProxy(_url);
+				configProxy.loader.addEventListener(Event.COMPLETE, configLoaded);
+				
+			}
+			
+		
+			var isAdded:Boolean = false;
+			var isPageLoaed = false;
+			
+			private function onAdded(e:Event):void{
+				isAdded = true;
+				
+				resetContentSize();
+			
+			}
+			
+			private function onPageLoaded(e:Event):void{
+				
+				isPageLoaed = true;
+				trace("page Loaded sclae")
+				if(this.uiComponent.contains(this.loadingPage))
+					uiComponent.removeChild(this.loadingPage);
+				
+				resetContentSize();
+				
+				
+			}
+			
+			private function onResize(e:Event):void{
+
+				resetContentSize();
+				
+			}
+			
+			
+			private function orientationChanged(e:StageOrientationEvent):void{
+				
+				 resetContentSize();
+				 
+				 
+				 if(stage)
+				 {
+				  controlPanel.y = -controlPanel.height;
+				  messageContainer.x = stage.stageWidth;
+				 }
+			}
+			
+			private function resetContentSize():void{
+				
+				trace(isAdded, isPageLoaed)
+				
+				if(isAdded&&isPageLoaed)
+				{
+					
+					
+				 trace("===============resized==============")
+			     var  scale = (this.stage.stageWidth/pageContainer.content.width);
+				
+				 pageContainer.scaleX = scale;
+				 pageContainer.scaleY = scale;
+				 penContainer.scaleX = scale;
+				 penContainer.scaleY = scale;
+				 
+				 contentContainer.rangeRect.width = pageContainer.width;
+				 
+				 contentContainer.rangeRect.height = pageContainer.height;
+				 
+				
+				
+				}
+			}
+			
+			
+			private function configLoaded(e:Event):void{
+				
+				
+				
+				actionProxy = new ActionProxy(configProxy.action_path);
+				actionProxy.loader.addEventListener(Event.COMPLETE, actionLoaded);
+				
+				
+			}
+			
+			private function  actionLoaded(e:Event):void{
+				
+				mediaProxy = new MediaProxy(configProxy.flv_path, actionProxy, pageContainer, penContainer, messageContainer);
+				
+				
+				controlPanel = new ControlPanelUI(mediaProxy);
+				uiComponent.addChild(controlPanel);
+				//controlPanel.visible = false;
+				
+				controlPanel.y = - controlPanel.height;
+				
+			}
+			
+			
+			private function showHideControls(e:MouseEvent):void{
+				
+				//messageContainer.visible = !messageContainer.visible;
+				//controlPanel.visible = !controlPanel.visible;
+				if(controlPanel)
+				{
+				 if(controlPanel.y < 0)
+				 {
+				  TweenLite.to(messageContainer, 0.3, {x:stage.stageWidth-messageContainer.width});
+				  TweenLite.to(controlPanel, 0.3, {y:0});
+				 }
+				 else
+				 {
+					TweenLite.to(messageContainer, 0.3, {x:stage.stageWidth});
+					TweenLite.to(controlPanel, 0.3, {y:-controlPanel.height});
+				 }
+				}
+				
+			}
+			
+			public function exit():void{
+				
+			  if(mediaProxy)	
+				mediaProxy.closeStream();
+			
+			  if(actionProxy)
+				  if(actionProxy.loader)
+			         actionProxy.loader.removeEventListener(Event.COMPLETE, actionLoaded);
+			  
+			  if(controlPanel)
+				  controlPanel.clearEventHandler();
+			  
+			  stage.removeEventListener(StageOrientationEvent.ORIENTATION_CHANGE, orientationChanged);
+			  stage.removeEventListener(MouseEvent.CLICK, showHideControls);
+
+			}
+			
+				
+		]]>
+	</fx:Script>
+	
+	
+</s:Group>

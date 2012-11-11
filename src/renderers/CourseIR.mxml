@@ -3,7 +3,7 @@
 							  xmlns:s="library://ns.adobe.com/flex/spark"
 							  xmlns:renderers="renderers.*"
 							  dataChange="courseitemrenderer1_dataChangeHandler(event)"
-							  creationComplete="courseitemrenderer1_creationCompleteHandler(event)"
+							  width="640" height="150"
 							  >
 	<fx:Script>
 		<![CDATA[
@@ -20,7 +20,6 @@
 				{
 					if (data.text == "loading...")
 					{
-						trace("PAAS");
 						addChild(loadGroup);
 						loadGroup.x = 0;
 						loadGroup.y = 0;
@@ -30,29 +29,6 @@
 					}
 				}
 			}
-			
-			protected function courseitemrenderer1_creationCompleteHandler(event:FlexEvent):void
-			{
-				trace('loadAnimCreated='+loadAnimCreated);
-				if (loadAnimCreated == false)
-				{
-					if (data.text == "loading...")
-					{
-						trace("PAAS");
-						addChild(loadGroup);
-						loadGroup.x = 0;
-						loadGroup.y = 0;
-						loadGroup.width = this.width;
-						loadGroup.height = this.height;
-						loadAnimCreated = true;
-					}
-				}
-				else
-				{
-					loadGroup.visible = true;
-				}
-			}
-			
 		]]>
 	</fx:Script>
 	<fx:Declarations>

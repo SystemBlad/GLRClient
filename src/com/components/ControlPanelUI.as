@@ -6,8 +6,14 @@ package com.components
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
+	import flash.events.StageOrientationEvent;
 	import flash.geom.Rectangle;
-
+	
+	
+	
+    
+	
+	
 	public class ControlPanelUI extends Sprite
 	{
 		
@@ -32,6 +38,7 @@ package com.components
 			controlPanel.playAndPause.addEventListener(MouseEvent.CLICK, playAndPauseClicked);
 			
 		    addEventListener(Event.ADDED_TO_STAGE, onAdded);
+			addEventListener(Event.RESIZE, onResize);
 			_mediaProxy.eventDispatcher.addEventListener("play_status_changed", updateControlPanel, false, 0, true);
 
 			
@@ -79,7 +86,41 @@ package com.components
 			this.controlPanel.drag.addEventListener(MouseEvent.MOUSE_DOWN, onStartDrag);
 			this.controlPanel.drag.addEventListener(MouseEvent.MOUSE_UP, onStopDrag);
 			
-	
+			stage.addEventListener(StageOrientationEvent.ORIENTATION_CHANGE, orientationChanged, false, 0, true);
+			
+			
+		}
+		
+		private function onResize(e:Event):void{
+			
+			var oW = this.controlPanel.back.width;
+			
+			this.controlPanel.back.width = this.stage.stageWidth * scale;
+			
+			var scaleChange = this.controlPanel.back.width / oW;
+			
+			this.scaleChange = scaleChange;
+			
+			this.controlPanel.duration.width = this.controlPanel.duration.width * scaleChange;
+			
+			
+			
+			
+		}
+		
+		private function orientationChanged(e:StageOrientationEvent):void{
+			
+			var oW = this.controlPanel.back.width;
+			
+			this.controlPanel.back.width = this.stage.stageWidth * scale;
+			
+			var scaleChange = this.controlPanel.back.width / oW;
+			
+			this.scaleChange = scaleChange;
+			
+			this.controlPanel.duration.width = this.controlPanel.duration.width * scaleChange;
+			
+			
 			
 			
 		}
@@ -112,7 +153,7 @@ package com.components
 		
 		public function update(data):void{
 			
-			this.visible = true;
+			//this.visible = true;
 			
 			this.time = data.time;
 			this.load = data.load;
@@ -131,6 +172,11 @@ package com.components
 			
 			this.update(e.data);
 			
+		}
+		
+		public function clearEventHandler():void{
+			
+			stage.removeEventListener(StageOrientationEvent.ORIENTATION_CHANGE, orientationChanged);
 		}
 		
 		

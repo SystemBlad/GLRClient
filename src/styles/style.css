@@ -44,6 +44,15 @@ s|TabbedViewNavigator #tabBar
 	backgroundColor:#319ED7;
 	color:#FFFFFF;
 }
+.messageListItem
+{
+	fontSize:16;
+	paddingLeft:30;
+	paddingRight:10;
+	paddingTop:10;
+	paddingBottom:10;
+	verticalAlign: top;
+}
 
 @media (application-dpi:320)
 {
