@@ -63,7 +63,7 @@
 				
 				this.addElement(messageContainer);
 				
-				//messageContainer.visible = false;
+				messageContainer.y = 100;
 				messageContainer.x = stage.stageWidth;
 				
 			    this.addElement(uiComponent);
@@ -195,7 +195,7 @@
 				 if(controlPanel.y < 0)
 				 {
 				  TweenLite.to(messageContainer, 0.3, {x:stage.stageWidth-messageContainer.width});
-				  TweenLite.to(controlPanel, 0.3, {y:0});
+				  TweenLite.to(controlPanel, 0.3, {y:0 + 100});
 				 }
 				 else
 				 {

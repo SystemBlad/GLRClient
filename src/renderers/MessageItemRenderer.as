@@ -19,7 +19,7 @@ package renderers
 		[Embed(source="assets/dialog-field.png")]
 		private var pIcon:Class;
 		
-		public function CourseItemRenderer()
+		public function MessageItemRenderer()
 		{
 		}
 		

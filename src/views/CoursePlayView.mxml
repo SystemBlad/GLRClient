@@ -18,18 +18,15 @@
 			
 			protected function view1_viewActivateHandler(event:ViewNavigatorEvent):void
 			{
-				stage.setOrientation(StageOrientation.ROTATED_LEFT);
+				stage.autoOrients = true;
+				stage.setAspectRatio("any");
+				//stage.setOrientation(StageOrientation.ROTATED_LEFT);
 				actionBarVisible = tabBarVisible = false;
 				
 				addEventListener(MouseEvent.CLICK, onMouseClick); 
 				
-				var container:UIComponent = new UIComponent();
-				container.percentWidth = 100;
-				container.percentHeight = 100;
-				
 				_vod = new GLRVod();
-				container.addChild(_vod);
-				group.addElement(container);
+				group.addElement(_vod);
 				_vod.start(String(data));
 			}
 			
@@ -45,7 +42,9 @@
 				
 				group.removeAllElements();
 				removeEventListener(MouseEvent.CLICK, onMouseClick);
-				stage.setOrientation(StageOrientation.DEFAULT);
+				//stage.setOrientation(StageOrientation.DEFAULT);
+				stage.setAspectRatio("portrait");
+				stage.autoOrients = false;
 			}
 		]]>
 	</fx:Script>

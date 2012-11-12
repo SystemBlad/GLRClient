@@ -30,6 +30,8 @@
 			
 			import events.LoginEvent;
 			
+			import mx.core.FlexGlobals;
+			
 			import spark.events.ViewNavigatorEvent;
 			
 			private var _mb:MicroBlog;
@@ -58,14 +60,25 @@
 			private function loginHandler(event:LoginEvent):void
 			{
 				busyIndicator.visible = false;
-				if (event.success)
+				if (event.success) {
+					FlexGlobals.topLevelApplication.persistenceManager.setProperty("username", txtUser.text);
+					FlexGlobals.topLevelApplication.persistenceManager.setProperty("password", txtPwd.text);
 					navigator.popView();
+				}
 				else
 					txtError.text = event.error;
 			}
 			
 			protected function view1_viewActivateHandler(event:ViewNavigatorEvent):void
 			{
+				var user:String = FlexGlobals.topLevelApplication.persistenceManager.getProperty("username");
+				var pass:String = FlexGlobals.topLevelApplication.persistenceManager.getProperty("password");
+				if (user && pass)
+				{
+					txtUser.text = user;
+					txtPwd.text = pass;
+				}
+					
 				_mb = new MicroBlog();
 				_mb.consumerKey = "191889720"; //申请的App Key
 				_mb.consumerSecret = "b0fec1128d444802cfa237b569f0122e"; //申请的App Secrect
