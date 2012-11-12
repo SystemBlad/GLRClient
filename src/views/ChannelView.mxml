@@ -42,22 +42,22 @@
 					switch (idx)
 					{
 						case 0:
-							listService.url = "http://www.glr.cn/appapi/app_course_list.php?perpage=15";
+							listService.url = "http://www.glr.cn/appapi/app_course_list.php?perpage=15&classtype=54";
 							courseList.removeAll();
 							listService.send();
 							break;
 						case 1:
-							listService.url = "http://www.glr.cn/appapi/app_course_list.php?perpage=15&view=1";
+							listService.url = "http://www.glr.cn/appapi/app_course_list.php?perpage=15&classtype=95";
 							courseList.removeAll();
 							listService.send();
 							break;
 						case 2:
-							listService.url = "http://www.glr.cn/appapi/app_course_list.php?perpage=15&view=7";
+							listService.url = "http://www.glr.cn/appapi/app_course_list.php?perpage=15&classtype=97";
 							courseList.removeAll();
 							listService.send();
 							break;
 						case 3:
-							listService.url = "http://www.glr.cn/appapi/app_course_list.php?perpage=15&view=30";
+							listService.url = "http://www.glr.cn/appapi/app_course_list.php?perpage=15&classtype=99";
 							courseList.removeAll();
 							listService.send();
 							break;
@@ -90,10 +90,10 @@
 				</s:fill>
 			</s:Rect>
 			<s:HGroup id="channelTags" width="100%" paddingLeft="20" paddingRight="20" textAlign="center" gap="20">
-				<s:Label text="不限时间" styleName="selected" click="channelTag_clickHandler(event)"/>
-				<s:Label text="今天" click="channelTag_clickHandler(event)"/>
-				<s:Label text="本周" click="channelTag_clickHandler(event)"/>
-				<s:Label text="本月" click="channelTag_clickHandler(event)"/>
+				<s:Label text="求职公开课" styleName="selected" click="channelTag_clickHandler(event)"/>
+				<s:Label text="行业公开课" click="channelTag_clickHandler(event)"/>
+				<s:Label text="专业公开课" click="channelTag_clickHandler(event)"/>
+				<s:Label text="过来人说" click="channelTag_clickHandler(event)"/>
 			</s:HGroup>
 			<s:Label backgroundColor="#319ED7" width="100%" height="2"/>
 		</s:VGroup>
