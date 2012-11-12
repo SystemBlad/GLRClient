@@ -35,8 +35,8 @@ s|TabbedViewNavigator #tabBar
 	color:#000000;
 	paddingLeft:10;
 	paddingRight:10;
-	paddingTop:8;
-	paddingBottom:6;
+	paddingTop:16;
+	paddingBottom:14;
 	verticalAlign:middle;
 }
 #channelTags s|Label.selected

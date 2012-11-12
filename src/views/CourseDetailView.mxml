@@ -16,8 +16,6 @@
 			import mx.formatters.DateFormatter;
 			import mx.rpc.events.ResultEvent;
 			
-			private var courseId:Number;
-			
 			protected function detailService_resultHandler(event:ResultEvent):void
 			{
 				var json:String = String(event.result);
@@ -25,7 +23,10 @@
 				var obj:Object = JSON.parse(json);
 				if (obj.error_occurred == false)
 				{
-					data.courseId = courseId = Number(obj.course_detail.course_view_id);
+					data.courseId = Number(obj.course_detail.course_view_id);
+					data.teacher_avatar = obj.course_detail.teacher_avatar;
+					data.teacher_intro = obj.course_detail.teacher_intro;
+					
 					txtIntro.text = obj.course_detail.course_introduce;
 				}
 			}
@@ -38,12 +39,12 @@
 				}
 				else
 				{
-					if (courseId)
+					if (data.courseId)
 					{
-						DataManager.instance.insertCourseHistory(data.subject, courseId);
+						DataManager.instance.insertCourseHistory(data.subject, data.courseId);
 						
 						var url:String = "http://www.glr.cn/appapi/app_course_view.php?appid=";
-						url += courseId;
+						url += data.courseId;
 						url += "&token=";
 						url += DataManager.instance.user.token;
 						trace("videoUrl="+url);
@@ -83,6 +84,14 @@
 				navigator.pushView(views.SubscribeView, data);
 			}
 			
+			protected function lblSpeaker_clickHandler(event:MouseEvent):void
+			{
+				if (data.teacher_intro)
+				{
+					navigator.pushView(views.SpeakerView, data);
+				}
+			}
+			
 		]]>
 	</fx:Script>
 	<fx:Declarations>
@@ -111,8 +120,9 @@
 				<s:VGroup gap="20" width="100%">
 					<s:Label text="{data.subject}" styleName="captionText"/>
 					<s:Label text="直播时间：{timeDuration}" color="#666666" verticalAlign="middle"/>
-					<s:HGroup width="100%">
-						<s:Label text="主讲人：{data.teacher_realname}" color="#666666"/>
+					<s:HGroup width="100%" gap="0">
+						<s:Label text="主讲人："/>
+						<s:Label id="lblSpeaker" text="{data.teacher_realname}" color="#0C3170" styleName="linkText" click="lblSpeaker_clickHandler(event)"/>
 						<s:Spacer width="100%"/>
 						<s:BitmapImage source="@Embed('assets/small-icon-popularity.png')"/>
 						<s:Label text="{data.viewnum}" height="100%" color="#666666" verticalAlign="bottom"/>
