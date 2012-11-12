@@ -53,12 +53,17 @@ s|TabbedViewNavigator #tabBar
 	paddingBottom:10;
 	verticalAlign: top;
 }
+#lblRegister
+{
+	textDecoration: underline;
+}
 
 @media (application-dpi:320)
 {
 	s|TabbedViewNavigatorApplication {fontSize:24;}
 	
 	.captionText {fontSize:30;}
+	.linkText {textDecoration:underline;}
 	
 	renderers|CourseItemRenderer, s|IconItemRenderer {fontSize:30;}
 	renderers|CourseItemRenderer s|Label, s|IconItemRenderer s|Label {fontSize:24;}

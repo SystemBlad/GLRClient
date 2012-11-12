@@ -39,6 +39,7 @@
 			protected function btnLogin_clickHandler(event:MouseEvent):void
 			{
 				txtError.text = "";
+				txtError.includeInLayout = false;
 				DataManager.instance.user.login(txtUser.text, txtPwd.text);
 				busyIndicator.visible = true;
 			}
@@ -46,7 +47,7 @@
 			protected function btnWeiboLogin_clickHandler(event:MouseEvent):void
 			{
 				_mb.addEventListener(MicroBlogEvent.LOGIN_RESULT, onLoginResult);
-				_mb.login();
+				_mb.login(txtUser.text, txtPwd.text);
 			}
 			
 			protected function onLoginResult(e:MicroBlogEvent):void
@@ -65,8 +66,10 @@
 					FlexGlobals.topLevelApplication.persistenceManager.setProperty("password", txtPwd.text);
 					navigator.popView();
 				}
-				else
+				else {
 					txtError.text = event.error;
+					txtError.includeInLayout = true;
+				}
 			}
 			
 			protected function view1_viewActivateHandler(event:ViewNavigatorEvent):void
@@ -80,8 +83,8 @@
 				}
 					
 				_mb = new MicroBlog();
-				_mb.consumerKey = "191889720"; //申请的App Key
-				_mb.consumerSecret = "b0fec1128d444802cfa237b569f0122e"; //申请的App Secrect
+				_mb.consumerKey = "1045842202"; //申请的App Key
+				_mb.consumerSecret = "8ab688a061c33aa4a76acfb0279109fe"; //申请的App Secrect
 				_mb.proxyURI = "http://flashsdk.sinaapp.com/proxy/proxy.php"; //写你自己部署的代理接口地址
 			}
 			
@@ -139,7 +142,10 @@
 				<s:BusyIndicator id="busyIndicator" symbolColor="#0C3170" height="40" visible="false" right="20" top="14"/>
 			</s:Group>
 			<s:Spacer height="20"/>
+			<s:Label id="lblRegister" text="还没有账号？马上注册" click="navigateToURL(new URLRequest('http://www.glr.cn/'));"/>
+			<s:Spacer height="20"/>
 			<s:Label id="txtError" color="#ff0000" includeInLayout="false"/>
+			<s:Spacer height="20"/>
 			
 			<!-- weibo user login -->
 			<s:Group width="100%" height="68">

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		xmlns:s="library://ns.adobe.com/flex/spark"
+		title="报名与分享">
+	<s:Group width="100%" height="100%">
+		<s:layout>
+			<s:VerticalLayout gap="20" paddingLeft="20" paddingRight="20" paddingTop="20" paddingBottom="20"/>
+		</s:layout>
+		<s:TextArea width="100%" height="100%" borderVisible="false">
+			<s:text>推荐给大家{data.teacher_realname}老师在过来人的网络公开课{data.subject}，快去看看吧~http://www.glr.cn/mooc/{data.courseId}</s:text>
+		</s:TextArea>
+		<s:HGroup width="100%" gap="10">
+			<s:Spacer width="100%"/>
+			<s:Group width="140" height="48">
+				<s:Rect width="100%" height="100%" radiusX="8">
+					<s:fill>
+						<s:SolidColor color="#0C3170"/>
+					</s:fill>
+					<s:stroke>
+						<s:SolidColorStroke color="#000000" alpha="0.2" weight="2"/>
+					</s:stroke>
+				</s:Rect>
+				<s:Label text="报名并分享"
+						 width="100%" height="100%"
+						 color="#FFFFFF"
+						 textAlign="center" verticalAlign="middle"
+						 />
+			</s:Group>
+			<s:Group width="140" height="48">
+				<s:Rect width="100%" height="100%" radiusX="8">
+					<s:fill>
+						<s:SolidColor color="#999999"/>
+					</s:fill>
+					<s:stroke>
+						<s:SolidColorStroke color="#000000" alpha="0.2" weight="2"/>
+					</s:stroke>
+				</s:Rect>
+				<s:Label text="报名"
+						 width="100%" height="100%"
+						 color="#FFFFFF"
+						 textAlign="center" verticalAlign="middle"
+						 />
+			</s:Group>
+		</s:HGroup>
+		<s:HGroup width="100%" height="60">
+			
+		</s:HGroup>
+	</s:Group>
+</s:View>
