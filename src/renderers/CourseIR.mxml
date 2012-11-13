@@ -2,60 +2,56 @@
 <renderers:CourseItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
 							  xmlns:s="library://ns.adobe.com/flex/spark"
 							  xmlns:renderers="renderers.*"
-							  dataChange="courseitemrenderer1_dataChangeHandler(event)"
-							  creationComplete="courseitemrenderer1_creationCompleteHandler(event)"
 							  width="640" height="150"
 							  >
 	<fx:Script>
 		<![CDATA[
 			import mx.events.FlexEvent;
-			private var loadAnimCreated:Boolean = false;
 			
-			protected function courseitemrenderer1_dataChangeHandler(event:FlexEvent):void
+			override public function set data(value:Object):void
 			{
-				if (loadAnimCreated == true && loadGroup.visible == true)
-				{
-					loadGroup.visible = false;
-					fadeOut.play();
-				}
-				else if (loadAnimCreated == false)
+				super.data = value;
+				if (data)
 				{
 					if (data.text == "loading...")
 					{
-						addChild(loadGroup);
-						loadGroup.x = 0;
-						loadGroup.y = 0;
-						loadGroup.width = this.width;
-						loadGroup.height = this.height;
-						loadAnimCreated = true;
+						loadGroup.visible = true;
+						noData.visible = false;
 					}
-				}
-			}
-			
-			protected function courseitemrenderer1_creationCompleteHandler(event:FlexEvent):void
-			{
-				if (loadAnimCreated == false)
-				{
-					if (data.text == "loading..."){
-						addChild(loadGroup);
-						loadGroup.x=0;
-						loadGroup.y=0;
-						loadGroup.width = this.width;
-						loadGroup.height = this.height;
-						loadAnimCreated = true;
+					else
+					{
+						loadGroup.visible = false;
+						noData.visible = false;
 					}
 				}
 				else
 				{
-					loadGroup.visible = true;
+					loadGroup.visible = false;
+					noData.visible = true;
 				}
 			}
 			
+			override protected function createChildren():void
+			{
+				super.createChildren();
+				
+				addChild(loadGroup);
+				loadGroup.x=0;
+				loadGroup.y=0;
+				loadGroup.width = this.width;
+				loadGroup.height = this.height;
+				
+				addChild(noData);
+				noData.x=0;
+				noData.y=0;
+				noData.width = this.width;
+				noData.height = this.height;
+			}
 		]]>
 	</fx:Script>
 	<fx:Declarations>
 		<s:Fade id='fadeOut' target="{loadGroup}" duration="500" alphaFrom="1" alphaTo="0"/>
-		<s:Group id="loadGroup">
+		<s:Group id="loadGroup" visible="false">
 			<s:Rect width="100%" height="100%">
 				<s:fill>
 					<s:SolidColor color="0xDDDDDD"/>
@@ -64,6 +60,16 @@
 			<s:HGroup  width="100%" height="100%" contentBackgroundColor="0xFF0000" contentBackgroundAlpha="1" verticalAlign="middle" horizontalAlign="center">
 				<s:BusyIndicator width="30" height="30"/>
 				<s:Label id="loadanim" color="0x444444" text="加载更多课程..." />
+			</s:HGroup>
+		</s:Group>
+		<s:Group id="noData" visible="false">
+			<s:Rect width="100%" height="100%">
+				<s:fill>
+					<s:SolidColor color="0xDDDDDD"/>
+				</s:fill>
+			</s:Rect>
+			<s:HGroup  width="100%" height="100%" contentBackgroundColor="0xFF0000" contentBackgroundAlpha="1" verticalAlign="middle" horizontalAlign="center">
+				<s:Label color="0x444444" text="没有返回数据" />
 			</s:HGroup>
 		</s:Group>
 	</fx:Declarations>

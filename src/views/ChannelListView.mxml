@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		xmlns:s="library://ns.adobe.com/flex/spark"
+		viewActivate="view1_viewActivateHandler(event)"
+		viewDeactivate="view1_viewDeactivateHandler(event)"
+		title="{data.title}"
+		xmlns:renderers="renderers.*">
+	<fx:Script>
+		<![CDATA[
+			import mx.events.PropertyChangeEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			import spark.core.NavigationUnit;
+			import spark.events.IndexChangeEvent;
+			import spark.events.ViewNavigatorEvent;
+			private var _draggingList:Boolean;
+			private var _currentPage:Number = 1;
+			private var _totalPages:Number;
+			private var _loadingCourses:Boolean;
+			
+			[Bindable]
+			private var PULL_DOWN_TEXT:String = "获取更多课程...";
+			private var RELEASE_TEXT:String = "松开立即刷新...";
+			
+			private function getCourseList():void
+			{
+				_loadingCourses = true;
+				listService.url = "http://www.glr.cn/appapi/app_course_list.php?classtype=" + data.id + "&page=" + _currentPage;
+				listService.send();
+			}
+			
+			protected function listService_resultHandler(event:ResultEvent):void
+			{
+				courseList.disableAutoUpdate();
+				_loadingCourses = false;
+				var json:String = String(event.result);
+				trace(json);
+				var obj:Object = JSON.parse(json);
+				_totalPages = Math.ceil(Number(obj.numcont)/Number(obj.perpage));
+				
+				var oldLength:int = courseList.length;
+				if (courseList.length > 0)
+					courseList.removeItemAt(courseList.length-1);
+				courseList.source = courseList.source.concat(obj.datalist);
+				
+				if (oldLength > 0 && oldLength < courseList.length)
+				{
+					list.validateNow();
+					list.ensureIndexIsVisible(oldLength-1);
+				}
+				
+				if (_currentPage == _totalPages)
+				{
+					arrowImage.visible = false;
+					PULL_DOWN_TEXT = RELEASE_TEXT = "已经获取所有课程列表";
+				}
+				courseList.enableAutoUpdate();
+				
+				addEventListeners();
+			}
+			
+			protected function view1_viewActivateHandler(event:ViewNavigatorEvent):void
+			{
+				courseList.addItem({text:"loading..."});
+				removeEventListeners();
+				getCourseList();
+			}
+			
+			protected function view1_viewDeactivateHandler(event:ViewNavigatorEvent):void
+			{
+				listService.cancel()
+			}
+			
+			protected function onPropertyChange(event:PropertyChangeEvent):void
+			{
+				if (_loadingCourses || !list.scroller.verticalScrollBar) return;
+				if (event.source == event.target && event.property == "verticalScrollPosition")
+				{
+					var vScroll:Number = list.scroller.verticalScrollBar.value;
+					if (vScroll > list.measuredHeight - list.height + 20)
+					{
+						if (!loadingGroup.visible)
+						{
+							loadingGroup.visible = true;
+							fadeIn.play();
+						}
+						loadingGroup.y = list.measuredHeight - vScroll;
+						
+						if (vScroll > list.measuredHeight - list.height + 90)
+						{
+							if(arrowImage.rotation == 180)
+								arrowImage.rotation = 0;
+							loadText.text = RELEASE_TEXT;
+							
+						}
+						else
+						{
+							if (arrowImage.rotation == 0)
+								arrowImage.rotation = 180;
+							loadText.text = PULL_DOWN_TEXT;
+						}
+						
+					}
+					else
+					{
+						loadingGroup.visible = false;
+					}
+				}
+			}
+			
+			protected function list_mouseUpHandler(event:MouseEvent):void
+			{
+				if (_loadingCourses || !list.scroller.verticalScrollBar) return;
+				
+				if (_draggingList)
+					_draggingList = false;
+				if (list.scroller.verticalScrollBar.value > list.measuredHeight - list.height + 90)
+				{
+					loadingGroup.visible = false;
+					
+					if (_currentPage < _totalPages)
+					{
+						list.setStyle("verticalScrollPolicy", "off");
+						courseList.addItem({text:"loading..."});
+						removeEventListeners();
+						scrollToBottom();
+						
+						_currentPage++;
+						getCourseList();
+					}
+				}
+			}
+			
+			protected override function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void
+			{
+				super.updateDisplayList(unscaledWidth, unscaledHeight);
+				list.setStyle("verticalScrollPolicy", "on");
+			}
+			
+			private function addEventListeners():void
+			{
+				addEventListener(MouseEvent.MOUSE_UP, view1_mouseUpHandler);
+				list.dataGroup.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, onPropertyChange);
+				list.addEventListener(MouseEvent.MOUSE_DOWN, list_mouseDownHandler);
+				list.addEventListener(MouseEvent.MOUSE_UP, list_mouseUpHandler);
+			}
+			
+			private function removeEventListeners():void
+			{
+				removeEventListener(MouseEvent.MOUSE_UP, view1_mouseUpHandler);
+				list.dataGroup.removeEventListener(PropertyChangeEvent.PROPERTY_CHANGE, onPropertyChange);
+				list.removeEventListener(MouseEvent.MOUSE_DOWN, list_mouseDownHandler);
+				list.removeEventListener(MouseEvent.MOUSE_UP, list_mouseUpHandler);
+			}
+			
+			private function scrollToBottom():void {
+				// update the verticalScrollPosition to the end of the List
+				// virtual layout may require us to validate a few times
+				var delta:Number = 0;
+				var count:int = 0;
+				while (count++ < 10) {
+					list.validateNow();
+					delta = list.layout.getVerticalScrollPositionDelta(NavigationUnit.END);
+					list.layout.verticalScrollPosition += delta;
+					trace('count='+count+', delta='+delta+', verticalScrollPosition='+list.layout.verticalScrollPosition);
+					if (delta == 0)
+						break;
+				}
+			}
+			
+			protected function view1_mouseUpHandler(event:MouseEvent):void
+			{
+				if (!_loadingCourses && _draggingList)
+				{
+					_draggingList = false;
+					list_mouseUpHandler(event);
+				}
+			}
+			
+			protected function list_mouseDownHandler(event:MouseEvent):void
+			{
+				if (!_loadingCourses)
+					_draggingList = true;
+			}
+			
+			protected function list_changeHandler(event:IndexChangeEvent):void
+			{
+				navigator.pushView(views.CourseDetailView, courseList.getItemAt(event.newIndex));
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<s:HTTPService id="listService" resultFormat="text" result="listService_resultHandler(event)"/>
+		<s:ArrayCollection id="courseList"/>
+		<s:Fade id='fadeIn' target="{loadingGroup}" duration="500" alphaFrom="0" alphaTo="1"/>
+	</fx:Declarations>
+	<s:Group width="100%" height="100%">
+		<s:List id="list" width="100%" height="100%" dataProvider="{courseList}" change="list_changeHandler(event)">
+			<s:itemRenderer>
+				<fx:Component>
+					<renderers:CourseIR iconWidth="180" iconHeight="120"
+										iconFillMode="clip" iconScaleMode="letterbox"
+										iconPlaceholder="@Embed('assets/icon-course-placeholder.png')"
+										iconField="pic"
+										labelField="subject">
+						
+					</renderers:CourseIR>
+				</fx:Component>
+			</s:itemRenderer>
+		</s:List>
+		<s:HGroup id="loadingGroup" horizontalAlign="center" verticalAlign="middle" width="{list.width}" visible="false" height="50" includeInLayout="false">
+			<s:Image id="arrowImage"  source="@Embed('assets/arrow-up.png')" rotation="180"/>
+			<s:Label text="{PULL_DOWN_TEXT}"  id="loadText"/>
+		</s:HGroup>
+	</s:Group>
+</s:View>

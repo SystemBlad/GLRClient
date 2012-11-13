@@ -30,6 +30,15 @@ s|TabbedViewNavigator #tabBar
 	height: 28;
 	verticalAlign: bottom;
 }
+.subChannelItem
+{
+	backgroundColor: #319ED7;
+	borderColor: #0C3170;
+	borderWeight: 2;
+	color: #ffffff;
+	textAlign: center;
+	verticalAlign: middle;
+}
 #channelTags s|Label
 {
 	color:#000000;
