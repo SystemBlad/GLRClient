@@ -18,7 +18,7 @@ package models
 		private var _displayName:String;
 		private var _statusLevel:Number;
 		private var _avatarFile:String;
-		private var _token:String;
+		private var _token:String = "";
 		
 		public function User()
 		{

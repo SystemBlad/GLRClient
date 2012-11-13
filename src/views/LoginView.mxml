@@ -26,6 +26,7 @@
 			import classes.DataManager;
 			
 			import com.sina.microblog.MicroBlog;
+			import com.sina.microblog.events.MicroBlogErrorEvent;
 			import com.sina.microblog.events.MicroBlogEvent;
 			
 			import events.LoginEvent;
@@ -47,7 +48,14 @@
 			protected function btnWeiboLogin_clickHandler(event:MouseEvent):void
 			{
 				_mb.addEventListener(MicroBlogEvent.LOGIN_RESULT, onLoginResult);
+				_mb.addEventListener(MicroBlogErrorEvent.LOGIN_ERROR, onErrorResult);
 				_mb.login(txtUser.text, txtPwd.text);
+			}
+			
+			private function onErrorResult(event:MicroBlogErrorEvent):void
+			{
+				trace(event);
+				trace(event.message);
 			}
 			
 			protected function onLoginResult(e:MicroBlogEvent):void
@@ -83,11 +91,10 @@
 				}
 					
 				_mb = new MicroBlog();
-				_mb.consumerKey = "1045842202"; //申请的App Key
-				_mb.consumerSecret = "8ab688a061c33aa4a76acfb0279109fe"; //申请的App Secrect
-				_mb.proxyURI = "http://flashsdk.sinaapp.com/proxy/proxy.php"; //写你自己部署的代理接口地址
+				_mb.source = "191889720"; //申请的App Key
+				_mb.consumerKey = "191889720"; //申请的App Key
+				_mb.consumerSecret = "b0fec1128d444802cfa237b569f0122e"; //申请的App Secrect
 			}
-			
 		]]>
 	</fx:Script>
 	<s:creationComplete>

@@ -16,6 +16,8 @@
 			import mx.formatters.DateFormatter;
 			import mx.rpc.events.ResultEvent;
 			
+			private var _subscribed:Boolean;
+			
 			protected function detailService_resultHandler(event:ResultEvent):void
 			{
 				var json:String = String(event.result);
@@ -28,6 +30,13 @@
 					data.teacher_intro = obj.course_detail.teacher_intro;
 					
 					txtIntro.text = obj.course_detail.course_introduce;
+					
+					trace(obj.course_detail.user_is_signup);
+					if (Number(obj.course_detail.user_is_signup))
+					{
+						_subscribed = true;
+						dispatchEvent(new Event("subscribeStatusChangeEvent"));
+					}
 				}
 			}
 			
@@ -100,10 +109,29 @@
 				}
 			}
 			
+			[Bindable(event="subscribeStatusChangeEvent")]
+			private function get subscribed():Boolean
+			{
+				return _subscribed;
+			}
+			
+			[Bindable(event="subscribeStatusChangeEvent")]
+			private function get subscribButtonText():String
+			{
+				return _subscribed ? "已报名" : "立即报名";
+			}
+			
+			[Bindable(event="subscribeStatusChangeEvent")]
+			private function get subscribButtonColor():uint
+			{
+				return _subscribed ? 0xCCCCCC : 0xec9a2b;
+			}
 		]]>
 	</fx:Script>
 	<fx:Declarations>
-		<s:HTTPService id="detailService" url="http://www.glr.cn/appapi/app_course_detail.php?kvideoid={data.kvideoid}" resultFormat="text" result="detailService_resultHandler(event)"/>
+		<s:HTTPService id="detailService" resultFormat="text" result="detailService_resultHandler(event)">
+			<s:url>http://www.glr.cn/appapi/app_course_detail.php?kvideoid={data.kvideoid}&amp;token={DataManager.instance.user.token}</s:url>
+		</s:HTTPService>
 	</fx:Declarations>
 	<s:states>
 		<s:State name="default"/>
@@ -138,6 +166,7 @@
 				</s:VGroup>
 			</s:HGroup>
 			<s:HGroup width="100%" gap="20">
+				<!-- play button -->
 				<s:Group width="180" height="60">
 					<s:Rect width="100%" height="100%" radiusX="8">
 						<s:fill>
@@ -157,19 +186,22 @@
 								 />
 						<s:BitmapImage source="@Embed('assets/arrow-play.png')" width="26" height="26"/>
 					</s:HGroup>
-					
 				</s:Group>
-				<s:Group width="180" height="60" click="btnSubscribe_clickHandler(event)">
+				
+				<!-- subscribe button -->
+				<s:Group width="180" height="60">
 					<s:Rect width="100%" height="100%" radiusX="8">
 						<s:fill>
-							<s:SolidColor color="#ec9a2b"/>
+							<s:SolidColor color="{subscribButtonColor}"/>
 						</s:fill>
 						<s:stroke>
 							<s:SolidColorStroke color="#0C3170" alpha="0.15" weight="2"/>
 						</s:stroke>
 					</s:Rect>
-					<s:HGroup width="100%" height="100%" horizontalAlign="center" verticalAlign="middle" gap="6">
-						<s:Label text="立即报名"
+					<s:HGroup width="100%" height="100%" horizontalAlign="center" verticalAlign="middle" gap="6"
+							  click="btnSubscribe_clickHandler(event)"
+							  enabled="{!subscribed}">
+						<s:Label text="{subscribButtonText}"
 								 color="#FFFFFF"
 								 textAlign="center" verticalAlign="middle"/>
 						<s:BitmapImage source="@Embed('assets/arrow-diagonal.png')" width="22" height="22"/>
