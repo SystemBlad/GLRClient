@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<components:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				 xmlns:s="library://ns.adobe.com/flex/spark"
+				 xmlns:components="spark.components.*"
+				 mouseDown="group1_mouseDownHandler(event)"
+				 mouseUp="group1_mouseUpHandler(event)"
+				 >
+	<fx:Script>
+		<![CDATA[
+			import mx.core.IVisualElement;
+			[ArrayElementType("mx.core.IVisualElement")]
+			public var content:Array;
+			
+			protected function group1_mouseDownHandler(event:MouseEvent):void
+			{
+				olay.visible = true;
+			}
+			
+			protected function group1_mouseUpHandler(event:MouseEvent):void
+			{
+				olay.visible = false;
+			}
+		]]>
+	</fx:Script>
+	<components:initialize>
+		<![CDATA[
+			for (var i:int=0; i<content.length; i++) {
+				hgroup.addElement(content[i]);
+			}
+		]]>
+	</components:initialize>
+	<fx:Declarations>
+		<fx:Number id="backgroundColor">0x999999</fx:Number>
+		<fx:Number id="borderColor">0x000000</fx:Number>
+		<fx:Number id="color">0xFFFFFF</fx:Number>
+		<fx:Number id="cornerRadius">8</fx:Number>
+		<fx:Number id="gap">10</fx:Number>
+	</fx:Declarations>
+	<s:Rect width="100%" height="100%" radiusX="{cornerRadius}">
+		<s:fill>
+			<s:SolidColor color="{backgroundColor}"/>
+		</s:fill>
+		<s:stroke>
+			<s:SolidColorStroke color="{borderColor}" alpha="0.2" weight="2"/>
+		</s:stroke>
+	</s:Rect>
+	<s:Rect id="olay" visible="false" left="1.5" top="1.5" right="2.5" bottom="2.5" radiusX="{cornerRadius}">
+		<s:fill>
+			<s:SolidColor color="#000000" alpha="0.3"/>
+		</s:fill>
+	</s:Rect>
+	<s:HGroup id="hgroup" width="100%" height="100%" horizontalAlign="center" verticalAlign="middle" gap="{gap}">
+		
+	</s:HGroup>
+</components:Group>

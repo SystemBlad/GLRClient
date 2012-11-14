@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		xmlns:s="library://ns.adobe.com/flex/spark"
-		title="报名与分享">
+		title="报名与分享"
+		xmlns:components="components.*">
 	<fx:Script>
 		<![CDATA[
 			import classes.DataManager;
@@ -50,38 +51,24 @@
 		</s:layout>
 		<s:HGroup width="100%" gap="10">
 			<s:Spacer width="100%"/>
-			<s:Group width="180" height="60">
-				<s:Rect width="100%" height="100%" radiusX="8">
-					<s:fill>
-						<s:SolidColor color="#E32529"/>
-					</s:fill>
-					<s:stroke>
-						<s:SolidColorStroke color="#000000" alpha="0.2" weight="2"/>
-					</s:stroke>
-				</s:Rect>
-				<s:Label id="btnShare" text="报名并分享"
-						 width="100%" height="100%"
-						 color="#FFFFFF"
-						 textAlign="center" verticalAlign="middle"
-						 click="btnShare_clickHandler(event)"
-						 />
-			</s:Group>
-			<s:Group width="140" height="60">
-				<s:Rect width="100%" height="100%" radiusX="8">
-					<s:fill>
-						<s:SolidColor color="#319ED7"/>
-					</s:fill>
-					<s:stroke>
-						<s:SolidColorStroke color="#000000" alpha="0.2" weight="2"/>
-					</s:stroke>
-				</s:Rect>
-				<s:Label id="btnSubscribe" text="报名"
-						 width="100%" height="100%"
-						 color="#FFFFFF"
-						 textAlign="center" verticalAlign="middle"
-						 click="btnSubscribe_clickHandler(event)"
-						 />
-			</s:Group>
+			<components:FancyButton id="btnShare" width="180" height="60"
+									backgroundColor="#E32529"
+									click="btnShare_clickHandler(event)">
+				<components:content>
+					<s:Label text="报名并分享"
+							 color="#FFFFFF"
+							 />
+				</components:content>
+			</components:FancyButton>
+			<components:FancyButton id="btnSubscribe" width="140" height="60"
+									backgroundColor="#319ED7"
+									click="btnSubscribe_clickHandler(event)">
+				<components:content>
+					<s:Label text="报名"
+							 color="#FFFFFF"
+							 />
+				</components:content>
+			</components:FancyButton>
 		</s:HGroup>
 		<s:TextArea width="100%" height="100%"
 					borderVisible="false"

@@ -62,7 +62,6 @@
 			{
 				trace(e);
 				_mb.removeEventListener(MicroBlogEvent.LOGIN_RESULT, onLoginResult);
-				btnLogin.text = e.result["access_token"];
 				trace(e.result["access_token"] + "::" + e.result["expires_in"] + "::" + e.result["refresh_token"]);  
 			}
 			
@@ -130,24 +129,17 @@
 			<s:Spacer height="20"/>
 			
 			<!-- site user login -->
-			<s:Group width="100%" height="68">
-				<s:Rect width="100%" height="100%" radiusX="8">
-					<s:fill>
-						<s:SolidColor color="#05b5ed"/>
-					</s:fill>
-					<s:stroke>
-						<s:SolidColorStroke color="#000000" alpha="0.2" weight="2"/>
-					</s:stroke>
-				</s:Rect>
-				<s:Label id="btnLogin" text="登录"
-						 width="100%" height="100%"
-						 styleName="captionText"
-						 color="#FFFFFF"
-						 textAlign="center" verticalAlign="middle"
-						 click="btnLogin_clickHandler(event)"
-						 />
-				<s:BusyIndicator id="busyIndicator" symbolColor="#0C3170" height="40" visible="false" right="20" top="14"/>
-			</s:Group>
+			<components:FancyButton id="btnLogin" width="100%" height="68"
+									backgroundColor="#05b5ed"
+									click="btnLogin_clickHandler(event)">
+				<components:content>
+					<s:Label text="登录"
+							 styleName="captionText"
+							 color="#FFFFFF"
+							 />
+					<s:BusyIndicator id="busyIndicator" symbolColor="#0C3170" height="40" visible="false" right="20" top="14"/>
+				</components:content>
+			</components:FancyButton>
 			<s:Spacer height="20"/>
 			<s:Label id="lblRegister" text="还没有账号？马上注册" click="navigateToURL(new URLRequest('http://www.glr.cn/'));"/>
 			<s:Spacer height="20"/>
@@ -155,23 +147,18 @@
 			<s:Spacer height="20"/>
 			
 			<!-- weibo user login -->
-			<s:Group width="100%" height="68">
-				<s:Rect width="100%" height="100%" radiusX="8">
-					<s:fill>
-						<s:SolidColor color="#82CB23"/>
-					</s:fill>
-					<s:stroke>
-						<s:SolidColorStroke color="#000000" alpha="0.2" weight="2"/>
-					</s:stroke>
-				</s:Rect>
-				<s:Label text="微博登录"
-						 width="100%" height="100%"
-						 styleName="captionText"
-						 color="#FFFFFF"
-						 textAlign="center" verticalAlign="middle"
-						 click="btnWeiboLogin_clickHandler(event)"
-						 />
-			</s:Group>
+			<components:FancyButton id="btnWeiboLogin" width="100%" height="68"
+									backgroundColor="#E81B13"
+									gap="20"
+									click="btnWeiboLogin_clickHandler(event)">
+				<components:content>
+					<s:BitmapImage source="@Embed('assets/Weibo_LOGO_48x48.png')" width="40" height="40"/>
+					<s:Label text="用新浪微博账号登录"
+							 styleName="captionText"
+							 color="#FFFFFF"
+							 />
+				</components:content>
+			</components:FancyButton>
 		</s:Group>
 	</s:Scroller>
 </s:View>
