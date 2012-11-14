@@ -8,6 +8,7 @@ package renderers
 	import spark.components.Group;
 	import spark.components.IconItemRenderer;
 	import spark.components.Label;
+	import spark.components.List;
 	import spark.components.TileGroup;
 	
 	[Event(name="channelChangeEvent", type="events.ChannelChangeEvent")]
@@ -31,6 +32,8 @@ package renderers
 				var label:Label = new Label();
 				label.text = data.channels[i].videoname;
 				label.styleName = "subChannelItem";
+				label.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
+				label.addEventListener(MouseEvent.MOUSE_UP, onMouseUp);
 				label.addEventListener(MouseEvent.CLICK, onSubChannelClicked);
 				group.addElement(label);
 			}
@@ -38,6 +41,7 @@ package renderers
 			invalidateDisplayList();
 			invalidateSize();
 		}
+		
 		
 		override protected function createChildren():void
 		{
@@ -107,12 +111,34 @@ package renderers
 			super.commitProperties();
 		}
 		
+		override protected function drawBackground(unscaledWidth:Number, unscaledHeight:Number):void
+		{
+			if (down)
+			{
+				graphics.beginFill(0x95CDE7, 1);
+				graphics.drawRect(0, 0, unscaledWidth, unscaledHeight);
+				graphics.endFill();
+			}
+			else
+				super.drawBackground(unscaledWidth, unscaledHeight);
+		}
+		
+		private function onMouseDown(event:MouseEvent):void
+		{
+			Label(event.target).setStyle("backgroundColor", "#EC9A2B");
+			event.stopPropagation();
+		}
+		
+		private function onMouseUp(event:MouseEvent):void
+		{
+		}
+		
 		private function onChannelClicked(event:MouseEvent):void
 		{
 			if (data && !subChannelSelected)
 			{
 				var evt:ChannelChangeEvent = new ChannelChangeEvent(Number(data.videoid), data.videoname);
-				dispatchEvent(evt);
+				owner.dispatchEvent(evt);
 			}
 		}
 		
@@ -122,7 +148,7 @@ package renderers
 			
 			var idx:Number = group.getElementIndex(label);
 			var evt:ChannelChangeEvent = new ChannelChangeEvent(Number(data.channels[idx].videoid), data.channels[idx].videoname);
-			dispatchEvent(evt);
+			owner.dispatchEvent(evt);
 			
 			subChannelSelected = true;
 			setTimeout(function():void{subChannelSelected = false;}, 300);

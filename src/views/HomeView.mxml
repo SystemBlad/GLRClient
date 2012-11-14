@@ -51,6 +51,9 @@
 					courseList.removeItemAt(courseList.length-1);
 				courseList.source = courseList.source.concat(obj.datalist);
 				
+				for (var i:int=0; i<obj.datalist.length; i++)
+					DataManager.instance.scheduleCourseNotification(obj.datalist[i]);
+				
 				if (oldLength > 0 && oldLength < courseList.length)
 				{
 					list.validateNow();
@@ -81,7 +84,7 @@
 			
 			protected function view1_viewDeactivateHandler(event:ViewNavigatorEvent):void
 			{
-				listService.cancel()
+				listService.cancel();
 			}
 			
 			protected function onPropertyChange(event:PropertyChangeEvent):void

@@ -2,7 +2,7 @@
 <s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		xmlns:s="library://ns.adobe.com/flex/spark"
 		title="播放历史"
-		viewActivate="view1_viewActivateHandler(event)">
+		viewActivate="view1_viewActivateHandler(event)" xmlns:renderers="renderers.*">
 	<fx:Script>
 		<![CDATA[
 			import classes.DataManager;
@@ -64,7 +64,7 @@
 				change="list_changeHandler(event)">
 			<s:itemRenderer>
 				<fx:Component>
-					<s:IconItemRenderer labelField="subject"
+					<renderers:HistoryItemRenderer labelField="subject"
 										messageFunction="getMessage"
 										messageStyleName="historyMessage"
 										decorator="@Embed('assets/decorator-arrow.png')">
@@ -87,7 +87,7 @@
 								}
 							]]>
 						</fx:Script>
-					</s:IconItemRenderer>
+					</renderers:HistoryItemRenderer>
 				</fx:Component>
 			</s:itemRenderer>
 		</s:List>

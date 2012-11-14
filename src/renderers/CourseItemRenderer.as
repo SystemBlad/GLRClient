@@ -110,5 +110,17 @@ package renderers
 				}
 			}
 		}
+		
+		override protected function drawBackground(unscaledWidth:Number, unscaledHeight:Number):void
+		{
+			if (down)
+			{
+				graphics.beginFill(0x95CDE7, 1);
+				graphics.drawRect(0, 0, unscaledWidth, unscaledHeight);
+				graphics.endFill();
+			}
+			else
+				super.drawBackground(unscaledWidth, unscaledHeight);
+		}
 	}
 }

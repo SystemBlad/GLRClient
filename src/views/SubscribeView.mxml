@@ -83,7 +83,9 @@
 						 />
 			</s:Group>
 		</s:HGroup>
-		<s:TextArea width="100%" height="100%" borderVisible="false" returnKeyLabel="done">
+		<s:TextArea width="100%" height="100%"
+					borderVisible="false"
+					returnKeyLabel="done">
 			<s:text>推荐给大家{data.teacher_realname}老师在过来人的网络公开课{data.subject}，快去看看吧~http://www.glr.cn/mooc/{data.kvideoid}</s:text>
 		</s:TextArea>
 		<s:HGroup width="100%" height="300">

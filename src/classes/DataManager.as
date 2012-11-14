@@ -1,9 +1,15 @@
 package classes
 {
+	import com.juankpro.ane.localnotif.Notification;
+	import com.juankpro.ane.localnotif.NotificationEvent;
+	import com.juankpro.ane.localnotif.NotificationManager;
+	
 	import models.Course;
 	import models.User;
 	
+	import mx.collections.ArrayCollection;
 	import mx.core.FlexGlobals;
+	import mx.formatters.DateFormatter;
 
 	public class DataManager
 	{
@@ -12,9 +18,26 @@ package classes
 		[Bindable]
 		public var user:User;
 		
+		
+		private var notificationManager:NotificationManager;
+		private var courseNotificationIDsPool:ArrayCollection;
+		
 		public function DataManager()
 		{
 			this.user = new User();
+			this.courseNotificationIDsPool = new ArrayCollection();
+			
+			if (NotificationManager.isSupported)
+			{
+				notificationManager = new NotificationManager();
+				notificationManager.addEventListener(NotificationEvent.NOTIFICATION_ACTION, notificationActionHandler);
+				cancelAllNotifications();
+			}
+		}
+		
+		private function notificationActionHandler(event:NotificationEvent):void
+		{
+			trace("Notification Code: " + event.notificationCode + ", Sample Data: {" + event.actionData.sampleData + "}");
 		}
 		
 		public static function get instance():DataManager
@@ -55,6 +78,51 @@ package classes
 		public function clearCourseHistory():void
 		{
 			FlexGlobals.topLevelApplication.persistenceManager.clear();
+		}
+		
+		// notifications
+		protected function cancelAllNotifications():void
+		{
+			if (notificationManager)
+			{
+				notificationManager.applicationBadgeNumber = 0;
+				notificationManager.cancelAll();
+				courseNotificationIDsPool.removeAll();
+			}
+		}
+		
+		public function scheduleCourseNotification(course:Object):void
+		{
+			var kvideoid:Number = Number(course.kvideoid);
+			if (courseNotificationIDsPool.getItemIndex(kvideoid) > -1)
+				return;
+			
+			var date:Date = new Date();
+			var diffSeconds:Number = Number(course.start_time) - Math.floor(date.getTime()/1000);
+			if (diffSeconds <= 1) return;
+			diffSeconds = Math.min(diffSeconds, 30*60);
+			
+			// schedule noti
+			courseNotificationIDsPool.addItem(kvideoid);
+			var desireDate:Date = new Date();
+			desireDate.setTime((Number(course.start_time) - diffSeconds) * 1000);
+			
+			var df:DateFormatter = new DateFormatter();
+			df.formatString = "YY年MM月DD日 JJ:NN";
+			trace(course.subject + ' will fire at ' + df.format(desireDate));
+			
+			if (notificationManager)
+			{
+				df.formatString = "JJ:NN";
+				var notification:Notification = new Notification();
+				notification.actionLabel = "OK";
+				notification.body = course.teacher_realname + "老师的" + course.subject + "将在" + df.format(desireDate) + "开始直播";
+				notification.fireDate = desireDate;
+				notification.numberAnnotation = 1;
+				notification.actionData = {sampleData:"Hello World!"};
+				
+				notificationManager.notifyUser(kvideoid.toString(), notification);
+			}
 		}
 	}
 }

@@ -268,4 +268,7 @@
 		]]></InfoAdditions>
         <requestedDisplayResolution>high</requestedDisplayResolution>
     </iPhone>
+	<extensions>
+        <extensionID>com.juankpro.ane.LocalNotification</extensionID>
+    </extensions>
 </application>
