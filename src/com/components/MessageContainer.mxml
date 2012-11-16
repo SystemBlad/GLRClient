@@ -15,7 +15,7 @@
 			
 			import spark.events.IndexChangeEvent;
 			
-			var messageArr:Array = new Array();
+			private var messageArr:Array = new Array();
 
            public function addMessage(msg:Object):void{
 			   

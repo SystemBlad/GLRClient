@@ -6,15 +6,15 @@ package com.components
 	public class PenContainer extends Sprite
 	{
 		
-		public var cWidth;
-		public var cHeight;
+		public var cWidth:Number;
+		public var cHeight:Number;
 		public var pen:Sprite = new Sprite();
-		public var penColor;
+		public var penColor:uint;
 		
-		public var penX;
-		public var penY;
+		public var penX:Number;
+		public var penY:Number;
 		
-		private var pen_draw;
+		private var pen_draw:Boolean;
 		
 		public function PenContainer()
 		{

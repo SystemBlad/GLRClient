@@ -75,6 +75,23 @@ package classes
 			FlexGlobals.topLevelApplication.persistenceManager.setProperty("history", courses);
 		}
 		
+		public function deleteCourseHistoryById(courseId:Number):void
+		{
+			var courses:Vector.<Course> = FlexGlobals.topLevelApplication.persistenceManager.getProperty("history") as Vector.<Course>;
+			if (courses && courseId)
+			{
+				for (var i:int=0; i<courses.length; i++)
+				{
+					if (courses[i].id == courseId)
+					{
+						courses.splice(i, 1);
+						FlexGlobals.topLevelApplication.persistenceManager.setProperty("history", courses);
+						break;
+					}
+				}
+			}
+		}
+		
 		public function clearCourseHistory():void
 		{
 			FlexGlobals.topLevelApplication.persistenceManager.clear();

@@ -74,6 +74,7 @@ s|TabbedViewNavigator #tabBar
 	.captionText {fontSize:30;}
 	.linkText {textDecoration:underline;}
 	
+	s|List {fontSize:30;}
 	renderers|CourseItemRenderer, s|IconItemRenderer {fontSize:30;}
 	renderers|CourseItemRenderer s|Label, s|IconItemRenderer s|Label {fontSize:24;}
 	.historyMessage {color:#999999;fontSize:24;}

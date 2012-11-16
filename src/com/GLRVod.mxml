@@ -9,11 +9,11 @@
 		<![CDATA[
 			import com.components.*;
 			import com.components.HScrollView;
+			import com.greensock.TweenLite;
 			import com.proxies.ActionProxy;
 			import com.proxies.ConfigProxy;
 			import com.proxies.MediaProxy;
 			import com.utils.DataObjectEvent;
-			import com.greensock.TweenLite;
 			
 			import flash.display.Sprite;
 			import flash.events.Event;
@@ -23,23 +23,23 @@
 			import mx.events.FlexEvent;
            
 			
-			var _url;
+			private var _url:String;
 			
-			var configProxy:ConfigProxy;
-			var actionProxy:ActionProxy;
-			var mediaProxy:MediaProxy;
+			private var configProxy:ConfigProxy;
+			private var actionProxy:ActionProxy;
+			private var mediaProxy:MediaProxy;
 			
 			
-			var contentContainer:HScrollView;
-			var pageContainer:PageContanier;
-			var penContainer:PenContainer;
-			var messageContainer:MessageContainer;
+			private var contentContainer:HScrollView;
+			private var pageContainer:PageContanier;
+			private var penContainer:PenContainer;
+			private var messageContainer:MessageContainer;
 			
-			var loadingPage:LoadingPage;
+			private var loadingPage:LoadingPage;
 			
-			var controlPanel:ControlPanelUI;
+			private var controlPanel:ControlPanelUI;
 			
-			var uiComponent:UIComponent;
+			private var uiComponent:UIComponent;
 			
 
 			protected function creationCompleteHandler(event:FlexEvent):void
@@ -95,8 +95,8 @@
 			}
 			
 		
-			var isAdded:Boolean = false;
-			var isPageLoaed = false;
+			private var isAdded:Boolean = false;
+			private var isPageLoaed:Boolean = false;
 			
 			private function onAdded(e:Event):void{
 				isAdded = true;

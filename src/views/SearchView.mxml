@@ -2,27 +2,54 @@
 <s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		xmlns:s="library://ns.adobe.com/flex/spark"
 		title="搜索"
-		xmlns:components="components.*">
+		xmlns:components="components.*"
+		viewActivate="service.send()">
 	<fx:Script>
 		<![CDATA[
 			import classes.DataManager;
 			
 			import events.SearchEvent;
 			
+			import spark.events.IndexChangeEvent;
+			
 			private function doSearch(event:SearchEvent):void
 			{
-				data = event.query;
 				navigator.pushView(views.SearchResultView, event.query);
+			}
+			
+			protected function list_changeHandler(event:IndexChangeEvent):void
+			{
+				searchBox.text = keywords.getItemAt(event.newIndex) as String;
+				navigator.pushView(views.SearchResultView, searchBox.text);
 			}
 		]]>
 	</fx:Script>
+	<fx:Declarations>
+		<s:HTTPService id="service" url="http://www.glr.cn/appapi/app_course_keyword.php" resultFormat="text">
+			<s:result>
+				<![CDATA[
+					var json:String = String(event.result);
+					var obj:Object = JSON.parse(json);
+				trace(json);
+					keywords.source = obj.keywords;
+				]]>
+			</s:result>
+		</s:HTTPService>
+		<s:ArrayCollection id="keywords"/>
+	</fx:Declarations>
 	<s:Group width="100%" height="100%">
 		<s:layout>
 			<s:MultiDPIVerticalLayout sourceDPI="320"
 									  paddingTop="20" paddingBottom="0" paddingLeft="0" paddingRight="0" gap="0"/>
 		</s:layout>
-		<s:HGroup width="100%" height="60" paddingLeft="20" paddingRight="20">
-			<components:SearchField width="100%" text="{data}" search="doSearch(event)"/>
+		<s:HGroup width="100%" paddingLeft="20" paddingRight="20">
+			<components:SearchField id="searchBox" width="100%" search="doSearch(event)"/>
 		</s:HGroup>
+		<s:List id="list" width="100%" height="100%" dataProvider="{keywords}"
+				downColor="0xFFFFFF"
+				selectionColor="0x95CDE7"
+				change="list_changeHandler(event)"
+				>
+		</s:List>
 	</s:Group>
 </s:View>

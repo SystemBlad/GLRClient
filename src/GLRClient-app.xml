@@ -270,5 +270,6 @@
     </iPhone>
 	<extensions>
         <extensionID>com.juankpro.ane.LocalNotification</extensionID>
+    	<extensionID>ie.jampot.Alert</extensionID>
     </extensions>
 </application>

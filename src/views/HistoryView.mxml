@@ -7,9 +7,12 @@
 		<![CDATA[
 			import classes.DataManager;
 			
+			import events.ScrollingEvent;
+			
 			import models.Course;
 			
 			import mx.core.FlexGlobals;
+			import mx.events.PropertyChangeEvent;
 			
 			import spark.events.IndexChangeEvent;
 			import spark.events.ViewNavigatorEvent;
@@ -27,6 +30,15 @@
 				}
 			}
 			
+			protected function onPropertyChange(event:PropertyChangeEvent):void
+			{
+				if (event.source == event.target && event.property == "verticalScrollPosition")
+				{
+					if (Math.abs(Number(event.oldValue) - Number(event.newValue)) > 10)
+						list.dispatchEvent(new ScrollingEvent(ScrollingEvent.SCROLLING_STARTED));
+				}
+			}
+			
 			protected function list_changeHandler(event:IndexChangeEvent):void
 			{
 				if (!DataManager.instance.user.loggedIn)
@@ -38,12 +50,7 @@
 					var course:Course = list.selectedItem as Course;
 					DataManager.instance.insertCourseHistory(course.subject, course.id);
 					
-					var url:String = "http://www.glr.cn/appapi/app_course_view.php?appid=";
-					url += course.id;
-					url += "&token=";
-					url += DataManager.instance.user.token;
-					trace("videoUrl="+url);
-					navigator.pushView(views.CoursePlayView, url);
+					navigator.pushView(views.CoursePlayView, {courseId:course.id, subject:course.subject});
 				}
 			}
 			
@@ -61,6 +68,8 @@
 	<s:Group width="100%" height="100%">
 		<s:List id="list" width="100%" height="100%" dataProvider="{courseList}"
 				visible="{courseList.length>0}" includeInLayout="{courseList.length>0}"
+				creationComplete="list.dataGroup.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, onPropertyChange)"
+				changing="list.dispatchEvent(new ScrollingEvent(ScrollingEvent.SCROLLING_STARTED))"
 				change="list_changeHandler(event)">
 			<s:itemRenderer>
 				<fx:Component>

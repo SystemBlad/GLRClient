@@ -1,8 +1,15 @@
 package renderers
 {
-	import spark.components.IconItemRenderer;
+	import classes.DataManager;
 	
-	public class HistoryItemRenderer extends IconItemRenderer
+	import flash.events.MouseEvent;
+	
+	import models.Course;
+	
+	import spark.components.IconItemRenderer;
+	import spark.components.List;
+	
+	public class HistoryItemRenderer extends DeletableIconItemRenderer
 	{
 		public function HistoryItemRenderer()
 		{
@@ -43,6 +50,15 @@ package renderers
 			}
 			else
 				super.drawBackground(unscaledWidth, unscaledHeight);
+		}
+		
+		override protected function btnDelete_mouseDownHandler(event:MouseEvent):void
+		{
+			var courseId:Number = Course(data).id;
+			
+			super.btnDelete_mouseDownHandler(event);
+			
+			DataManager.instance.deleteCourseHistoryById(courseId);
 		}
 	}
 }

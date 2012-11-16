@@ -1,26 +1,27 @@
 package com.proxies
 {
+	import com.adobe.serialization.json.JSON;
+	
 	import flash.events.Event;
 	import flash.net.URLLoader;
 	import flash.net.URLRequest;
-	import com.adobe.serialization.json.JSON;
 	
 	public class ActionProxy extends Object
 	{
 		
-		public var loader = new URLLoader();
+		public var loader:URLLoader = new URLLoader();
 		private var _action:Object;
 		private var _beforeAction:Array = new Array();;
 		
-		public var result;
+		public var result:Object;
 		
-		public var before;
+		public var before:Array;
 		
 		public function ActionProxy(url:String)
 		{
 			super();
 			
-			var r = new URLRequest(url);
+			var r:URLRequest = new URLRequest(url);
 			
 			this.loader.load(r);
 			

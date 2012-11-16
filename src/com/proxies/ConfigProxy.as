@@ -1,25 +1,26 @@
 package com.proxies
 {
 	
+	import com.adobe.serialization.json.JSON;
+	
 	import flash.events.Event;
 	import flash.net.URLLoader;
 	import flash.net.URLRequest;
-	import com.adobe.serialization.json.JSON;
 	
 	public class ConfigProxy extends Object
 	{
 		
-		public var loader = new URLLoader();
+		public var loader:URLLoader = new URLLoader();
 	
-		public var flv_path; 
-		public var action_path; 
+		public var flv_path:String;
+		public var action_path:String;
 		
 		
 		public function ConfigProxy(url:String)
 		{
 			super();
 			
-			var r = new URLRequest(url);
+			var r:URLRequest = new URLRequest(url);
 			
 			this.loader.load(r);
 			
@@ -31,10 +32,10 @@ package com.proxies
 		
 		private function onLoadComplete(e:Event):void
 		{
-			var obj = com.adobe.serialization.json.JSON.decode((e.target as URLLoader).data);
+			var obj:Object = com.adobe.serialization.json.JSON.decode((e.target as URLLoader).data);
 			
-			var flvFlag = obj.hasOwnProperty("flv_path");
-			var actionFlag = obj.hasOwnProperty("action_path");
+			var flvFlag:Boolean = obj.hasOwnProperty("flv_path");
+			var actionFlag:Boolean = obj.hasOwnProperty("action_path");
 			
 			
 			if (flvFlag && actionFlag) 

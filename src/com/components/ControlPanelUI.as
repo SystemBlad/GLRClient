@@ -70,14 +70,15 @@ package com.components
 		}
 		
 		
-		var scaleChange;
+		private var scaleChange:Number;
+		
 		private function onAdded(e:Event):void{
 			
-			var oW = this.controlPanel.back.width;
+			var oW:Number = this.controlPanel.back.width;
 			
 			this.controlPanel.back.width = this.stage.stageWidth * scale;
 			
-			var scaleChange = this.controlPanel.back.width / oW;
+			var scaleChange:Number = this.controlPanel.back.width / oW;
 			
 			this.scaleChange = scaleChange;
 			
@@ -93,11 +94,11 @@ package com.components
 		
 		private function onResize(e:Event):void{
 			
-			var oW = this.controlPanel.back.width;
+			var oW:Number = this.controlPanel.back.width;
 			
 			this.controlPanel.back.width = this.stage.stageWidth * scale;
 			
-			var scaleChange = this.controlPanel.back.width / oW;
+			var scaleChange:Number = this.controlPanel.back.width / oW;
 			
 			this.scaleChange = scaleChange;
 			
@@ -110,11 +111,11 @@ package com.components
 		
 		private function orientationChanged(e:StageOrientationEvent):void{
 			
-			var oW = this.controlPanel.back.width;
+			var oW:Number = this.controlPanel.back.width;
 			
 			this.controlPanel.back.width = this.stage.stageWidth * scale;
 			
-			var scaleChange = this.controlPanel.back.width / oW;
+			var scaleChange:Number = this.controlPanel.back.width / oW;
 			
 			this.scaleChange = scaleChange;
 			
@@ -140,7 +141,7 @@ package com.components
 			this.stage.removeEventListener(MouseEvent.MOUSE_UP, onStopDrag);
 			_mediaProxy.eventDispatcher.addEventListener("play_status_changed", updateControlPanel, false, 0, true);
 			
-			var time = this.controlPanel.drag.x / this.controlPanel.duration.width * this.duration;
+			var time:Number = this.controlPanel.drag.x / this.controlPanel.duration.width * this.duration;
 			trace(time)
 			_mediaProxy.seekTo(time);
 			
@@ -151,7 +152,7 @@ package com.components
 		var play;
 		var duration;
 		
-		public function update(data):void{
+		public function update(data:Object):void{
 			
 			//this.visible = true;
 			

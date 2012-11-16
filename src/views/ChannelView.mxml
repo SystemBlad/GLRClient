@@ -3,7 +3,7 @@
 		xmlns:s="library://ns.adobe.com/flex/spark"
 		viewActivate="listService.send()"
 		viewDeactivate="listService.cancel()"
-		title="频道"
+		title="课程分类"
 		xmlns:renderers="renderers.*">
 	<fx:Script>
 		<![CDATA[

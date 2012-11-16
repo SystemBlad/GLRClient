@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<components1:IconItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+							 xmlns:s="library://ns.adobe.com/flex/spark"
+							 xmlns:components="components.*"
+							 xmlns:components1="spark.components.*"
+							 creationComplete="iconitemrenderer1_creationCompleteHandler(event)">
+	<fx:Script>
+		<![CDATA[
+			import events.ScrollingEvent;
+			
+			import mx.events.EffectEvent;
+			import mx.events.FlexEvent;
+			
+			import spark.components.List;
+			
+			private var FLAGSTATE:int = 2;
+			
+			protected function iconitemrenderer1_creationCompleteHandler(event:FlexEvent):void
+			{
+				Multitouch.inputMode = MultitouchInputMode.GESTURE;
+				addEventListener(TransformGestureEvent.GESTURE_SWIPE, onSwipe);
+				
+				owner.addEventListener(ScrollingEvent.SCROLLING_STARTED, onScrollAgain);
+				wipeEffectIn.addEventListener(EffectEvent.EFFECT_END, onEffectInEnd);
+				wipeEffectOut.addEventListener(EffectEvent.EFFECT_END, onEffetOutEnd);
+				
+				/*
+				this.addChild(actBar);
+				
+				actBar.width = this.width;
+				actBar.height = this.height;
+				actBar.visible = true;
+				actBar.addEventListener(FlexEvent.CREATION_COMPLETE, onItemComplete);
+				wipeEffectIn.play();
+				*/
+			}
+			
+			private function onSwipe(event:TransformGestureEvent):void
+			{
+				if (Math.abs(event.offsetX) == 0) return;
+				
+				var evt:ScrollingEvent = new ScrollingEvent(ScrollingEvent.SCROLLING_STARTED);
+				if (FLAGSTATE == 2) {
+					
+					this.addChild(actBar);
+					
+					actBar.width = this.width;
+					actBar.height = this.height;
+					actBar.visible = true;
+					actBar.addEventListener(FlexEvent.CREATION_COMPLETE, onItemComplete);
+					FLAGSTATE = 0;
+					
+				}
+				else if (FLAGSTATE == 0) {
+					wipeEffectIn.play();
+				}
+				else {
+					wipeEffectOut.play();
+				}
+				owner.dispatchEvent(evt);
+			}
+			
+			protected function onItemComplete(event:FlexEvent):void
+			{
+				wipeEffectIn.play();
+			}
+			
+			private function onScrollAgain(event:ScrollingEvent):void
+			{
+				trace("scrolling");
+				if (FLAGSTATE == 1)
+					wipeEffectOut.play();
+			}			
+			
+			protected function onEffectInEnd(event:EffectEvent):void
+			{
+				FLAGSTATE = 1;
+			}
+			
+			protected function onEffetOutEnd(event:EffectEvent):void
+			{
+				FLAGSTATE = 0;
+			}
+			
+			protected function btnDelete_mouseDownHandler(event:MouseEvent):void
+			{
+				var list:List = owner as List;
+				list.dataProvider.removeItemAt(list.dataProvider.getItemIndex(data));
+				event.stopPropagation();
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<s:Parallel id="wipeEffectIn" target="{actBar}">
+			<s:Move duration="250" xFrom="{this.width}" xTo="0"/>
+		</s:Parallel>
+		<s:Parallel id="wipeEffectOut" target="{actBar}">
+			<s:Move duration="150" xFrom="0" xTo="{this.width}"/>
+		</s:Parallel>
+		<s:HGroup id="actBar" width="100%" height="100%" horizontalAlign="right" verticalAlign="middle" paddingRight="18">
+			<components:FancyButton id="btnDelete" width="80" height="60"
+									backgroundColor="#FF0000"
+									mouseDown="btnDelete_mouseDownHandler(event)">
+				<components:content>
+					<s:Label text="删除"
+							 color="#FFFFFF"
+							 />
+				</components:content>
+			</components:FancyButton>
+		</s:HGroup>
+	</fx:Declarations>
+</components1:IconItemRenderer>

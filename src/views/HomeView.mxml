@@ -9,6 +9,9 @@
 		<![CDATA[
 			import classes.DataManager;
 			
+			import ie.jampot.nativeExtensions.Alert;
+			import ie.jampot.nativeExtensions.AlertEvent;
+			
 			import mx.events.PropertyChangeEvent;
 			import mx.rpc.events.ResultEvent;
 			
@@ -199,6 +202,19 @@
 					_draggingList = true;
 			}
 			
+			protected function btnLogout_clickHandler(event:MouseEvent):void
+			{
+				var nativeAlert:Alert = new Alert();
+				nativeAlert.addEventListener(AlertEvent.ALERT_CLOSED, alertCloseHandler);
+				nativeAlert.showAlert("你确定要注销当前用户吗？", "", "否,是");
+			}
+			
+			private function alertCloseHandler(event:AlertEvent):void
+			{
+				//nativeAlert.removeEventListener(AlertEvent.ALERT_CLOSED, alertCloseHandler);
+				if (event.label == "是")
+					DataManager.instance.user.logout();
+			}
 		]]>
 	</fx:Script>
 	<fx:Declarations>
@@ -277,6 +293,6 @@
 	
 	<s:actionContent>
 		<s:Button id="btnLogin" label="登录" click="navigator.pushView(views.LoginView)" visible="{!DataManager.instance.user.loggedIn}" includeInLayout="{!DataManager.instance.user.loggedIn}"/>
-		<s:Button id="btnLogout" label="登出" click="DataManager.instance.user.logout()" visible="{DataManager.instance.user.loggedIn}" includeInLayout="{DataManager.instance.user.loggedIn}"/>
+		<s:Button id="btnLogout" label="注销" click="btnLogout_clickHandler(event)" visible="{DataManager.instance.user.loggedIn}" includeInLayout="{DataManager.instance.user.loggedIn}"/>
 	</s:actionContent>
 </s:View>

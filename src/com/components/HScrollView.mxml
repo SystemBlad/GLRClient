@@ -6,9 +6,9 @@
 		<![CDATA[
 			import mx.core.UIComponent;
 		
-			public var rangeRect;
+			public var rangeRect:Rect;
 			
-			var uiComponent:UIComponent = new UIComponent();
+			private var uiComponent:UIComponent = new UIComponent();
 			
 			private function onCreated():void{
 			

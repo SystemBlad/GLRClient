@@ -10,6 +10,8 @@ package com.proxies
 	import flash.events.Event;
 	import flash.net.URLRequest;
 	import flash.utils.*;
+	
+	import mx.core.IVisualElementContainer;
 
 	public class MediaProxy extends Object
 	{
@@ -29,11 +31,11 @@ package com.proxies
 		
 		public var eventDispatcher:Sprite =  new Sprite();
 	
-		public function MediaProxy(url:String, action:ActionProxy, pageContainer, penContainer, messageContainer)
+		public function MediaProxy(url:String, action:ActionProxy, pageContainer:PageContanier, penContainer:PenContainer, messageContainer:MessageContainer)
 		{
 			super();
 			_url = url;
-			_action = action.result;
+			_action = action.result as Array;
 			_before = action.before;
 			_pageContainer = pageContainer;
 			_penContainer = penContainer;
@@ -50,9 +52,9 @@ package com.proxies
 		
 		private function initAction():void{
 			
-			var startPage;
+			var startPage:Object;
 			trace(_before.length)
-			for(var i=0;i<_before.length;i++)
+			for(var i:int=0;i<_before.length;i++)
 			{
 			   if(_before[i].type == "page")
 				   startPage = _before[i];
@@ -126,13 +128,13 @@ package com.proxies
 		}
 		
 		
-		var currentPageActionIndex = 0;
-		var currentPenActionIndex = 0;
-		var currentMessageActionIndex = 0;
+		private var currentPageActionIndex:Number = 0;
+		private var currentPenActionIndex:Number = 0;
+		private var currentMessageActionIndex:Number = 0;
 		
 		protected function onLoop():void
 		{
-			var duration;
+			var duration:Number;
 			var currentPercent:*=NaN;
 			var playStatus:*=null;
 			var actionList:*=null;
@@ -221,11 +223,11 @@ package com.proxies
 			}
 		}
 		
-		private function refrashContent(time):void{
+		private function refrashContent(time:Number):void{
 			
 		  _penContainer.clearGraphic();
 	
-			for(var i = 0;i< _pageAction.length; i++)
+			for(var i:int = 0;i< _pageAction.length; i++)
 			{
 				if(_pageAction[i].time > time){
 					
@@ -240,7 +242,7 @@ package com.proxies
 			
 	
 			
-			for(var j = 0;j< _penAction.length; j++)
+			for(var j:int = 0;j< _penAction.length; j++)
 			{
 				if(currentPageActionIndex>0)
 				if(_pageAction[currentPageActionIndex-1].time < _penAction[j].time && _penAction[j].time< time){
@@ -252,7 +254,7 @@ package com.proxies
 				
 			}
 			
-			for(var h = 0;h< _penAction.length; h++)
+			for(var h:int = 0;h< _penAction.length; h++)
 			{
 				if( _penAction[h].time> time){
 					
@@ -265,7 +267,7 @@ package com.proxies
 			
 			var currentMessageActions:Array = new Array();
 			
-			for(var l = 0; l<_messageAction.length; l++)
+			for(var l:int = 0; l<_messageAction.length; l++)
 			{
 				if( _messageAction[l].time< time){
 					

@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		xmlns:s="library://ns.adobe.com/flex/spark"
-		title="掌上课堂"
+		title="{data.subject}"
 		viewActivate="view1_viewActivateHandler(event)"
 		viewDeactivate="view1_viewDeactivateHandler(event)"
 		overlayControls="true"
 		>
 	<fx:Script>
 		<![CDATA[
+			import classes.DataManager;
+			
 			import com.GLRVod;
 			
 			import mx.core.UIComponent;
@@ -18,21 +20,26 @@
 			
 			protected function view1_viewActivateHandler(event:ViewNavigatorEvent):void
 			{
-				stage.autoOrients = true;
-				stage.setAspectRatio("any");
-				//stage.setOrientation(StageOrientation.ROTATED_LEFT);
+				//stage.autoOrients = true;
+				//stage.setAspectRatio("any");
+				stage.setOrientation(StageOrientation.ROTATED_LEFT);
 				actionBarVisible = tabBarVisible = false;
 				
 				addEventListener(MouseEvent.CLICK, onMouseClick); 
 				
+				var url:String = "http://www.glr.cn/appapi/app_course_view.php?appid=";
+				url += data.courseId;
+				url += "&token=";
+				url += DataManager.instance.user.token;
+				
 				_vod = new GLRVod();
 				group.addElement(_vod);
-				_vod.start(String(data));
+				_vod.start(url);
 			}
 			
 			private function onMouseClick(event:MouseEvent):void
 			{
-				actionBarVisible = tabBarVisible = !tabBarVisible;
+				actionBarVisible = !actionBarVisible;
 			}
 			
 			protected function view1_viewDeactivateHandler(event:ViewNavigatorEvent):void
@@ -42,9 +49,10 @@
 				
 				group.removeAllElements();
 				removeEventListener(MouseEvent.CLICK, onMouseClick);
-				//stage.setOrientation(StageOrientation.DEFAULT);
-				stage.setAspectRatio("portrait");
-				stage.autoOrients = false;
+				stage.setOrientation(StageOrientation.DEFAULT);
+				//stage.setAspectRatio("portrait");
+				//stage.autoOrients = false;
+				actionBarVisible = tabBarVisible = true;
 			}
 		]]>
 	</fx:Script>
