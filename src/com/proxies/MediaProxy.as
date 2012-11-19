@@ -27,6 +27,10 @@ package com.proxies
 		private var _penContainer:PenContainer;
 		private var _messageContainer:MessageContainer;
 		
+		private var isPageLoaded:Boolean = false;
+		private var isMediaLoaded:Boolean = false;
+		
+		
 		private var client:NetClient;
 		
 		public var eventDispatcher:Sprite =  new Sprite();
@@ -66,8 +70,17 @@ package com.proxies
 		
 		private function firstPageLoaded(e:Event):void{
 			
-			_pageContainer.removeEventListener(Event.COMPLETE, firstPageLoaded);
-			trace("pageload")
+			isPageLoaded = true;
+			_pageContainer.contentLoaderInfo.removeEventListener(Event.COMPLETE, firstPageLoaded);
+			trace(" first pageload")
+			
+			if(this.isMediaLoaded)
+			{
+				resume();
+				refrashContent(this.videoTime);
+				setLoop(true);
+			}
+			
 			
 			_pageContainer.dispatchEvent(new Event("page_loaded"));
 			trace(_pageContainer.content.width,_pageContainer.content.height)
@@ -164,6 +177,7 @@ package com.proxies
 						
 						_pageContainer.load(new URLRequest(_pageAction[currentPageActionIndex].value.url));
 						
+						
 						//trace(_pageAction[currentPageActionIndex].value.url);
 						
 						_penContainer.clearGraphic();
@@ -205,12 +219,24 @@ package com.proxies
 		
 		private function onPlayPageLoaded(e:Event):void{
 			
-			trace("page loaded")
+			this.isPageLoaded = true;
+			
+			if(this.isMediaLoaded)
+			{
+				resume();
+			
+				setLoop(true);
+			}
+			
+			_pageContainer.contentLoaderInfo.removeEventListener(Event.COMPLETE, onPlayPageLoaded);
+			
+		    trace("page loaded")
 		}
 		
 		public function seekTo(time:Number):void
 		{
-	        
+	        this.isMediaLoaded = false;
+			this.isPageLoaded = false;
 			
 			var keyFrame:*= KeyFrameUtil.getKeyFrame(time, this.metadata);
 			
@@ -233,8 +259,11 @@ package com.proxies
 					
 					currentPageActionIndex = i;
 					if(currentPageActionIndex>0)
+					{
+					_pageContainer.contentLoaderInfo.removeEventListener(Event.COMPLETE, onPlayPageLoaded);
 					_pageContainer.load(new URLRequest(_pageAction[currentPageActionIndex - 1].value.url));
-					
+					_pageContainer.contentLoaderInfo.addEventListener(Event.COMPLETE, onPlayPageLoaded);
+					}
 					break;
 				}
 				
@@ -377,15 +406,25 @@ package com.proxies
 		
 		protected function onFull():void
 		{
+			
+			    isMediaLoaded = true;
 			    trace("buffer full  " + (this.videoTime) );
 	
+				pause();
 				refrashContent(this.videoTime);
 				
-				setLoop(true);
-	
+				if(this.isPageLoaded)
+				{
+				 resume();
+				 
+				 setLoop(true);
+				}
 			
 			return;
 		}
+		
+		
+		
 		
 		protected function onEmpty():void
 		{

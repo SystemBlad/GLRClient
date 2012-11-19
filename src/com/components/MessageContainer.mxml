@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
-		 xmlns:s="library://ns.adobe.com/flex/spark"  height="100%" creationComplete="creationCompleteHandler(event)" xmlns:renderers="renderers.*">
+		 xmlns:s="library://ns.adobe.com/flex/spark"  height="100%" xmlns:renderers="renderers.*">
 	<fx:Declarations>
 		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
 		
@@ -12,7 +12,7 @@
 	<fx:Script>
 		<![CDATA[
 			import mx.events.FlexEvent;
-			
+			import mx.events.PropertyChangeEvent;
 			import spark.events.IndexChangeEvent;
 			
 			private var messageArr:Array = new Array();
@@ -20,12 +20,7 @@
            public function addMessage(msg:Object):void{
 			   
 			   messageArr.push(msg)
-				   
-				   //trace("added item")
-			   
 		   }
-			
-			
 			
 		   public function refreshMessage(msgArr:Array):void{
 				
@@ -33,52 +28,40 @@
 			   messageArr = msgArr;
 			   
 			   messageList.source = messageArr;
-				
+			   list.invalidateDisplayList();
 		   }
-			
-			
-			
-			
-			protected function list_changeHandler(event:IndexChangeEvent):void
-			{
-				
-			}
-			
-			
-			protected function creationCompleteHandler(event:FlexEvent):void
-			{
-				// TODO Auto-generated method stub
-				
-				messageList.source = messageArr;
-				
-			}
-			
 		]]>
 	</fx:Script>
 	
-	<s:Group width="330" height="100%" alpha="0.75">
-		<s:layout>
-			<s:MultiDPIVerticalLayout sourceDPI="320"
-									  paddingTop="0" paddingBottom="0" paddingLeft="0" paddingRight="0" gap="0"/>
-		</s:layout>
+	<s:VGroup width="330" height="100%" alpha="1" >
 		
-		<s:Spacer width="100%" height="60"/>
+		<s:Group width="330" height="100%" alpha="1" >
 		
-		<s:List visible="true" id="list" width="100%" height="100%" dataProvider="{messageList}" contentBackgroundAlpha="0" 
-				change="list_changeHandler(event)">
+		<s:Rect id="rect" width="100%" height="100%" radiusX="10" topRightRadiusX="0" bottomRightRadiusX="0" alpha="0.8">
+			<s:fill>
+				<s:SolidColor color="#333333"/>
+			</s:fill>
+		</s:Rect>
+		
+		<s:List y="10" visible="true" id="list" width="100%" height="95%" dataProvider="{messageList}"  contentBackgroundAlpha="0">
 			<s:itemRenderer>
 				<fx:Component>
 					<renderers:MessageItemRenderer iconWidth="38" iconHeight="38"
 												  iconFillMode="clip" iconScaleMode="letterbox"
 												  iconPlaceholder="@Embed('assets/icon_head.png')"
-												  
 												  iconFunction = "getIcon"
-												  labelField="subject">
+												  messageFunction="getMessage"
+												  messageStyleName="messageListItem"
+												  >
 						<fx:Script>
 							<![CDATA[
 								private function getIcon(item:Object):String{
 									
 									return  item.value.avatar;
+								}
+								
+								private function getMessage(item:Object):String{
+									return item.value.value;
 								}
 							]]>
 						</fx:Script>
@@ -87,16 +70,17 @@
 			</s:itemRenderer>
 		</s:List>
 		
-		<s:HGroup id="buttonBar" width="100%" height="20" verticalAlign="middle">
+	   </s:Group>
+		<!--<s:HGroup id="buttonBar" width="100%" height="20" verticalAlign="middle" >
 			<s:Spacer width="100%"/>
 			<s:Label text="online students number:" fontSize="15" height="60" verticalAlign="middle"/>
 			
 			<s:Spacer width="100%"/>
-		</s:HGroup>
+		</s:HGroup>-->
 	
+		<s:Spacer height="120"/>
 	
-	
-	</s:Group>
+	</s:VGroup>
 	
 	
 </s:Group>

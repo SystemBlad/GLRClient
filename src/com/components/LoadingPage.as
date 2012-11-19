@@ -7,7 +7,7 @@ package com.components
 	public class LoadingPage extends Sprite
 	{
 		
-		var loading:Loading = new Loading();
+		private var loading:Loading = new Loading();
 		
 	
 		public function LoadingPage()

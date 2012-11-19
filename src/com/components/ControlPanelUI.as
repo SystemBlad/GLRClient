@@ -17,11 +17,11 @@ package com.components
 	public class ControlPanelUI extends Sprite
 	{
 		
-		var controlPanel:ControlPanel = new ControlPanel(); 
+		private var controlPanel:ControlPanel = new ControlPanel(); 
 		
-		var scale:Number = 1;
+		private var scale:Number = 1;
 		
-		var _mediaProxy;
+		private var _mediaProxy:MediaProxy;
 		
 		//this should be added after parent be added
 		
@@ -147,10 +147,10 @@ package com.components
 			
 		}
 		
-		var time;
-		var load;
-		var play;
-		var duration;
+		private var time:Number;
+		private var load:Number;
+		private var play:Number;
+		private var duration:Number;
 		
 		public function update(data:Object):void{
 			

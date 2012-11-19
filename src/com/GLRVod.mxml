@@ -31,7 +31,7 @@
 			
 			
 			private var contentContainer:HScrollView;
-			private var pageContainer:PageContanier;
+			public var pageContainer:PageContanier;
 			private var penContainer:PenContainer;
 			private var messageContainer:MessageContainer;
 			
@@ -63,7 +63,7 @@
 				
 				this.addElement(messageContainer);
 				
-				messageContainer.y = 100;
+				messageContainer.y = 93;
 				messageContainer.x = stage.stageWidth;
 				
 			    this.addElement(uiComponent);
@@ -80,7 +80,7 @@
 				pageContainer.addEventListener("page_loaded", onPageLoaded);
 				pageContainer.addEventListener(Event.RESIZE, onResize);
 				
-				stage.addEventListener(MouseEvent.CLICK, showHideControls);
+				pageContainer.addEventListener(MouseEvent.CLICK, showHideControls);
 				
 				stage.addEventListener(StageOrientationEvent.ORIENTATION_CHANGE, orientationChanged);
 				
@@ -131,7 +131,7 @@
 				 
 				 if(stage)
 				 {
-				  controlPanel.y = -controlPanel.height;
+				  controlPanel.y = stage.stageHeight - controlPanel.height;
 				  messageContainer.x = stage.stageWidth;
 				 }
 			}
@@ -145,7 +145,7 @@
 					
 					
 				 trace("===============resized==============")
-			     var  scale = (this.stage.stageWidth/pageContainer.content.width);
+			     var  scale:Number = (this.stage.stageWidth/pageContainer.content.width);
 				
 				 pageContainer.scaleX = scale;
 				 pageContainer.scaleY = scale;
@@ -180,8 +180,8 @@
 				controlPanel = new ControlPanelUI(mediaProxy);
 				uiComponent.addChild(controlPanel);
 				//controlPanel.visible = false;
-				
-				controlPanel.y = - controlPanel.height;
+				//controlPanel.alpha = 0.8;
+				controlPanel.y = stage.stageHeight - controlPanel.height;
 				
 			}
 			
@@ -190,17 +190,17 @@
 				
 				//messageContainer.visible = !messageContainer.visible;
 				//controlPanel.visible = !controlPanel.visible;
-				if(controlPanel)
+				if(controlPanel&&stage)
 				{
-				 if(controlPanel.y < 0)
+				 if(controlPanel.y >= stage.stageHeight)
 				 {
 				  TweenLite.to(messageContainer, 0.3, {x:stage.stageWidth-messageContainer.width});
-				  TweenLite.to(controlPanel, 0.3, {y:0 + 100});
+				  TweenLite.to(controlPanel, 0.3, {y:stage.stageHeight - controlPanel.height});
 				 }
 				 else
 				 {
 					TweenLite.to(messageContainer, 0.3, {x:stage.stageWidth});
-					TweenLite.to(controlPanel, 0.3, {y:-controlPanel.height});
+					TweenLite.to(controlPanel, 0.3, {y:stage.stageHeight});
 				 }
 				}
 				

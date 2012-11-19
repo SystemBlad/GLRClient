@@ -94,7 +94,7 @@ package classes
 		
 		public function clearCourseHistory():void
 		{
-			FlexGlobals.topLevelApplication.persistenceManager.clear();
+			FlexGlobals.topLevelApplication.persistenceManager.setProperty("history", null);
 		}
 		
 		// notifications

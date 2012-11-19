@@ -1,109 +1,112 @@
 package renderers
 {
+	import flash.geom.Rectangle;
+	
 	import mx.controls.Spacer;
+	import mx.core.BitmapAsset;
+	import mx.events.ResizeEvent;
 	import mx.formatters.DateFormatter;
 	
 	import spark.components.Group;
 	import spark.components.IconItemRenderer;
+	import spark.components.Image;
 	import spark.components.Label;
 	import spark.components.VGroup;
+	import spark.components.supportClasses.StyleableTextField;
 	import spark.filters.DropShadowFilter;
 	import spark.primitives.BitmapImage;
 
 	public class MessageItemRenderer extends IconItemRenderer
 	{
 		private var group:Group;
-		private var lblName:Label;
-		private var lblWord:Label;
 		
-		[Embed(source="assets/dialog-field.png")]
+		[Embed(source="assets/dialog-field.png",  
+               scaleGridTop="20",scaleGridBottom="48",
+               scaleGridLeft="20",scaleGridRight="230")]
+		[Bindable]
 		private var pIcon:Class;
 		
 		public function MessageItemRenderer()
 		{
+			mouseEnabled = false;
 		}
 		
 		override protected function createChildren():void
 		{
-			super.createChildren();
-
-			this.mouseEnabled = false;
-			
-			this.filters = [new DropShadowFilter(6, 45, 0, 0.7, 8, 8)];
-			
-		    group = new Group();
-			group.percentWidth = 100;
-			group.height = 60;
+			group = new Group();
 			addChild(group);
 			
-		
 			var picon:BitmapImage = new BitmapImage();
 			picon.source = pIcon;
+			picon.percentWidth = 100;
+			picon.percentHeight = 100;
 			group.addElement(picon);
 			
+			super.createChildren();
 			
-			lblWord = new Label();
-			
-			lblWord.width = 241;
-			lblWord.height = 58;
-		
-			
-			
-			lblWord.styleName = "messageListItem";
-			group.addElement(lblWord);
-			
-		
-		
-		
-		
+			this.filters = [new DropShadowFilter(6, 45, 0, 0.7, 8, 8)];
 		}
 		
 		override protected function drawBackground(unscaledWidth:Number, unscaledHeight:Number):void
 		{
+			//super.drawBackground(unscaledWidth, unscaledHeight);
+		}
+		
+		override public function set data(value:Object):void
+		{
+			super.data = value;
 			
+			invalidateDisplayList();
+			invalidateSize();
+		}
+		
+		override protected function measure():void{
+			super.measure();
+			var paddingTop:Number    = 10;	//getStyle("paddingTop");
+			var paddingBottom:Number = 10;	//getStyle("paddingBottom");
 			
-			
+			measuredHeight = messageDisplay.height + paddingTop + paddingBottom;
+			height = measuredHeight;
+			trace(messageDisplay.text+", "+height);
+		}
+		
+		override protected function createMessageDisplay():void
+		{
+			super.createMessageDisplay();
+			messageDisplay.mouseEnabled = false;
+			messageDisplay.wordWrap = true;
 		}
 		
 		override protected function layoutContents(unscaledWidth:Number, unscaledHeight:Number):void
 		{
 			super.layoutContents(unscaledWidth, unscaledHeight);
+			trace('unscaledWidth='+unscaledWidth+', unscaleHeight='+unscaledHeight);
+			if (width == 0) return;
 			
-			var hasMessage:Boolean = messageDisplay && messageDisplay.text != "";
+			var paddingLeft:Number   = 10;	//getStyle("paddingLeft");
+			var paddingRight:Number  = 10;	//getStyle("paddingRight");
+			var paddingTop:Number    = 10;	//getStyle("paddingTop");
+			var paddingBottom:Number = 10;	//getStyle("paddingBottom");
+			var horizontalGap:Number = 10;	//getStyle("horizontalGap");
 			
-			var paddingLeft:Number   = getStyle("paddingLeft");
-			var paddingRight:Number  = getStyle("paddingRight");
-			var paddingTop:Number    = getStyle("paddingTop");
-			var paddingBottom:Number = getStyle("paddingBottom");
-			var horizontalGap:Number = getStyle("horizontalGap");
-			var verticalGap:Number   = (hasMessage) ? getStyle("verticalGap") : 5;
+			setElementPosition(iconDisplay, paddingLeft, paddingTop);
 			
-			setElementPosition(labelDisplay, labelDisplay.x, paddingTop+10);
-			//setElementPosition(messageDisplay, messageDisplay.x, unscaledHeight - paddingBottom - 52);
-			if (messageDisplay)
-				messageDisplay.visible = messageDisplay.includeInLayout = false;
+			// messageDisplay
+			setElementPosition(messageDisplay, paddingLeft+iconDisplay.width+horizontalGap+20, paddingTop+10);
+			setElementSize(messageDisplay, Math.min(messageDisplay.getPreferredBoundsWidth(), this.width - messageDisplay.x - paddingRight), messageDisplay.getPreferredBoundsHeight());
 			
-			// layout hgroup
-			setElementSize(group, getLayoutBoundsWidth()-iconDisplay.getLayoutBoundsWidth()-paddingLeft-paddingRight-horizontalGap, 58);
-			setElementPosition(group, iconDisplay.getLayoutBoundsWidth()+paddingLeft+horizontalGap, unscaledHeight - paddingBottom - 58);
+			// group
+			setElementPosition(group, paddingLeft+iconDisplay.width+horizontalGap, paddingTop);
+			setElementSize(group,
+				messageDisplay.width+27,
+				messageDisplay.height+14);
 		}
 		
-		override protected function commitProperties():void
+		override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void
 		{
-			super.commitProperties();
-			if (data)
-			{
-				//lblName.text = data.value.value;
-				lblWord.text = data.value.value;
-			
-				var date:Date = new Date();
-				date.setTime(Number(data.start_time)*1000);
-				var df:DateFormatter = new DateFormatter();
-				df.formatString = "YY年MM月DD日 JJ:NN";
-				//lblButton.text = df.format(date);
-				
-			
-			}
+			super.updateDisplayList(unscaledWidth, unscaledHeight);
+			if (labelDisplay)
+				labelDisplay.visible = false;
 		}
 	}
 }
