@@ -2,6 +2,7 @@
 <s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		xmlns:s="library://ns.adobe.com/flex/spark"
 		viewActivate="view1_viewActivateHandler(event)"
+		preinitialize="preinitialize()"
 		viewDeactivate="view1_viewDeactivateHandler(event)"
 		title="今日推荐"
 		xmlns:renderers="renderers.*">
@@ -12,6 +13,7 @@
 			import ie.jampot.nativeExtensions.Alert;
 			import ie.jampot.nativeExtensions.AlertEvent;
 			
+			import mx.core.FlexGlobals;
 			import mx.events.PropertyChangeEvent;
 			import mx.rpc.events.ResultEvent;
 			
@@ -215,6 +217,30 @@
 				if (event.label == "是")
 					DataManager.instance.user.logout();
 			}
+			
+			private function preinitialize():void
+			{
+				var entered:Number = FlexGlobals.topLevelApplication.persistenceManager.getProperty("entered");
+				if (!entered)
+				{
+					actionBarVisible = tabBarVisible = false;
+					currentState = "firsttime";
+				}
+			}
+			
+			protected function welcomeList_changeHandler(event:IndexChangeEvent):void
+			{
+				actionBarVisible = tabBarVisible = true;
+				currentState = "default";
+				
+				FlexGlobals.topLevelApplication.persistenceManager.setProperty("entered", 1);
+			}
+			
+			protected function welcomeList_changingHandler(event:IndexChangeEvent):void
+			{
+				if (event.newIndex < welcomes.length - 1)
+					event.preventDefault();
+			}
 		]]>
 	</fx:Script>
 	<fx:Declarations>
@@ -222,8 +248,18 @@
 		<s:ArrayCollection id="courseList"/>
 		<fx:Model id="recommend" source="assets/recommends.xml"/>
 		<s:ArrayCollection id="recommends" source="{recommend.Course}"/>
+		<s:ArrayCollection id="welcomes">
+			<fx:Object pic="assets/01.jpg"/>
+			<fx:Object pic="assets/02.jpg"/>
+			<fx:Object pic="assets/03.jpg"/>
+			<fx:Object pic="assets/04.jpg"/>
+		</s:ArrayCollection>
 		<s:Fade id='fadeIn' target="{loadingGroup}" duration="500" alphaFrom="0" alphaTo="1"/>
 	</fx:Declarations>
+	<s:states>
+		<s:State name="default"/>
+		<s:State name="firsttime"/>
+	</s:states>
 	<s:Group width="100%" height="100%">
 		<s:layout>
 			<s:MultiDPIVerticalLayout sourceDPI="320"
@@ -290,7 +326,24 @@
 			</s:HGroup>
 		</s:Group>
 	</s:Group>
-	
+	<s:List id="welcomeList"
+			width="100%" height="100%"
+			verticalScrollPolicy="off" horizontalScrollPolicy="on"
+			pageScrollingEnabled="true"
+			itemRenderer="renderers.WelcomeItemRenderer"
+			skinClass="skins.PagedListSkin"
+			changing="welcomeList_changingHandler(event)"
+			change="welcomeList_changeHandler(event)"
+			dataProvider="{welcomes}"
+			selectionColor="#4d86b3"
+			includeIn="firsttime"
+			>
+		<s:layout>
+			<s:TileLayout orientation="rows" requestedRowCount="1" 
+						  columnWidth="{welcomeList.width}" rowHeight="{welcomeList.height}" 
+						  verticalGap="0" horizontalGap="0"/>
+		</s:layout>
+	</s:List>
 	<s:actionContent>
 		<s:Button id="btnLogin" label="登录" click="navigator.pushView(views.LoginView)" visible="{!DataManager.instance.user.loggedIn}" includeInLayout="{!DataManager.instance.user.loggedIn}"/>
 		<s:Button id="btnLogout" label="注销" click="btnLogout_clickHandler(event)" visible="{DataManager.instance.user.loggedIn}" includeInLayout="{DataManager.instance.user.loggedIn}"/>
