@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				 xmlns:s="library://ns.adobe.com/flex/spark"
+				 xmlns:components="components.*"
+				 title="反馈">
+	
+	<fx:Script>
+		<![CDATA[
+			protected function btnSend_clickHandler(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+				
+			}
+		]]>
+	</fx:Script>
+	
+	<s:Group width="100%" height="100%">
+		<s:layout>
+			<s:VerticalLayout gap="20" paddingLeft="20" paddingRight="20" paddingTop="20" paddingBottom="20"/>
+		</s:layout>
+		<s:TextArea width="100%" height="100%"
+					borderVisible="false"
+					returnKeyLabel="done">
+			<s:text></s:text>
+		</s:TextArea>
+		<s:HGroup width="100%" gap="10" horizontalAlign="center">
+			<components:FancyButton id="btnSend" width="100%" height="68"
+									backgroundColor="#05b5ed"
+									click="btnSend_clickHandler(event)">
+				<components:content>
+					<s:Label text="发送反馈"
+							 styleName="captionText"
+							 color="#FFFFFF"
+							 />
+					<s:BusyIndicator id="busyIndicator" symbolColor="#0C3170" height="40" visible="false" right="20" top="14"/>
+				</components:content>
+			</components:FancyButton>
+		</s:HGroup>
+		<s:HGroup width="100%" height="300">
+			
+		</s:HGroup>
+	</s:Group>
+</s:View>

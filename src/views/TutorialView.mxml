@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<components:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				 xmlns:s="library://ns.adobe.com/flex/spark"
+				 xmlns:components="spark.components.*"
+				 xmlns:renderers="renderers.*"
+				 viewActivate="view1_viewActivateHandler(event)"
+				 viewDeactivate="view1_viewDeactivateHandler(event)"
+				 title="欢迎">
+	<fx:Script>
+		<![CDATA[
+			import spark.events.IndexChangeEvent;
+			import spark.events.ViewNavigatorEvent;
+			
+			protected function view1_viewActivateHandler(event:ViewNavigatorEvent):void
+			{
+				actionBarVisible = tabBarVisible = false;
+			}
+			
+			protected function view1_viewDeactivateHandler(event:ViewNavigatorEvent):void
+			{
+				actionBarVisible = tabBarVisible = true;
+			}
+			
+			protected function welcomeList_changeHandler(event:IndexChangeEvent):void
+			{
+				navigator.popView();
+			}
+			
+			protected function welcomeList_changingHandler(event:IndexChangeEvent):void
+			{
+				if (event.newIndex < list.dataProvider.length - 1)
+					event.preventDefault();
+			}
+		]]>
+	</fx:Script>
+	<s:Group width="100%" height="100%">
+		<s:List id="list"
+				width="100%" height="100%"
+				verticalScrollPolicy="off" horizontalScrollPolicy="on"
+				pageScrollingEnabled="true"
+				itemRenderer="renderers.WelcomeItemRenderer"
+				skinClass="skins.PagedListSkin"
+				changing="welcomeList_changingHandler(event)"
+				change="welcomeList_changeHandler(event)"
+				selectionColor="#4d86b3"
+				>
+			<s:layout>
+				<s:TileLayout orientation="rows" requestedRowCount="1" 
+							  columnWidth="{list.width}" rowHeight="{list.height}" 
+							  verticalGap="0" horizontalGap="0"/>
+			</s:layout>
+			<s:dataProvider>
+				<s:ArrayCollection>
+					<fx:Object pic="assets/01.jpg"/>
+					<fx:Object pic="assets/02.jpg"/>
+					<fx:Object pic="assets/03.jpg"/>
+					<fx:Object pic="assets/04.jpg"/>
+				</s:ArrayCollection>
+			</s:dataProvider>
+		</s:List>
+	</s:Group>
+</components:View>

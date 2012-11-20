@@ -39,20 +39,6 @@ s|TabbedViewNavigator #tabBar
 	textAlign: center;
 	verticalAlign: middle;
 }
-#channelTags s|Label
-{
-	color:#000000;
-	paddingLeft:10;
-	paddingRight:10;
-	paddingTop:16;
-	paddingBottom:14;
-	verticalAlign:middle;
-}
-#channelTags s|Label.selected
-{
-	backgroundColor:#319ED7;
-	color:#FFFFFF;
-}
 .messageListItem
 {
 	fontSize:20;
@@ -75,4 +61,34 @@ s|TabbedViewNavigator #tabBar
 	.historyMessage {color:#999999;fontSize:24;}
 	
 	components|SearchField {fontSize:30;}
+}
+
+renderers|StyledIconItemRenderer
+{
+	borderStyle: rounded;
+	borderWeight: 1;
+	cornerRadius: 10;
+}
+.versionNumber
+{
+	color: #666666;
+	fontSize: 30;
+	verticalAlign: bottom;
+}
+
+@media (application-dpi: 240)
+{
+	renderers|StyledIconItemRenderer
+	{
+		cornerRadius: 15;
+	}
+}
+
+@media (application-dpi: 320)
+{
+	renderers|StyledIconItemRenderer
+	{
+		borderWeight: 2;
+		cornerRadius: 20;
+	}
 }

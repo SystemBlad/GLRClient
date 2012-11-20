@@ -1,7 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
-		xmlns:s="library://ns.adobe.com/flex/spark" title="设置">
+		xmlns:s="library://ns.adobe.com/flex/spark"
+		title="关于我们"
+		creationComplete="view1_creationCompleteHandler(event)" xmlns:renderers="renderers.*">
 	<fx:Declarations>
-		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+		<s:ArrayCollection id="listData">
+			<fx:String>版本</fx:String>
+			<fx:String>欢迎页</fx:String>
+			<fx:String>反馈</fx:String>
+		</s:ArrayCollection>
 	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import mx.core.DPIClassification;
+			import mx.core.FlexGlobals;
+			import mx.events.FlexEvent;
+			
+			import spark.components.ListFormItemRenderer;
+			import spark.events.IndexChangeEvent;
+			import spark.skins.spark.DefaultItemRenderer;
+			
+			protected function view1_creationCompleteHandler(event:FlexEvent):void
+			{
+				if (Capabilities.version.indexOf("IOS") == 0)
+				{
+					var padding:Number = (10 * FlexGlobals.topLevelApplication.applicationDPI / DPIClassification.DPI_160);
+					list.top = list.bottom = list.left = list.right = padding;
+				}
+			}
+			
+			protected function list_changingHandler(event:IndexChangeEvent):void
+			{
+				event.preventDefault();
+				if (event.newIndex == 1)
+					navigator.pushView(views.TutorialView);
+				else if (event.newIndex == 2)
+					navigator.pushView(views.ResponseView);
+			}
+		]]>
+	</fx:Script>
+	<s:Scroller width="100%" height="100%">
+		<s:Group width="100%" height="100%">
+			
+			<!-- Custom List with optional title skin part -->
+			<s:List id="list" width="100%" height="100%"
+					skinClass="skins.ListSkin"
+					selectionColor="#FFFFFF"
+					changing="list_changingHandler(event)">
+				<s:itemRenderer>
+					<fx:Component>
+						<renderers:StyledIconItemRenderer labelField="label" decorator="@Embed('assets/decorator-arrow.png')"/>
+					</fx:Component>
+				</s:itemRenderer>
+				<s:ArrayCollection>
+					<fx:Object label="版本" version="1.0.1"/>
+					<fx:Object label="欢迎页"/>
+					<fx:Object label="反馈"/>
+				</s:ArrayCollection>
+			</s:List>
+			
+			<s:Label text="过来人(北京)教育科技有限公司 版权所有" width="100%" bottom="50" textAlign="center" verticalAlign="middle"
+					 fontSize="24" color="#999999"
+					 />
+		</s:Group>
+	</s:Scroller>
 </s:View>
