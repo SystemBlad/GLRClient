@@ -77,12 +77,16 @@ package com.components
 			var oW:Number = this.controlPanel.back.width;
 			
 			this.controlPanel.back.width = this.stage.stageWidth * scale;
-			
+			this.controlPanel.logo.x = this.stage.stageWidth - this.controlPanel.logo.width - 10;
 			var scaleChange:Number = this.controlPanel.back.width / oW;
 			
 			this.scaleChange = scaleChange;
 			
 			this.controlPanel.duration.width = this.controlPanel.duration.width * scaleChange;
+			
+			this.controlPanel.drag.x = 0;
+			this.controlPanel.loaded.width = 0;
+			this.controlPanel.played.width = 0;
 			
 			this.controlPanel.drag.addEventListener(MouseEvent.MOUSE_DOWN, onStartDrag);
 			this.controlPanel.drag.addEventListener(MouseEvent.MOUSE_UP, onStopDrag);
@@ -97,6 +101,7 @@ package com.components
 			var oW:Number = this.controlPanel.back.width;
 			
 			this.controlPanel.back.width = this.stage.stageWidth * scale;
+			this.controlPanel.logo.x = this.stage.stageWidth - this.controlPanel.width - 10;
 			
 			var scaleChange:Number = this.controlPanel.back.width / oW;
 			
@@ -114,6 +119,7 @@ package com.components
 			var oW:Number = this.controlPanel.back.width;
 			
 			this.controlPanel.back.width = this.stage.stageWidth * scale;
+			this.controlPanel.logo.x = this.stage.stageWidth - this.controlPanel.width - 10;
 			
 			var scaleChange:Number = this.controlPanel.back.width / oW;
 			

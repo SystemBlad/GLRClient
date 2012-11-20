@@ -37,7 +37,7 @@
 			
 			private var loadingPage:LoadingPage;
 			
-			private var controlPanel:ControlPanelUI;
+			public var controlPanel:ControlPanelUI;
 			
 			private var uiComponent:UIComponent;
 			
@@ -67,7 +67,7 @@
 				messageContainer.x = stage.stageWidth;
 				
 			    this.addElement(uiComponent);
-				
+				messageContainer.visible = false;
 				
 				contentContainer.addFlashChild(pageContainer);
 				contentContainer.addFlashChild(penContainer);
@@ -80,8 +80,7 @@
 				pageContainer.addEventListener("page_loaded", onPageLoaded);
 				pageContainer.addEventListener(Event.RESIZE, onResize);
 				
-				pageContainer.addEventListener(MouseEvent.CLICK, showHideControls);
-				
+			
 				stage.addEventListener(StageOrientationEvent.ORIENTATION_CHANGE, orientationChanged);
 				
 				
@@ -113,6 +112,12 @@
 					uiComponent.removeChild(this.loadingPage);
 				
 				resetContentSize();
+				
+				dispatchEvent(new Event("ready_to_play"));
+				controlPanel.visible = true;
+				messageContainer.visible = true;
+				
+				pageContainer.addEventListener(MouseEvent.CLICK, showHideControls);
 				
 				
 			}
@@ -179,6 +184,7 @@
 				
 				controlPanel = new ControlPanelUI(mediaProxy);
 				uiComponent.addChild(controlPanel);
+				controlPanel.visible = false;
 				//controlPanel.visible = false;
 				//controlPanel.alpha = 0.8;
 				controlPanel.y = stage.stageHeight - controlPanel.height;

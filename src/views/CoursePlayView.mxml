@@ -23,9 +23,9 @@
 				//stage.autoOrients = true;
 				//stage.setAspectRatio("any");
 				stage.setOrientation(StageOrientation.ROTATED_LEFT);
-				actionBarVisible = tabBarVisible = false;
+		        tabBarVisible = false;
 				
-				addEventListener(MouseEvent.CLICK, onMouseClick); 
+				 
 				
 				var url:String = "http://www.glr.cn/appapi/app_course_view.php?appid=";
 				url += data.courseId;
@@ -33,13 +33,29 @@
 				url += DataManager.instance.user.token;
 				
 				_vod = new GLRVod();
+				_vod.addEventListener("ready_to_play", initControlPanel, false, 0, true);
 				group.addElement(_vod);
 				_vod.start(url);
 			}
 			
+			private function initControlPanel(e:Event):void{
+				
+				
+				_vod.pageContainer.addEventListener(MouseEvent.CLICK, onMouseClick);
+			}
+			
+			
 			private function onMouseClick(event:MouseEvent):void
 			{
-				actionBarVisible = !actionBarVisible;
+				if(_vod.controlPanel.y >= stage.stageHeight)
+				{
+				
+				  actionBarVisible = true;
+				}
+				else
+				{
+					actionBarVisible = false;
+				}
 			}
 			
 			protected function view1_viewDeactivateHandler(event:ViewNavigatorEvent):void

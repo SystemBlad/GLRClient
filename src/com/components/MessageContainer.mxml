@@ -13,14 +13,23 @@
 		<![CDATA[
 			import mx.events.FlexEvent;
 			import mx.events.PropertyChangeEvent;
+			
+			import spark.core.NavigationUnit;
 			import spark.events.IndexChangeEvent;
 			
 			private var messageArr:Array = new Array();
 
            public function addMessage(msg:Object):void{
 			   
-			   messageArr.push(msg)
+			   messageArr.push(msg);
+			   messageList.source = messageArr
+			   scrollToBottom();
+			  
 		   }
+			
+			
+		   
+			
 			
 		   public function refreshMessage(msgArr:Array):void{
 				
@@ -28,8 +37,27 @@
 			   messageArr = msgArr;
 			   
 			   messageList.source = messageArr;
-			   list.invalidateDisplayList();
+			   scrollToBottom();
+			   
+			 //  list.invalidateDisplayList();
 		   }
+			
+			
+			private function scrollToBottom():void {
+				// update the verticalScrollPosition to the end of the List
+				// virtual layout may require us to validate a few times
+				var delta:Number = 0;
+				var count:int = 0;
+				while (count++ < 10) {
+					list.validateNow();
+					delta = list.layout.getVerticalScrollPositionDelta(NavigationUnit.END);
+					list.layout.verticalScrollPosition += delta;
+					trace('count='+count+', delta='+delta+', verticalScrollPosition='+list.layout.verticalScrollPosition);
+					if (delta == 0)
+						break;
+				}
+			}
+			
 		]]>
 	</fx:Script>
 	

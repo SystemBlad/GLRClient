@@ -28,8 +28,8 @@ package com.components
 			trace(this.loading.width)
 			this.loading.back.width = this.stage.stageWidth;
 			this.loading.back.height = this.stage.stageHeight;
-			this.loading.textField.x = (this.loading.back.width - this.loading.textField.width)/2;
-			this.loading.textField.y = (this.loading.back.height - this.loading.textField.height)/2;
+			this.loading.logo.x = (this.loading.back.width - this.loading.logo.width)/2;
+			this.loading.logo.y = (this.loading.back.height - this.loading.logo.height)/2;
 			stage.addEventListener(StageOrientationEvent.ORIENTATION_CHANGE, orientationChanged, false, 0, true);
 		
 				
@@ -43,8 +43,8 @@ package com.components
 			{
 			 this.loading.back.width = this.stage.stageWidth;
 			 this.loading.back.height = this.stage.stageHeight;
-			 this.loading.textField.x = (this.loading.back.width - this.loading.textField.width)/2;
-			 this.loading.textField.y = (this.loading.back.height - this.loading.textField.height)/2;
+			 this.loading.logo.x = (this.loading.back.width - this.loading.logo.width)/2;
+			 this.loading.logo.y = (this.loading.back.height - this.loading.logo.height)/2;
 			}
 			
 		}
@@ -56,8 +56,8 @@ package com.components
 			{
 			 this.loading.back.width = this.stage.stageWidth;
 			 this.loading.back.height = this.stage.stageHeight;
-			 this.loading.textField.x = (this.loading.back.width - this.loading.textField.width)/2;
-			 this.loading.textField.y = (this.loading.back.height - this.loading.textField.height)/2;
+			 this.loading.logo.x = (this.loading.back.width - this.loading.logo.width)/2;
+			 this.loading.logo.y = (this.loading.back.height - this.loading.logo.height)/2;
 			}
 			
 		}

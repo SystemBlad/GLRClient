@@ -82,6 +82,13 @@
 			
 			protected function view1_viewActivateHandler(event:ViewNavigatorEvent):void
 			{
+				var user:String = FlexGlobals.topLevelApplication.persistenceManager.getProperty("username");
+				var pass:String = FlexGlobals.topLevelApplication.persistenceManager.getProperty("password");
+				if (user && pass)
+				{
+					DataManager.instance.user.login(user, pass);
+				}
+				
 				courseList.addItem({text:"loading..."});
 				removeEventListeners();
 				getCourseList();

@@ -74,6 +74,7 @@ package models
 			return _token;
 		}
 		
+		[Bindable(event="loginEvent")]
 		[Bindable(event="logoutEvent")]
 		public function get loggedIn():Boolean
 		{

@@ -220,7 +220,7 @@ package com.proxies
 		private function onPlayPageLoaded(e:Event):void{
 			
 			this.isPageLoaded = true;
-			
+			this._penContainer.visible = true;
 			if(this.isMediaLoaded)
 			{
 				resume();
@@ -235,6 +235,8 @@ package com.proxies
 		
 		public function seekTo(time:Number):void
 		{
+			this._penContainer.visible = false;
+			
 	        this.isMediaLoaded = false;
 			this.isPageLoaded = false;
 			
