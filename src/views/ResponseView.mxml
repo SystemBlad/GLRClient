@@ -6,20 +6,49 @@
 	
 	<fx:Script>
 		<![CDATA[
+			import classes.DataManager;
+			
+			import mx.rpc.events.ResultEvent;
+			
+			private function service_resultHandler(event:ResultEvent):void
+			{
+				busyIndicator.visible = false;
+				var json:String = String(event.result);
+				trace(json);
+				var obj:Object = JSON.parse(json);
+				if (Number(obj.feedback_success))
+				{
+					comment.enabled = comment.mouseEnabled = false;
+					bounceIn.play();
+					setTimeout(function():void{
+						navigator.popView();
+					}, 1000);
+				}
+			}
+			
 			protected function btnSend_clickHandler(event:MouseEvent):void
 			{
-				// TODO Auto-generated method stub
-				
+				busyIndicator.visible = true;
+				btnSend.enabled = btnSend.mouseEnabled = false;
+				service.send();
 			}
 		]]>
 	</fx:Script>
-	
+	<fx:Declarations>
+		<s:HTTPService id="service" resultFormat="text" result="service_resultHandler(event)">
+			<s:url>http://www.glr.cn/appapi/app_feedback.php?token={DataManager.instance.user.token}&amp;content={comment.text}</s:url>
+		</s:HTTPService>
+		<s:Bounce id="bounceEasing"/>
+		<s:Parallel id="bounceIn" target="{prompt}">
+			<s:Move duration="750" yFrom="{height}" yTo="560" easer="{bounceEasing}"/>
+		</s:Parallel>
+	</fx:Declarations>
 	<s:Group width="100%" height="100%">
 		<s:layout>
 			<s:VerticalLayout gap="20" paddingLeft="20" paddingRight="20" paddingTop="20" paddingBottom="20"/>
 		</s:layout>
 		<s:Group width="100%" height="100%">
-			<s:TextArea width="100%" height="100%"
+			<s:TextArea id="comment" width="100%" height="100%"
 						borderVisible="false"
 						returnKeyLabel="done"
 						focusIn="borderStroke.alpha=0"
@@ -49,4 +78,16 @@
 			
 		</s:HGroup>
 	</s:Group>
+	<s:HGroup id="prompt" width="100%" height="80" y="{height}" horizontalAlign="center">
+		<s:Group width="270" height="100%">
+			<s:Rect width="100%" height="100%" radiusX="12">
+				<s:fill>
+					<s:SolidColor color="#000000" alpha="0.6"/>
+				</s:fill>
+			</s:Rect>
+			<s:Label color="#FFFFFF" text="感谢您的反馈！" styleName="captionText"
+					 width="100%" height="100%"
+					 textAlign="center" verticalAlign="middle"/>
+		</s:Group>
+	</s:HGroup>
 </s:View>

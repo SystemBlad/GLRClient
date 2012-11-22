@@ -12,6 +12,8 @@
 	</fx:Declarations>
 	<fx:Script>
 		<![CDATA[
+			import classes.DataManager;
+			
 			import mx.core.DPIClassification;
 			import mx.core.FlexGlobals;
 			import mx.events.FlexEvent;
@@ -32,10 +34,18 @@
 			protected function list_changingHandler(event:IndexChangeEvent):void
 			{
 				event.preventDefault();
-				if (event.newIndex == 1)
+				
+				if (event.newIndex == 1) {
 					navigator.pushView(views.TutorialView);
-				else if (event.newIndex == 2)
-					navigator.pushView(views.ResponseView);
+				}
+				else if (event.newIndex == 2) {
+					if (!DataManager.instance.user.loggedIn) {
+						navigator.pushView(views.LoginView);
+					}
+					else {
+						navigator.pushView(views.ResponseView);
+					}
+				}
 			}
 		]]>
 	</fx:Script>

@@ -44,13 +44,14 @@
 			{
 				if (!DataManager.instance.user.loggedIn)
 				{
-					subscribeService.send();
 					navigator.pushView(views.LoginView);
 				}
 				else
 				{
 					if (data.courseId)
 					{
+						subscribeService.send();
+						
 						DataManager.instance.insertCourseHistory(data.subject, data.courseId);
 						
 						navigator.pushView(views.CoursePlayView, data);
