@@ -110,7 +110,7 @@ public class PagedListSkin extends ListSkin
             if (i == selectedIndex)
                 g.beginFill(selectionColor, 1);
             else
-                g.beginFill(0, .25);
+                g.beginFill(0x828282, 1);
             
             if (isHorizontal)
                 g.drawCircle(axisPos + centerPos, centerPos, radius);

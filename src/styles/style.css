@@ -5,12 +5,14 @@
 
 s|ActionBar
 {
-	chromeColor:#0C3170;
+	chromeColor:#587297;
+	skinClass: ClassReference("skins.MyActionBarSkin");
 	titleAlign:center;
 }
 s|TabbedViewNavigator #tabBar
 {
-	chromeColor:#0C3170;
+	chromeColor:#587297;
+	skinClass: ClassReference("skins.MyTabBarSkin");
 }
 .courseListItemMessage
 {
