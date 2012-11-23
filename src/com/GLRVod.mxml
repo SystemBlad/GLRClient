@@ -78,20 +78,15 @@
 				uiComponent.addChild(loadingPage);
 				
 				messageBtn = new MessageButton();
+				messageBtn.visible = false;
 				uiComponent.addChild(messageBtn);
-				messageBtn.x = stage.stageWidth - messageBtn.width + 5;
-				messageBtn.y = messageContainer.y + 100;
 					
 				pageContainer.addEventListener("page_loaded", onPageLoaded);
 				pageContainer.addEventListener(Event.RESIZE, onResize);
 				
 				messageBtn.addEventListener(MouseEvent.CLICK, messageBtnHandle, false, 0, true);
 				stage.addEventListener(StageOrientationEvent.ORIENTATION_CHANGE, orientationChanged);
-				
-			
-				
 			}
-
 		
 			public function start(_url:String):void{
 				
@@ -99,23 +94,19 @@
 				configProxy.loader.addEventListener(Event.COMPLETE, configLoaded);
 				
 			}
-			
 		
 			private var isAdded:Boolean = false;
 			private var isPageLoaed:Boolean = false;
 			
 			private function onAdded(e:Event):void{
-				isAdded = true;
-				
+				isAdded = true;				
 				resetContentSize();
-			
 			}
 			
 			private function onPageLoaded(e:Event):void{
-				
 				isPageLoaed = true;
 				trace("page Loaded sclae")
-				if(this.uiComponent.contains(this.loadingPage))
+				if (this.uiComponent.contains(this.loadingPage))
 					uiComponent.removeChild(this.loadingPage);
 				
 				resetContentSize();
@@ -126,15 +117,14 @@
 				
 				pageContainer.addEventListener(MouseEvent.CLICK, showHideControls);
 				
-				
+				messageBtn.visible = true;
+				messageBtn.x = stage.stageWidth - messageBtn.width + 5;
+				messageBtn.y = messageContainer.y + 100;
 			}
 			
 			private function onResize(e:Event):void{
-
 				resetContentSize();
-				
 			}
-			
 			
 			private function orientationChanged(e:StageOrientationEvent):void{
 				
@@ -146,7 +136,7 @@
 				  controlPanel.y = stage.stageHeight - controlPanel.realHeight;
 				  messageContainer.x = stage.stageWidth;
 				  messageBtn.x = stage.stageWidth - messageBtn.width + 5;
-				  
+				  trace(messageBtn.x+'::::'+stage.orientation+', '+stage.deviceOrientation+', before='+e.beforeOrientation+' after='+e.afterOrientation);
 				 }
 			}
 			
@@ -177,13 +167,8 @@
 			
 			
 			private function configLoaded(e:Event):void{
-				
-				
-				
 				actionProxy = new ActionProxy(configProxy.action_path);
 				actionProxy.loader.addEventListener(Event.COMPLETE, actionLoaded);
-				
-				
 			}
 			
 			private function  actionLoaded(e:Event):void{
@@ -198,7 +183,6 @@
 				//controlPanel.visible = false;
 				//controlPanel.alpha = 0.8;
 				controlPanel.y = stage.stageHeight - controlPanel.realHeight;
-				
 			}
 			
 			private function onPlayTimeChange(e:DataEvent):void{

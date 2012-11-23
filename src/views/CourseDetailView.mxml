@@ -4,7 +4,7 @@
 		title="课程详情"
 		viewActivate="detailService.send()"
 		viewDeactivate="detailService.cancel()" xmlns:components="components.*"
-		creationComplete="view1_creationCompleteHandler(event)">
+		creationComplete="view1_creationCompleteHandler(event)" xmlns:renderers="renderers.*">
 	<fx:Script>
 		<![CDATA[
 			import classes.DataManager;
@@ -13,8 +13,11 @@
 			
 			import mx.core.FlexGlobals;
 			import mx.events.FlexEvent;
+			import mx.events.IndexChangedEvent;
 			import mx.formatters.DateFormatter;
 			import mx.rpc.events.ResultEvent;
+			
+			import spark.events.IndexChangeEvent;
 			
 			private var _subscribed:Boolean;
 			
@@ -28,6 +31,13 @@
 					data.courseId = Number(obj.course_detail.course_view_id);
 					data.teacher_avatar = obj.course_detail.teacher_avatar;
 					data.teacher_intro = obj.course_detail.teacher_intro;
+					recommends.source = obj.course_detail.teacher_recom_list;
+					trace('cour list: '+recommends.length);
+					
+					// update UI
+					teacherGroup.visible = teacherGroup.includeInLayout = true;
+					teacherAvatar.source = data.teacher_avatar;
+					teacherIntro.text = data.teacher_intro;
 					
 					txtIntro.text = obj.course_detail.course_introduce;
 					
@@ -139,6 +149,15 @@
 						break;
 				}
 			}
+			
+			protected function list_changingHandler(event:IndexChangeEvent):void
+			{
+				event.preventDefault();
+				
+				var obj:Object = recommends.getItemAt(event.newIndex);
+				obj.button_txt = data.button_txt;
+				navigator.pushView(views.CourseDetailView, obj);
+			}
 		]]>
 	</fx:Script>
 	<fx:Declarations>
@@ -148,6 +167,7 @@
 		<s:HTTPService id="subscribeService" resultFormat="text" result="subscribeService_resultHandler(event)">
 			<s:url>http://www.glr.cn/appapi/app_course_signup.php?kvideoid={data.kvideoid}&amp;token={DataManager.instance.user.token}</s:url>
 		</s:HTTPService>
+		<s:ArrayCollection id="recommends"/>
 	</fx:Declarations>
 	<s:states>
 		<s:State name="default"/>
@@ -170,11 +190,11 @@
 					</s:Rect>
 				</s:Group>
 				<s:VGroup gap="20" width="100%">
-					<s:Label text="{data.subject}" styleName="captionText"/>
+					<s:Label text="{data.subject}" styleName="captionText" width="100%"/>
 					<s:Label text="直播时间：{timeDuration}" color="#666666" verticalAlign="middle"/>
 					<s:HGroup width="100%" gap="0">
 						<s:Label text="主讲人："/>
-						<s:Label id="lblSpeaker" text="{data.teacher_realname}" color="#0C3170" styleName="linkText" click="lblSpeaker_clickHandler(event)"/>
+						<s:Label id="lblSpeaker" text="{data.teacher_realname}" color="#0C3170"/>
 						<s:Spacer width="100%"/>
 						<s:BitmapImage source="@Embed('assets/small-icon-popularity.png')"/>
 						<s:Label text="{data.viewnum}" height="100%" color="#666666" verticalAlign="bottom"/>
@@ -212,6 +232,8 @@
 				</components:FancyButton>-->
 			</s:HGroup>
 			<s:Spacer height="0"/>
+			
+			<!-- course intro -->
 			<s:VGroup width="100%" gap="0">
 				<s:HGroup width="100%">
 					<s:Spacer width="100%"/>
@@ -221,6 +243,53 @@
 				<s:Label backgroundColor="#319ED7" width="100%" height="2"/>
 			</s:VGroup>
 			<s:Label id="txtIntro" width="100%" textAlign="left" color="#666666"/>
+			
+			<!-- speaker intro -->
+			<s:VGroup width="100%" gap="0" id="teacherGroup" visible="false">
+				<s:HGroup width="100%">
+					<s:Spacer width="100%"/>
+					<s:Label text="老师简介" backgroundColor="#319ED7" color="#FFFFFF" height="100%" verticalAlign="middle"
+							 paddingLeft="10" paddingRight="10" paddingTop="8" paddingBottom="6"/>
+				</s:HGroup>
+				<s:Label backgroundColor="#319ED7" width="100%" height="2"/>
+				
+				<s:Group width="100%">
+					<s:layout>
+						<s:HorizontalLayout gap="20" paddingTop="20" paddingBottom="10"/>
+					</s:layout>
+					<s:VGroup width="144" gap="20">
+						<s:Group width="144" height="170">
+							<s:BitmapImage id="teacherAvatar" source="{data.teacher_avatar}" width="100%" height="100%" fillMode="scale"/>
+							<s:Rect width="100%" height="100%">
+								<s:stroke>
+									<s:SolidColorStroke color="#319ED7"/>
+								</s:stroke>
+							</s:Rect>
+						</s:Group>
+						<s:Label width="100%" textAlign="center" text="{data.teacher_realname}" color="#0C3170"/>
+					</s:VGroup>
+					<s:VGroup gap="20" width="100%">
+						<s:Label id="teacherIntro" width="100%" height="100%" text="{data.teacher_intro}" color="#666666"/>
+					</s:VGroup>
+					
+				</s:Group>
+				
+				<s:List id="list" width="100%" verticalScrollPolicy="off"
+						contentBackgroundAlpha="0"
+						skinClass="skins.ListSkin"
+						selectionColor="#FFFFFF"
+						dataProvider="{recommends}"
+						changing="list_changingHandler(event)">
+					<s:itemRenderer>
+						<fx:Component>
+							<renderers:StyledIconItemRenderer labelField="subject" decorator="@Embed('assets/decorator-arrow.png')"/>
+						</fx:Component>
+					</s:itemRenderer>
+				</s:List>
+				
+			</s:VGroup>
+			
+			
 		</s:Group>
 	</s:Scroller>
 </s:View>

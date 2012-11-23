@@ -36,7 +36,8 @@
 				_vod.addEventListener("ready_to_play", initControlPanel, false, 0, true);
 				_vod.addEventListener("play_time_changed", updatePlaytime);
 				group.addElement(_vod);
-				_vod.start(url);
+				
+				setTimeout(function():void{_vod.start(url);}, 500);
 			}
 			
 			private function initControlPanel(e:Event):void
@@ -53,8 +54,7 @@
 			{
 				if(_vod.controlPanel.y >= stage.stageHeight)
 				{
-				
-				  actionBarVisible = true;
+					actionBarVisible = true;
 				}
 				else
 				{
