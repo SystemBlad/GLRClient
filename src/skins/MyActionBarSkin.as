@@ -30,7 +30,6 @@ package skins
 			
 			// apply alpha to chromeColor fill only
 			var backgroundAlphas:Array = [backgroundAlphaValue, backgroundAlphaValue, backgroundAlphaValue];
-			trace(backgroundAlphaValue+',,,,');
 			
 			// exclude top and bottom 1px borders
 			var matrix:Matrix = new Matrix();

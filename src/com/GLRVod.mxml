@@ -34,12 +34,14 @@
 			public var pageContainer:PageContanier;
 			private var penContainer:PenContainer;
 			private var messageContainer:MessageContainer;
+			private var messageBtn:MessageButton;
 			
 			private var loadingPage:LoadingPage;
 			
 			public var controlPanel:ControlPanelUI;
 			
 			private var uiComponent:UIComponent;
+			
 			
 
 			protected function creationCompleteHandler(event:FlexEvent):void
@@ -63,7 +65,7 @@
 				
 				this.addElement(messageContainer);
 				
-				messageContainer.y = 93;
+				messageContainer.y = 100;
 				messageContainer.x = stage.stageWidth;
 				
 			    this.addElement(uiComponent);
@@ -75,17 +77,22 @@
 				
 				uiComponent.addChild(loadingPage);
 				
-				
-				
+				messageBtn = new MessageButton();
+				uiComponent.addChild(messageBtn);
+				messageBtn.x = stage.stageWidth - messageBtn.width + 5;
+				messageBtn.y = messageContainer.y + 100;
+					
 				pageContainer.addEventListener("page_loaded", onPageLoaded);
 				pageContainer.addEventListener(Event.RESIZE, onResize);
 				
-			
+				messageBtn.addEventListener(MouseEvent.CLICK, messageBtnHandle, false, 0, true);
 				stage.addEventListener(StageOrientationEvent.ORIENTATION_CHANGE, orientationChanged);
 				
+			
 				
 			}
 
+		
 			public function start(_url:String):void{
 				
 				configProxy = new ConfigProxy(_url);
@@ -136,8 +143,10 @@
 				 
 				 if(stage)
 				 {
-				  controlPanel.y = stage.stageHeight - controlPanel.height;
+				  controlPanel.y = stage.stageHeight - controlPanel.realHeight;
 				  messageContainer.x = stage.stageWidth;
+				  messageBtn.x = stage.stageWidth - messageBtn.width + 5;
+				  
 				 }
 			}
 			
@@ -183,11 +192,36 @@
 				
 				
 				controlPanel = new ControlPanelUI(mediaProxy);
+				controlPanel.addEventListener("play_time_changed", onPlayTimeChange, false, 0, true);
 				uiComponent.addChild(controlPanel);
 				controlPanel.visible = false;
 				//controlPanel.visible = false;
 				//controlPanel.alpha = 0.8;
-				controlPanel.y = stage.stageHeight - controlPanel.height;
+				controlPanel.y = stage.stageHeight - controlPanel.realHeight;
+				
+			}
+			
+			private function onPlayTimeChange(e:DataEvent):void{
+				
+				dispatchEvent(e);
+			}
+			
+			private function messageBtnHandle(e:MouseEvent):void{
+				
+				if(messageContainer)
+				{
+					if(messageContainer.x >= stage.stageWidth)
+					{
+						TweenLite.to(messageContainer, 0.3, {x:stage.stageWidth-messageContainer.width});
+						
+					}
+					else
+					{
+						TweenLite.to(messageContainer, 0.3, {x:stage.stageWidth});
+						
+					}
+				}
+				
 				
 			}
 			
@@ -200,12 +234,12 @@
 				{
 				 if(controlPanel.y >= stage.stageHeight)
 				 {
-				  TweenLite.to(messageContainer, 0.3, {x:stage.stageWidth-messageContainer.width});
-				  TweenLite.to(controlPanel, 0.3, {y:stage.stageHeight - controlPanel.height});
+				 // TweenLite.to(messageContainer, 0.3, {x:stage.stageWidth-messageContainer.width});
+				  TweenLite.to(controlPanel, 0.3, {y:stage.stageHeight - controlPanel.realHeight});
 				 }
 				 else
 				 {
-					TweenLite.to(messageContainer, 0.3, {x:stage.stageWidth});
+					//TweenLite.to(messageContainer, 0.3, {x:stage.stageWidth});
 					TweenLite.to(controlPanel, 0.3, {y:stage.stageHeight});
 				 }
 				}

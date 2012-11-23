@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		xmlns:s="library://ns.adobe.com/flex/spark"
+		backgroundColor="#cfe0e7"
 		title="关于我们"
-		creationComplete="view1_creationCompleteHandler(event)" xmlns:renderers="renderers.*">
+		creationComplete="view1_creationCompleteHandler(event)"
+		xmlns:renderers="renderers.*">
 	<fx:Declarations>
 		<s:ArrayCollection id="listData">
 			<fx:String>版本</fx:String>
@@ -51,9 +53,17 @@
 	</fx:Script>
 	<s:Scroller width="100%" height="100%">
 		<s:Group width="100%" height="100%">
-			
+			<s:layout>
+				<s:MultiDPIVerticalLayout sourceDPI="320"
+										  paddingTop="60" paddingBottom="20" paddingLeft="80" paddingRight="80" gap="0"/>
+			</s:layout>
+			<!-- logo -->
+			<s:HGroup width="100%" height="120" horizontalAlign="center">
+				<s:BitmapImage source="@Embed(source='assets/banner-login-top.png')" width="320" height="92"/>
+			</s:HGroup>
 			<!-- Custom List with optional title skin part -->
 			<s:List id="list" width="100%" height="100%"
+					contentBackgroundAlpha="0"
 					skinClass="skins.ListSkin"
 					selectionColor="#FFFFFF"
 					changing="list_changingHandler(event)">

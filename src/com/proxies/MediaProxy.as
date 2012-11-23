@@ -10,6 +10,7 @@ package com.proxies
 	import flash.events.Event;
 	import flash.net.URLRequest;
 	import flash.utils.*;
+	import flash.media.SoundTransform;
 	
 	import mx.core.IVisualElementContainer;
 
@@ -501,7 +502,7 @@ package com.proxies
 			value = arg1;
 			try 
 			{
-				//this.stream.soundTransform = new flash.media.SoundTransform(value);
+				this.stream.soundTransform = new flash.media.SoundTransform(value);
 			}
 			catch (e:Error)
 			{

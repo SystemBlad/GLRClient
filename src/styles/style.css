@@ -49,7 +49,12 @@ s|TabbedViewNavigator #tabBar
 {
 	textDecoration: underline;
 }
-
+#playProgress
+{
+	color: #FFFFFF;
+	textShadowAlpha: .65;
+	textShadowColor: #000000;
+}
 @media (application-dpi:320)
 {
 	s|TabbedViewNavigatorApplication {fontSize:24;}
