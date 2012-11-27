@@ -5,15 +5,18 @@
 		preinitialize="preinitialize()"
 		viewDeactivate="view1_viewDeactivateHandler(event)"
 		title="今日推荐"
-		xmlns:renderers="renderers.*">
+		xmlns:renderers="renderers.*" xmlns:components="components.*">
 	<fx:Script>
 		<![CDATA[
 			import classes.DataManager;
+			
+			import events.TapEvent;
 			
 			import ie.jampot.nativeExtensions.Alert;
 			import ie.jampot.nativeExtensions.AlertEvent;
 			
 			import mx.core.FlexGlobals;
+			import mx.events.FlexEvent;
 			import mx.events.PropertyChangeEvent;
 			import mx.rpc.events.ResultEvent;
 			
@@ -21,10 +24,12 @@
 			import spark.events.IndexChangeEvent;
 			import spark.events.ViewNavigatorEvent;
 			
-			private var _draggingList:Boolean;
 			private var _currentPage:Number = 1;
 			private var _totalPages:Number;
 			private var _loadingCourses:Boolean;
+			
+			private var _flag_scrollToBottom:Boolean = false;
+			private var _flag_time:Date;
 			
 			[Bindable]
 			private var PULL_DOWN_TEXT:String = "获取更多课程...";
@@ -72,7 +77,7 @@
 				}
 				courseList.enableAutoUpdate();
 				
-				addEventListeners();
+				scroller.viewport.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, onScroll);
 			}
 			
 			protected function list_changeHandler(event:IndexChangeEvent):void
@@ -89,37 +94,41 @@
 					DataManager.instance.user.login(user, pass);
 				}
 				
+				list.mouseChildren = false;
+				
 				courseList.addItem({text:"loading..."});
-				removeEventListeners();
 				getCourseList();
+				
+				
 			}
 			
 			protected function view1_viewDeactivateHandler(event:ViewNavigatorEvent):void
 			{
 				listService.cancel();
+				scroller.viewport.removeEventListener(PropertyChangeEvent.PROPERTY_CHANGE, onScroll);
 			}
 			
-			protected function onPropertyChange(event:PropertyChangeEvent):void
+			private function onScroll(event:PropertyChangeEvent):void
 			{
-				if (_loadingCourses || !list.scroller.verticalScrollBar) return;
 				if (event.source == event.target && event.property == "verticalScrollPosition")
 				{
-					var vScroll:Number = list.scroller.verticalScrollBar.value;
-					if (vScroll > list.measuredHeight - list.height + 20)
+					//trace(event.property, "changed to ", event.newValue, "| total height=", scroller.height, ", ", scroller.measuredHeight);
+					//trace(tapGroup.y+tapGroup.measuredHeight);
+					var vScroll:Number = scroller.verticalScrollBar.value;
+					if (vScroll > scroller.measuredHeight - scroller.height + 20)
 					{
 						if (!loadingGroup.visible)
 						{
 							loadingGroup.visible = true;
 							fadeIn.play();
 						}
-						loadingGroup.y = list.measuredHeight - vScroll;
+						loadingGroup.y = scroller.measuredHeight - vScroll;
 						
-						if (vScroll > list.measuredHeight - list.height + 90)
+						if (vScroll > scroller.measuredHeight - scroller.height + 90)
 						{
-							if(arrowImage.rotation == 180)
+							if (arrowImage.rotation == 180)
 								arrowImage.rotation = 0;
 							loadText.text = RELEASE_TEXT;
-							
 						}
 						else
 						{
@@ -127,7 +136,6 @@
 								arrowImage.rotation = 180;
 							loadText.text = PULL_DOWN_TEXT;
 						}
-						
 					}
 					else
 					{
@@ -136,22 +144,24 @@
 				}
 			}
 			
-			protected function list_mouseUpHandler(event:MouseEvent):void
+			protected function scroller_mouseUpHandler(event:MouseEvent):void
 			{
-				if (_loadingCourses || !list.scroller.verticalScrollBar) return;
+				if (_loadingCourses) return;
 				
-				if (_draggingList)
-					_draggingList = false;
-				if (list.scroller.verticalScrollBar.value > list.measuredHeight - list.height + 90)
+				if (scroller.verticalScrollBar.value > scroller.measuredHeight - scroller.height + 90)
 				{
 					loadingGroup.visible = false;
 					
 					if (_currentPage < _totalPages)
 					{
-						list.setStyle("verticalScrollPolicy", "off");
+						scroller.setStyle("verticalScrollPolicy", "off");
 						courseList.addItem({text:"loading..."});
-						removeEventListeners();
-						scrollToBottom();
+						scroller.viewport.removeEventListener(PropertyChangeEvent.PROPERTY_CHANGE, onScroll);
+						list.validateNow();
+						
+						_flag_scrollToBottom = true;
+						_flag_time = new Date();
+						scroller.verticalScrollBar.value = scroller.verticalScrollBar.maximum;
 						
 						_currentPage++;
 						getCourseList();
@@ -159,26 +169,16 @@
 				}
 			}
 			
-			protected override function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void
+			protected function scroller_updateCompleteHandler(event:FlexEvent):void
 			{
-				super.updateDisplayList(unscaledWidth, unscaledHeight);
-				list.setStyle("verticalScrollPolicy", "on");
-			}
-			
-			private function addEventListeners():void
-			{
-				addEventListener(MouseEvent.MOUSE_UP, view1_mouseUpHandler);
-				list.dataGroup.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, onPropertyChange);
-				list.addEventListener(MouseEvent.MOUSE_DOWN, list_mouseDownHandler);
-				list.addEventListener(MouseEvent.MOUSE_UP, list_mouseUpHandler);
-			}
-			
-			private function removeEventListeners():void
-			{
-				removeEventListener(MouseEvent.MOUSE_UP, view1_mouseUpHandler);
-				list.dataGroup.removeEventListener(PropertyChangeEvent.PROPERTY_CHANGE, onPropertyChange);
-				list.removeEventListener(MouseEvent.MOUSE_DOWN, list_mouseDownHandler);
-				list.removeEventListener(MouseEvent.MOUSE_UP, list_mouseUpHandler);
+				if (_flag_scrollToBottom) {
+					var now:Date = new Date();
+					if (now.time - _flag_time.time > 1000) {
+						_flag_scrollToBottom = false;
+						return;
+					}
+					scroller.verticalScrollBar.value = scroller.verticalScrollBar.maximum;
+				}
 			}
 			
 			private function scrollToBottom():void {
@@ -196,19 +196,10 @@
 				}
 			}
 			
-			protected function view1_mouseUpHandler(event:MouseEvent):void
+			protected override function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void
 			{
-				if (!_loadingCourses && _draggingList)
-				{
-					_draggingList = false;
-					list_mouseUpHandler(event);
-				}
-			}
-			
-			protected function list_mouseDownHandler(event:MouseEvent):void
-			{
-				if (!_loadingCourses)
-					_draggingList = true;
+				super.updateDisplayList(unscaledWidth, unscaledHeight);
+				scroller.setStyle("verticalScrollPolicy", "on");
 			}
 			
 			protected function btnLogout_clickHandler(event:MouseEvent):void
@@ -248,6 +239,11 @@
 				if (event.newIndex < welcomes.length - 1)
 					event.preventDefault();
 			}
+			
+			protected function tapgroup_tapHandler(event:TapEvent):void
+			{
+				trace(event.locationX+', '+event.locationY);
+			}
 		]]>
 	</fx:Script>
 	<fx:Declarations>
@@ -267,72 +263,77 @@
 		<s:State name="default"/>
 		<s:State name="firsttime"/>
 	</s:states>
-	<s:Group width="100%" height="100%">
-		<s:layout>
-			<s:MultiDPIVerticalLayout sourceDPI="320"
-									  paddingTop="0" paddingBottom="0" paddingLeft="0" paddingRight="0" gap="0"/>
-		</s:layout>
-		
-		<!-- top banner -->
-		<s:List id="pagedList"
-				width="100%" height="200"
-				verticalScrollPolicy="off" horizontalScrollPolicy="on"
-				pageScrollingEnabled="true"
-				itemRenderer="renderers.RecommendCourseItemRenderer"
-				skinClass="skins.PagedListSkin"
-				change="pagedList_changeHandler(event)"
-				dataProvider="{recommends}"
-				>
-			<s:layout>
-				<s:TileLayout orientation="rows" requestedRowCount="1" 
-							  columnWidth="{pagedList.width}" rowHeight="{pagedList.height}" 
-							  verticalGap="0" horizontalGap="0"/>
-			</s:layout>
-		</s:List>
-		
-		<!-- list header -->
-		<s:Group width="100%" height="66">
-			<s:Rect width="100%" height="100%">
-				<s:fill>
-					<s:SolidColor color="#319ED7"/>
-				</s:fill>
-			</s:Rect>
-			<s:Rect width="100%" height="2">
-				<s:fill>
-					<s:SolidColor color="#ffffff" alpha="0.5"/>
-				</s:fill>
-			</s:Rect>
-			<s:Rect width="100%" bottom="0" height="2">
-				<s:fill>
-					<s:SolidColor color="#000000" alpha="0.3"/>
-				</s:fill>
-			</s:Rect>
-			<s:Label text="最新上线课程" styleName="captionText" color="#FFFFFF" width="100%" height="100%" verticalAlign="middle" paddingLeft="10"/>
-		</s:Group>
-		
-		<!-- list -->
+	<s:Scroller id="scroller" width="100%" height="100%" verticalScrollPolicy="on"
+				mouseUp="scroller_mouseUpHandler(event)"
+				updateComplete="scroller_updateCompleteHandler(event)">
 		<s:Group width="100%" height="100%">
-			<s:List id="list" width="100%" height="100%" dataProvider="{courseList}"
-					change="list_changeHandler(event)"
+			<s:layout>
+				<s:MultiDPIVerticalLayout sourceDPI="320"
+										  paddingTop="0" paddingBottom="0" paddingLeft="0" paddingRight="0" gap="0"/>
+			</s:layout>
+			
+			<!-- top banner -->
+			<s:List id="pagedList"
+					width="100%" height="454"
+					verticalScrollPolicy="off" horizontalScrollPolicy="on"
+					pageScrollingEnabled="true"
+					itemRenderer="renderers.RecommendCourseItemRenderer"
+					skinClass="skins.PagedListSkin"
+					change="pagedList_changeHandler(event)"
+					dataProvider="{recommends}"
 					>
-				<s:itemRenderer>
-					<fx:Component>
-						<renderers:CourseIR iconWidth="180" iconHeight="120"
-													  iconFillMode="clip" iconScaleMode="letterbox"
-													  iconPlaceholder="@Embed('assets/icon-course-placeholder.png')"
-													  iconField="pic"
-													  labelField="subject">
-							
-						</renderers:CourseIR>
-					</fx:Component>
-				</s:itemRenderer>
+				<s:layout>
+					<s:TileLayout orientation="rows" requestedRowCount="1" 
+								  columnWidth="{pagedList.width}" rowHeight="{pagedList.height}" 
+								  verticalGap="0" horizontalGap="0"/>
+				</s:layout>
 			</s:List>
-			<s:HGroup id="loadingGroup" horizontalAlign="center" verticalAlign="middle" width="{list.width}" visible="false" height="50" includeInLayout="false">
-				<s:Image id="arrowImage"  source="@Embed('assets/arrow-up.png')" rotation="180"/>
-				<s:Label text="{PULL_DOWN_TEXT}"  id="loadText"/>
-			</s:HGroup>
+			
+			<!-- list header -->
+			<s:Group width="100%" height="66">
+				<s:Rect width="100%" height="100%">
+					<s:fill>
+						<s:SolidColor color="#319ED7"/>
+					</s:fill>
+				</s:Rect>
+				<s:Rect width="100%" height="2">
+					<s:fill>
+						<s:SolidColor color="#ffffff" alpha="0.5"/>
+					</s:fill>
+				</s:Rect>
+				<s:Rect width="100%" bottom="0" height="2">
+					<s:fill>
+						<s:SolidColor color="#000000" alpha="0.3"/>
+					</s:fill>
+				</s:Rect>
+				<s:Label text="最新上线课程" styleName="captionText" color="#FFFFFF" width="100%" height="100%" verticalAlign="middle" paddingLeft="10"/>
+			</s:Group>
+			
+			<!-- list -->
+			<components:TapGroup id="tapGroup" width="100%" height="{courseList.length * 150}" tap="tapgroup_tapHandler(event)">
+				<s:List id="list" width="100%" height="100%" dataProvider="{courseList}"
+						change="list_changeHandler(event)"
+						>
+					<s:itemRenderer>
+						<fx:Component>
+							<renderers:CourseIR iconWidth="180" iconHeight="120"
+												iconFillMode="clip" iconScaleMode="letterbox"
+												iconPlaceholder="@Embed('assets/icon-course-placeholder.png')"
+												iconField="pic"
+												labelField="subject">
+								
+							</renderers:CourseIR>
+						</fx:Component>
+					</s:itemRenderer>
+				</s:List>
+			</components:TapGroup>
 		</s:Group>
-	</s:Group>
+	</s:Scroller>
+	<s:HGroup id="loadingGroup" horizontalAlign="center" verticalAlign="middle" width="{list.width}" height="50" visible="true" includeInLayout="false">
+		<s:Image id="arrowImage"  source="@Embed('assets/arrow-up.png')" rotation="180"/>
+		<s:Label text="{PULL_DOWN_TEXT}"  id="loadText"/>
+	</s:HGroup>
+	
 	<s:List id="welcomeList"
 			width="100%" height="100%"
 			verticalScrollPolicy="off" horizontalScrollPolicy="on"

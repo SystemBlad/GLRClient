@@ -23,7 +23,7 @@ package renderers
 		{
 			_bitmap = new BitmapImage();
 			_bitmap.width = 640;
-			_bitmap.height = 200;
+			_bitmap.height = 454;
 			addElement(_bitmap);
 		}
 		
