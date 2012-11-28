@@ -24,7 +24,6 @@
 				//stage.setAspectRatio("any");
 				stage.setOrientation(StageOrientation.ROTATED_LEFT);
 		        tabBarVisible = false;
-				
 				 
 				
 				var url:String = "http://www.glr.cn/appapi/app_course_view.php?appid=";
@@ -54,10 +53,12 @@
 			{
 				if(_vod.controlPanel.y >= stage.stageHeight)
 				{
+					stage.displayState = StageDisplayState.NORMAL;
 					actionBarVisible = true;
 				}
 				else
 				{
+					stage.displayState = StageDisplayState.FULL_SCREEN_INTERACTIVE;
 					actionBarVisible = false;
 				}
 			}

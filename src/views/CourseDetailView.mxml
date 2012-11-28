@@ -150,10 +150,8 @@
 				}
 			}
 			
-			protected function list_changingHandler(event:IndexChangeEvent):void
+			protected function list_changeHandler(event:IndexChangeEvent):void
 			{
-				event.preventDefault();
-				
 				var obj:Object = recommends.getItemAt(event.newIndex);
 				obj.button_txt = data.button_txt;
 				navigator.pushView(views.CourseDetailView, obj);
@@ -271,25 +269,40 @@
 					<s:VGroup gap="20" width="100%">
 						<s:Label id="teacherIntro" width="100%" height="100%" text="{data.teacher_intro}" color="#666666"/>
 					</s:VGroup>
-					
 				</s:Group>
-				
-				<s:List id="list" width="100%" verticalScrollPolicy="off"
-						contentBackgroundAlpha="0"
-						skinClass="skins.ListSkin"
-						selectionColor="#FFFFFF"
-						dataProvider="{recommends}"
-						changing="list_changingHandler(event)">
-					<s:itemRenderer>
-						<fx:Component>
-							<renderers:StyledIconItemRenderer labelField="subject" decorator="@Embed('assets/decorator-arrow.png')"/>
-						</fx:Component>
-					</s:itemRenderer>
-				</s:List>
-				
 			</s:VGroup>
 			
-			
+			<!-- other courses -->
+			<s:VGroup width="100%" gap="0" visible="{recommends.length>0}" includeInLayout="{recommends.length>0}">
+				<s:HGroup width="100%">
+					<s:Spacer width="100%"/>
+					<s:Label text="其它课程" backgroundColor="#319ED7" color="#FFFFFF" height="100%" verticalAlign="middle"
+							 paddingLeft="10" paddingRight="10" paddingTop="8" paddingBottom="6"/>
+				</s:HGroup>
+				<s:Label backgroundColor="#319ED7" width="100%" height="2"/>
+				<s:Group width="100%">
+					<s:Rect width="100%" height="100%">
+						<s:fill>
+							<s:SolidColor color="#ff0000"/>
+						</s:fill>
+					</s:Rect>
+					<s:List id="list" width="100%" height="{recommends.length * 150}" verticalScrollPolicy="off"
+							dataProvider="{recommends}"
+							change="list_changeHandler(event)">
+						<s:itemRenderer>
+							<fx:Component>
+								<renderers:CourseIR iconWidth="180" iconHeight="120"
+													iconFillMode="clip" iconScaleMode="letterbox"
+													iconPlaceholder="@Embed('assets/icon-course-placeholder.png')"
+													iconField="pic"
+													labelField="subject">
+									
+								</renderers:CourseIR>
+							</fx:Component>
+						</s:itemRenderer>
+					</s:List>
+				</s:Group>
+			</s:VGroup>
 		</s:Group>
 	</s:Scroller>
 </s:View>

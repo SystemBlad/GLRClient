@@ -1,5 +1,7 @@
 package renderers
 {
+	import flash.events.Event;
+	
 	import mx.controls.Spacer;
 	import mx.formatters.DateFormatter;
 	
@@ -113,7 +115,7 @@ package renderers
 		
 		override protected function drawBackground(unscaledWidth:Number, unscaledHeight:Number):void
 		{
-			if (down)
+			if (down || selected)
 			{
 				graphics.beginFill(0x95CDE7, 1);
 				graphics.drawRect(0, 0, unscaledWidth, unscaledHeight);

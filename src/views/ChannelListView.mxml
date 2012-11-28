@@ -3,7 +3,7 @@
 		xmlns:s="library://ns.adobe.com/flex/spark"
 		viewActivate="view1_viewActivateHandler(event)"
 		viewDeactivate="view1_viewDeactivateHandler(event)"
-		title="{data.title}"
+		title="{data.videoname}"
 		xmlns:renderers="renderers.*">
 	<fx:Script>
 		<![CDATA[
@@ -25,7 +25,7 @@
 			private function getCourseList():void
 			{
 				_loadingCourses = true;
-				listService.url = "http://www.glr.cn/appapi/app_course_list.php?classtype=" + data.id + "&page=" + _currentPage;
+				listService.url = "http://www.glr.cn/appapi/app_course_list.php?classtype=" + data.videoid + "&page=" + _currentPage;
 				listService.send();
 			}
 			

@@ -20,6 +20,7 @@
 			import mx.events.PropertyChangeEvent;
 			import mx.rpc.events.ResultEvent;
 			
+			import spark.components.IItemRenderer;
 			import spark.core.NavigationUnit;
 			import spark.events.IndexChangeEvent;
 			import spark.events.ViewNavigatorEvent;
@@ -78,11 +79,7 @@
 				courseList.enableAutoUpdate();
 				
 				scroller.viewport.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, onScroll);
-			}
-			
-			protected function list_changeHandler(event:IndexChangeEvent):void
-			{
-				navigator.pushView(views.CourseDetailView, courseList.getItemAt(event.newIndex));
+				scroller.setStyle("verticalScrollPolicy", "on");
 			}
 			
 			protected function view1_viewActivateHandler(event:ViewNavigatorEvent):void
@@ -96,10 +93,11 @@
 				
 				list.mouseChildren = false;
 				
-				courseList.addItem({text:"loading..."});
-				getCourseList();
-				
-				
+				if (courseList.length == 0)
+				{
+					courseList.addItem({text:"loading..."});
+					getCourseList();
+				}
 			}
 			
 			protected function view1_viewDeactivateHandler(event:ViewNavigatorEvent):void
@@ -110,6 +108,8 @@
 			
 			private function onScroll(event:PropertyChangeEvent):void
 			{
+				if (_loadingCourses) return;
+				
 				if (event.source == event.target && event.property == "verticalScrollPosition")
 				{
 					//trace(event.property, "changed to ", event.newValue, "| total height=", scroller.height, ", ", scroller.measuredHeight);
@@ -146,7 +146,7 @@
 			
 			protected function scroller_mouseUpHandler(event:MouseEvent):void
 			{
-				if (_loadingCourses) return;
+				if (_loadingCourses || !scroller.verticalScrollBar) return;
 				
 				if (scroller.verticalScrollBar.value > scroller.measuredHeight - scroller.height + 90)
 				{
@@ -154,14 +154,14 @@
 					
 					if (_currentPage < _totalPages)
 					{
-						scroller.setStyle("verticalScrollPolicy", "off");
 						courseList.addItem({text:"loading..."});
 						scroller.viewport.removeEventListener(PropertyChangeEvent.PROPERTY_CHANGE, onScroll);
 						list.validateNow();
 						
 						_flag_scrollToBottom = true;
 						_flag_time = new Date();
-						scroller.verticalScrollBar.value = scroller.verticalScrollBar.maximum;
+						scroller.verticalScrollBar.value = scroller.measuredHeight - scroller.height; //scroller.verticalScrollBar.maximum;
+						scroller.setStyle("verticalScrollPolicy", "off");
 						
 						_currentPage++;
 						getCourseList();
@@ -169,37 +169,10 @@
 				}
 			}
 			
-			protected function scroller_updateCompleteHandler(event:FlexEvent):void
-			{
-				if (_flag_scrollToBottom) {
-					var now:Date = new Date();
-					if (now.time - _flag_time.time > 1000) {
-						_flag_scrollToBottom = false;
-						return;
-					}
-					scroller.verticalScrollBar.value = scroller.verticalScrollBar.maximum;
-				}
-			}
-			
-			private function scrollToBottom():void {
-				// update the verticalScrollPosition to the end of the List
-				// virtual layout may require us to validate a few times
-				var delta:Number = 0;
-				var count:int = 0;
-				while (count++ < 10) {
-					list.validateNow();
-					delta = list.layout.getVerticalScrollPositionDelta(NavigationUnit.END);
-					list.layout.verticalScrollPosition += delta;
-					trace('count='+count+', delta='+delta+', verticalScrollPosition='+list.layout.verticalScrollPosition);
-					if (delta == 0)
-						break;
-				}
-			}
-			
 			protected override function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void
 			{
 				super.updateDisplayList(unscaledWidth, unscaledHeight);
-				scroller.setStyle("verticalScrollPolicy", "on");
+				
 			}
 			
 			protected function btnLogout_clickHandler(event:MouseEvent):void
@@ -242,7 +215,13 @@
 			
 			protected function tapgroup_tapHandler(event:TapEvent):void
 			{
-				trace(event.locationX+', '+event.locationY);
+				if (_loadingCourses) return;
+				var idx:Number = Math.ceil(event.locationY / 150) - 1;
+				//trace("x=", event.locationX+', y='+event.locationY, ', index=', idx, ', total ', courseList.length, ' courses');
+				var renderer:IItemRenderer = list.dataGroup.getElementAt(idx) as IItemRenderer;
+				renderer.selected = true;
+				var course:Object = courseList.getItemAt(idx);
+				navigator.pushView(views.CourseDetailView, course);
 			}
 		]]>
 	</fx:Script>
@@ -264,8 +243,7 @@
 		<s:State name="firsttime"/>
 	</s:states>
 	<s:Scroller id="scroller" width="100%" height="100%" verticalScrollPolicy="on"
-				mouseUp="scroller_mouseUpHandler(event)"
-				updateComplete="scroller_updateCompleteHandler(event)">
+				mouseUp="scroller_mouseUpHandler(event)">
 		<s:Group width="100%" height="100%">
 			<s:layout>
 				<s:MultiDPIVerticalLayout sourceDPI="320"
@@ -311,9 +289,7 @@
 			
 			<!-- list -->
 			<components:TapGroup id="tapGroup" width="100%" height="{courseList.length * 150}" tap="tapgroup_tapHandler(event)">
-				<s:List id="list" width="100%" height="100%" dataProvider="{courseList}"
-						change="list_changeHandler(event)"
-						>
+				<s:List id="list" width="100%" height="100%" dataProvider="{courseList}">
 					<s:itemRenderer>
 						<fx:Component>
 							<renderers:CourseIR iconWidth="180" iconHeight="120"
@@ -329,7 +305,7 @@
 			</components:TapGroup>
 		</s:Group>
 	</s:Scroller>
-	<s:HGroup id="loadingGroup" horizontalAlign="center" verticalAlign="middle" width="{list.width}" height="50" visible="true" includeInLayout="false">
+	<s:HGroup id="loadingGroup" horizontalAlign="center" verticalAlign="middle" width="{list.width}" height="50" visible="false" includeInLayout="false">
 		<s:Image id="arrowImage"  source="@Embed('assets/arrow-up.png')" rotation="180"/>
 		<s:Label text="{PULL_DOWN_TEXT}"  id="loadText"/>
 	</s:HGroup>
