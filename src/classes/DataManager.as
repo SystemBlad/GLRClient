@@ -4,6 +4,8 @@ package classes
 	import com.juankpro.ane.localnotif.NotificationEvent;
 	import com.juankpro.ane.localnotif.NotificationManager;
 	
+	import flash.system.Capabilities;
+	
 	import models.Course;
 	import models.User;
 	
@@ -45,6 +47,13 @@ package classes
 			if (!_instance)
 				_instance = new DataManager();
 			return _instance;
+		}
+		
+		[Bindable]
+		public function get isPad():Boolean
+		{
+			var h:Number = Math.min(Capabilities.screenResolutionX, Capabilities.screenResolutionY);
+			return (h == 768 || h == 1536);
 		}
 		
 		public function insertCourseHistory(subject:String, id:Number):void

@@ -34,6 +34,7 @@
 			import mx.core.FlexGlobals;
 			
 			import spark.events.ViewNavigatorEvent;
+			import spark.managers.PersistenceManager;
 			
 			private var _mb:MicroBlog;
 			
@@ -69,8 +70,9 @@
 			{
 				busyIndicator.visible = busyIndicator.includeInLayout = false;
 				if (event.success) {
-					FlexGlobals.topLevelApplication.persistenceManager.setProperty("username", txtUser.text);
-					FlexGlobals.topLevelApplication.persistenceManager.setProperty("password", txtPwd.text);
+					var pm:PersistenceManager = new PersistenceManager();
+					pm.setProperty("username", txtUser.text);
+					pm.setProperty("password", txtPwd.text);
 					navigator.popView();
 				}
 				else {
@@ -81,8 +83,9 @@
 			
 			protected function view1_viewActivateHandler(event:ViewNavigatorEvent):void
 			{
-				var user:String = FlexGlobals.topLevelApplication.persistenceManager.getProperty("username");
-				var pass:String = FlexGlobals.topLevelApplication.persistenceManager.getProperty("password");
+				var pm:PersistenceManager = new PersistenceManager();
+				var user:String = pm.getProperty("username") as String;
+				var pass:String = pm.getProperty("password") as String;
 				if (user && pass)
 				{
 					txtUser.text = user;
@@ -145,7 +148,7 @@
 			<s:Spacer height="20"/>
 			
 			<!-- weibo user login -->
-			<components:FancyButton id="btnWeiboLogin" width="100%" height="68"
+			<!--<components:FancyButton id="btnWeiboLogin" width="100%" height="68"
 									backgroundColor="#E81B13"
 									gap="20"
 									click="btnWeiboLogin_clickHandler(event)">
@@ -156,7 +159,7 @@
 							 color="#FFFFFF"
 							 />
 				</components:content>
-			</components:FancyButton>
+			</components:FancyButton>-->
 		</s:Group>
 	</s:Scroller>
 </s:View>

@@ -16,10 +16,12 @@
 			
 			import spark.events.IndexChangeEvent;
 			import spark.events.ViewNavigatorEvent;
+			import spark.managers.PersistenceManager;
 			
 			protected function view1_viewActivateHandler(event:ViewNavigatorEvent):void
 			{
-				var courses:Vector.<Course> =  FlexGlobals.topLevelApplication.persistenceManager.getProperty("history") as Vector.<Course>;
+				var pm:PersistenceManager = new PersistenceManager();
+				var courses:Vector.<Course> =  pm.getProperty("history") as Vector.<Course>;
 				courseList.removeAll();
 				if (courses)
 				{

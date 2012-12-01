@@ -16,6 +16,7 @@
 			import ie.jampot.nativeExtensions.AlertEvent;
 			
 			import mx.core.FlexGlobals;
+			import mx.events.EffectEvent;
 			import mx.events.FlexEvent;
 			import mx.events.PropertyChangeEvent;
 			import mx.rpc.events.ResultEvent;
@@ -28,9 +29,6 @@
 			private var _currentPage:Number = 1;
 			private var _totalPages:Number;
 			private var _loadingCourses:Boolean;
-			
-			private var _flag_scrollToBottom:Boolean = false;
-			private var _flag_time:Date;
 			
 			[Bindable]
 			private var PULL_DOWN_TEXT:String = "获取更多课程...";
@@ -80,6 +78,7 @@
 				
 				scroller.viewport.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, onScroll);
 				scroller.setStyle("verticalScrollPolicy", "on");
+				scroller.setStyle("interactionMode", "touch");
 			}
 			
 			protected function view1_viewActivateHandler(event:ViewNavigatorEvent):void
@@ -112,9 +111,9 @@
 				
 				if (event.source == event.target && event.property == "verticalScrollPosition")
 				{
-					//trace(event.property, "changed to ", event.newValue, "| total height=", scroller.height, ", ", scroller.measuredHeight);
 					//trace(tapGroup.y+tapGroup.measuredHeight);
 					var vScroll:Number = scroller.verticalScrollBar.value;
+					//trace(int(event.newValue), "| total height=", scroller.height, ", ", scroller.measuredHeight, ', ', int(vScroll));
 					if (vScroll > scroller.measuredHeight - scroller.height + 20)
 					{
 						if (!loadingGroup.visible)
@@ -147,6 +146,10 @@
 			protected function scroller_mouseUpHandler(event:MouseEvent):void
 			{
 				if (_loadingCourses || !scroller.verticalScrollBar) return;
+				//scroller.invalidateSize();
+				//scroller.verticalScrollBar.value = scroller.verticalScrollBar.maximum
+				
+				trace('new=', scroller.verticalScrollBar.value, ', max=', scroller.verticalScrollBar.maximum);
 				
 				if (scroller.verticalScrollBar.value > scroller.measuredHeight - scroller.height + 90)
 				{
@@ -154,21 +157,41 @@
 					
 					if (_currentPage < _totalPages)
 					{
+						
+						
+						scroller.setStyle("verticalScrollPolicy", "off");
+						
+					
 						courseList.addItem({text:"loading..."});
+						
+						scroller.validateNow();
+						
+						
+							
+						scroller.setStyle("interactionMode", "none");
+						//scroller.verticalScrollBar.value = scroller.verticalScrollBar.maximum
+					
+						
 						scroller.viewport.removeEventListener(PropertyChangeEvent.PROPERTY_CHANGE, onScroll);
 						list.validateNow();
 						
-						_flag_scrollToBottom = true;
-						_flag_time = new Date();
-						scroller.verticalScrollBar.value = scroller.measuredHeight - scroller.height; //scroller.verticalScrollBar.maximum;
-						scroller.setStyle("verticalScrollPolicy", "off");
+						//scroller.invalidateSize();
 						
+						//scroller.setStyle("interactionMode", "touch");
+						
+						//var ol:Number = scroller.verticalScrollBar.value;
+						//scroller.verticalScrollBar.value = scroller.verticalScrollBar.maximum;
+						//trace('old=', ol, ', new=', scroller.verticalScrollBar.value, ', max=', scroller.verticalScrollBar.maximum);
+						//trace('max=', scroller.verticalScrollBar.maximum, ', val=', scroller.verticalScrollBar.value, ', h='+scroller.height);
+							
 						_currentPage++;
-						getCourseList();
+						getCourseList();   
 					}
 				}
 			}
 			
+		
+		
 			protected override function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void
 			{
 				super.updateDisplayList(unscaledWidth, unscaledHeight);
@@ -289,7 +312,7 @@
 			
 			<!-- list -->
 			<components:TapGroup id="tapGroup" width="100%" height="{courseList.length * 150}" tap="tapgroup_tapHandler(event)">
-				<s:List id="list" width="100%" height="100%" dataProvider="{courseList}">
+				<s:List id="list" width="100%" height="{courseList.length * 150}" dataProvider="{courseList}">
 					<s:itemRenderer>
 						<fx:Component>
 							<renderers:CourseIR iconWidth="180" iconHeight="120"
@@ -307,7 +330,7 @@
 	</s:Scroller>
 	<s:HGroup id="loadingGroup" horizontalAlign="center" verticalAlign="middle" width="{list.width}" height="50" visible="false" includeInLayout="false">
 		<s:Image id="arrowImage"  source="@Embed('assets/arrow-up.png')" rotation="180"/>
-		<s:Label text="{PULL_DOWN_TEXT}"  id="loadText"/>
+		<s:Label height="100%" verticalAlign="middle" text="{PULL_DOWN_TEXT}" id="loadText"/>
 	</s:HGroup>
 	
 	<s:List id="welcomeList"
