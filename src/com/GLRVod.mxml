@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
-		 xmlns:s="library://ns.adobe.com/flex/spark" width="100%" height="100%" addedToStage="onAdded(event)" creationComplete="creationCompleteHandler(event)">
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 width="{FlexGlobals.topLevelApplication.width}" height="{FlexGlobals.topLevelApplication.height}"
+		 addedToStage="onAdded(event)" creationComplete="creationCompleteHandler(event)">
 	<fx:Declarations>
 		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
 	</fx:Declarations>
@@ -19,9 +21,12 @@
 			import flash.events.Event;
 			import flash.events.StageOrientationEvent;
 			
+			import mx.binding.utils.BindingUtils;
+			import mx.core.FlexGlobals;
 			import mx.core.UIComponent;
 			import mx.events.FlexEvent;
-           
+			import mx.managers.SystemManager;
+			
 			
 			private var _url:String;
 			
@@ -42,11 +47,15 @@
 			
 			private var uiComponent:UIComponent;
 			
+			[Bindable]
+			private var scaleFactor:Number;
 			
-
+			
 			protected function creationCompleteHandler(event:FlexEvent):void
 			{
-				// TODO Auto-generated method stub
+				scaleFactor = FlexGlobals.topLevelApplication.applicationDPI / FlexGlobals.topLevelApplication.runtimeDPI;
+				
+				
 				uiComponent = new UIComponent();
 				
 				contentContainer = new HScrollView();
@@ -60,41 +69,43 @@
 				messageContainer = new MessageContainer();
 				
 				loadingPage = new LoadingPage();
+				loadingPage.scaleX = loadingPage.scaleY = scaleFactor;
 				
 				this.addElement(contentContainer);
 				
 				this.addElement(messageContainer);
 				
-				messageContainer.y = 100;
-				messageContainer.x = stage.stageWidth;
+				//messageContainer.y = 100;
+				messageContainer.x = width;
+				trace('FlexGlobals.topLevelApplication.width=', FlexGlobals.topLevelApplication.width, ', width=', this.width);
 				
-			    this.addElement(uiComponent);
+				this.addElement(uiComponent);
 				messageContainer.visible = false;
 				
 				contentContainer.addFlashChild(pageContainer);
 				contentContainer.addFlashChild(penContainer);
-			    
+				
 				
 				uiComponent.addChild(loadingPage);
 				
 				messageBtn = new MessageButton();
 				messageBtn.visible = false;
 				uiComponent.addChild(messageBtn);
-					
+				
 				pageContainer.addEventListener("page_loaded", onPageLoaded);
 				pageContainer.addEventListener(Event.RESIZE, onResize);
 				
 				messageBtn.addEventListener(MouseEvent.CLICK, messageBtnHandle, false, 0, true);
 				stage.addEventListener(StageOrientationEvent.ORIENTATION_CHANGE, orientationChanged);
 			}
-		
+			
 			public function start(_url:String):void{
 				
 				configProxy = new ConfigProxy(_url);
 				configProxy.loader.addEventListener(Event.COMPLETE, configLoaded);
 				
 			}
-		
+			
 			private var isAdded:Boolean = false;
 			private var isPageLoaed:Boolean = false;
 			
@@ -105,7 +116,6 @@
 			
 			private function onPageLoaded(e:Event):void{
 				isPageLoaed = true;
-				trace("page Loaded sclae")
 				if (this.uiComponent.contains(this.loadingPage))
 					uiComponent.removeChild(this.loadingPage);
 				
@@ -114,12 +124,15 @@
 				dispatchEvent(new Event("ready_to_play"));
 				controlPanel.visible = true;
 				messageContainer.visible = true;
+				messageContainer.x = width;
 				
 				pageContainer.addEventListener(MouseEvent.CLICK, showHideControls);
 				
-				messageBtn.visible = true;
-				messageBtn.x = stage.stageWidth - messageBtn.width + 5;
-				messageBtn.y = messageContainer.y + 100;
+				//messageBtn.visible = true;
+				messageBtn.x = width - messageBtn.width + 5;
+				messageBtn.y = (height - messageBtn.height) / 2;
+				
+				//this.setElementIndex(info, numElements-1);
 			}
 			
 			private function onResize(e:Event):void{
@@ -128,40 +141,38 @@
 			
 			private function orientationChanged(e:StageOrientationEvent):void{
 				
-				 resetContentSize();
-				 
-				 
-				 if(stage)
-				 {
-				  controlPanel.y = stage.stageHeight - controlPanel.realHeight;
-				  messageContainer.x = stage.stageWidth;
-				  messageBtn.x = stage.stageWidth - messageBtn.width + 5;
-				  trace(messageBtn.x+'::::'+stage.orientation+', '+stage.deviceOrientation+', before='+e.beforeOrientation+' after='+e.afterOrientation);
-				 }
+				resetContentSize();
+				
+				
+				if(stage)
+				{
+					controlPanel.y = height - controlPanel.realHeight;
+					messageContainer.x = width;
+					messageBtn.x = width - messageBtn.width + 5;
+					//trace(messageBtn.x+'::::'+stage.orientation+', '+stage.deviceOrientation+', before='+e.beforeOrientation+' after='+e.afterOrientation);
+				}
 			}
 			
 			private function resetContentSize():void{
-				
-				trace(isAdded, isPageLoaed)
 				
 				if(isAdded&&isPageLoaed)
 				{
 					
 					
-				 trace("===============resized==============")
-			     var  scale:Number = (this.stage.stageWidth/pageContainer.content.width);
-				
-				 pageContainer.scaleX = scale;
-				 pageContainer.scaleY = scale;
-				 penContainer.scaleX = scale;
-				 penContainer.scaleY = scale;
-				 
-				 contentContainer.rangeRect.width = pageContainer.width;
-				 
-				 contentContainer.rangeRect.height = pageContainer.height;
-				 
-				
-				
+					trace('resize FlexGlobals.topLevelApplication.width=', FlexGlobals.topLevelApplication.measuredWidth, ', width=', this.width, ', ', this.measuredWidth);
+					var  scale:Number = (width/pageContainer.content.width);
+					
+					pageContainer.scaleX = scale;
+					pageContainer.scaleY = scale;
+					penContainer.scaleX = scale;
+					penContainer.scaleY = scale;
+					
+					contentContainer.rangeRect.width = pageContainer.width;
+					
+					contentContainer.rangeRect.height = pageContainer.height;
+					
+					
+					
 				}
 			}
 			
@@ -182,7 +193,10 @@
 				controlPanel.visible = false;
 				//controlPanel.visible = false;
 				//controlPanel.alpha = 0.8;
-				controlPanel.y = stage.stageHeight - controlPanel.realHeight;
+				controlPanel.y = height - controlPanel.realHeight;
+				//controlPanel.width = width;
+				
+				//infoCP.text = "controlPanel.y: "+ controlPanel.y;
 			}
 			
 			private function onPlayTimeChange(e:DataEvent):void{
@@ -194,14 +208,15 @@
 				
 				if(messageContainer)
 				{
-					if(messageContainer.x >= stage.stageWidth)
+					if (messageContainer.x >= Math.floor(width)
+						&& !isControlShow)
 					{
-						TweenLite.to(messageContainer, 0.3, {x:stage.stageWidth-messageContainer.width});
+						TweenLite.to(messageContainer, 0.3, {x:width-messageContainer.width});
 						
 					}
 					else
 					{
-						TweenLite.to(messageContainer, 0.3, {x:stage.stageWidth});
+						TweenLite.to(messageContainer, 0.3, {x:width});
 						
 					}
 				}
@@ -209,47 +224,59 @@
 				
 			}
 			
-			
+			private var isControlShow:Boolean = true;
 			private function showHideControls(e:MouseEvent):void{
 				
 				//messageContainer.visible = !messageContainer.visible;
 				//controlPanel.visible = !controlPanel.visible;
-				if(controlPanel&&stage)
+				if(controlPanel && stage)
 				{
-				 if(controlPanel.y >= stage.stageHeight)
-				 {
-				 // TweenLite.to(messageContainer, 0.3, {x:stage.stageWidth-messageContainer.width});
-				  TweenLite.to(controlPanel, 0.3, {y:stage.stageHeight - controlPanel.realHeight});
-				 }
-				 else
-				 {
-					//TweenLite.to(messageContainer, 0.3, {x:stage.stageWidth});
-					TweenLite.to(controlPanel, 0.3, {y:stage.stageHeight});
-				 }
+					
+					//infoCP.text = "  " + height + " stageHeigth  " + stage.stageHeight + "   controlPanel  " + controlPanel.y;
+					
+					if(controlPanel.y >= Math.floor(height))
+					{
+						// TweenLite.to(messageContainer, 0.3, {x:FlexGlobals.topLevelApplication.width-messageContainer.width});
+						messageBtn.visible = false;
+						isControlShow = true;
+						TweenLite.to(controlPanel, 0.3, {y:height - controlPanel.realHeight});
+						TweenLite.to(messageContainer, 0.3, {x:width});
+					}
+					else
+					{
+						//TweenLite.to(messageContainer, 0.3, {x:FlexGlobals.topLevelApplication.width});
+						messageBtn.visible = true;
+						isControlShow = false;
+						TweenLite.to(controlPanel, 0.3, {y:height});
+					}
 				}
 				
 			}
 			
 			public function exit():void{
 				
-			  if(mediaProxy)	
-				mediaProxy.closeStream();
-			
-			  if(actionProxy)
-				  if(actionProxy.loader)
-			         actionProxy.loader.removeEventListener(Event.COMPLETE, actionLoaded);
-			  
-			  if(controlPanel)
-				  controlPanel.clearEventHandler();
-			  
-			  stage.removeEventListener(StageOrientationEvent.ORIENTATION_CHANGE, orientationChanged);
-			  stage.removeEventListener(MouseEvent.CLICK, showHideControls);
-
+				if(mediaProxy)	
+					mediaProxy.closeStream();
+				
+				if(actionProxy)
+					if(actionProxy.loader)
+						actionProxy.loader.removeEventListener(Event.COMPLETE, actionLoaded);
+				
+				if(controlPanel)
+					controlPanel.clearEventHandler();
+				
+				stage.removeEventListener(StageOrientationEvent.ORIENTATION_CHANGE, orientationChanged);
+				stage.removeEventListener(MouseEvent.CLICK, showHideControls);
+				
 			}
 			
-				
+			
 		]]>
 	</fx:Script>
-	
+	<fx:Declarations>
+		
+	</fx:Declarations>
+
 	
 </s:Group>
+	

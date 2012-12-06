@@ -10,6 +10,7 @@ package com.components
 	import flash.events.MouseEvent;
 	import flash.events.StageOrientationEvent;
 	import flash.geom.Rectangle;
+	import mx.core.FlexGlobals;
 	
 	
 	
@@ -18,6 +19,7 @@ package com.components
 	
 	public class ControlPanelUI extends Sprite
 	{
+		
 		
 		public var realHeight:Number;
 		
@@ -104,18 +106,24 @@ package com.components
 			
 			var oW:Number = this.controlPanel.back.width;
 			
-			this.controlPanel.back.width = this.stage.stageWidth;
-			this.controlPanel.volume.x = this.stage.stageWidth - this.controlPanel.volume.width;
+			this.controlPanel.back.width = FlexGlobals.topLevelApplication.width;//this.stage.stageWidth;
+			this.controlPanel.volume.x = FlexGlobals.topLevelApplication.width - this.controlPanel.volume.width;//this.stage.stageWidth - this.controlPanel.volume.width;
 			var scaleChange:Number = this.controlPanel.back.width / oW;
 			
 			this.scaleChange = scaleChange;
 			
 			this.controlPanel.duration.width = this.controlPanel.duration.width * scaleChange;
 			
+			this.controlPanel.duration.x = this.controlPanel.duration.x * scaleChange;
+			
+			
 			this.controlPanel.drag.x = 0 + this.controlPanel.duration.x;
 			this.controlPanel.drag.tip.visible = false;
 			this.controlPanel.loaded.width = 0;
 			this.controlPanel.played.width = 0;
+			this.controlPanel.loaded.x = this.controlPanel.duration.x;
+			
+			this.controlPanel.played.x = this.controlPanel.duration.x;
 			
 			this.controlPanel.drag.addEventListener(MouseEvent.MOUSE_DOWN, onStartDrag);
 			this.controlPanel.drag.addEventListener(MouseEvent.MOUSE_UP, onStopDrag);

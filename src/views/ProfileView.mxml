@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		xmlns:s="library://ns.adobe.com/flex/spark"
-		backgroundColor="#cfe0e7"
+		backgroundColor="#cedfe7"
 		title="关于我们"
 		creationComplete="view1_creationCompleteHandler(event)"
 		xmlns:renderers="renderers.*">
@@ -52,15 +52,19 @@
 		]]>
 	</fx:Script>
 	<s:Scroller width="100%" height="100%">
-		<s:Group width="100%" height="100%">
-			<s:layout>
-				<s:MultiDPIVerticalLayout sourceDPI="320"
-										  paddingTop="60" paddingBottom="20" paddingLeft="80" paddingRight="80" gap="0"/>
-			</s:layout>
+		<s:VGroup width="100%" height="100%" horizontalAlign="center"
+				  paddingLeft="80" paddingRight="80" paddingTop="40" paddingBottom="20"
+				  gap="0">
 			<!-- logo -->
-			<s:HGroup width="100%" height="120" horizontalAlign="center">
-				<s:BitmapImage source="@Embed(source='assets/banner-login-top.png')" width="320" height="92"/>
-			</s:HGroup>
+			<s:Label width="100%"
+					 textAlign="center"
+					 text="Teach and learn, anytime, anywhere"
+					 color="#3c8acb" fontSize="46"/>
+			<s:Spacer height="20"/>
+			<s:BitmapImage source="@Embed(source='assets/icon-114.png')" width="114" height="114"/>
+			<s:Spacer height="10"/>
+			<s:Label width="100%" textAlign="center" styleName="captionText" fontWeight="bold" color="#3c8acb" text="过来人公开课"/>
+			<s:Spacer height="36"/>
 			<!-- Custom List with optional title skin part -->
 			<s:List id="list" width="100%" height="100%"
 					contentBackgroundAlpha="0"
@@ -82,6 +86,6 @@
 			<s:Label text="过来人(北京)教育科技有限公司 版权所有" width="100%" bottom="50" textAlign="center" verticalAlign="middle"
 					 fontSize="24" color="#999999"
 					 />
-		</s:Group>
+		</s:VGroup>
 	</s:Scroller>
 </s:View>

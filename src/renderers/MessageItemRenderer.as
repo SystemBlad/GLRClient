@@ -80,7 +80,6 @@ package renderers
 		override protected function layoutContents(unscaledWidth:Number, unscaledHeight:Number):void
 		{
 			super.layoutContents(unscaledWidth, unscaledHeight);
-			trace('unscaledWidth='+unscaledWidth+', unscaleHeight='+unscaledHeight);
 			if (width == 0) return;
 			
 			var paddingLeft:Number   = 10;	//getStyle("paddingLeft");

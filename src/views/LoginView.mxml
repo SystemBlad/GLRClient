@@ -2,7 +2,7 @@
 <s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		xmlns:s="library://ns.adobe.com/flex/spark"
 		title="登录"
-		backgroundColor="#cfe0e7"
+		backgroundColor="#cedfe7"
 		xmlns:components="components.*"
 		viewActivate="view1_viewActivateHandler(event)">
 	<fx:Style>
@@ -106,16 +106,13 @@
 	</s:creationComplete>
 	
 	<s:Scroller width="100%" height="100%">
-		<s:Group width="100%" height="100%">
-			<s:layout>
-				<s:MultiDPIVerticalLayout sourceDPI="320"
-										  paddingTop="60" paddingBottom="20" paddingLeft="80" paddingRight="80" gap="0"/>
-			</s:layout>
+		<s:VGroup width="100%" height="100%" horizontalAlign="center"
+				  paddingLeft="80" paddingRight="80" paddingTop="40" paddingBottom="20"
+				  gap="0">
 			<!-- logo -->
-			<s:HGroup width="100%" height="120" horizontalAlign="center">
-				<s:BitmapImage source="@Embed(source='assets/banner-login-top.png')" width="320" height="92"/>
-			</s:HGroup>
-			
+			<s:Spacer height="60"/>
+			<s:BitmapImage source="@Embed(source='assets/icon-114.png')" width="114" height="114"/>
+			<s:Spacer height="60"/>
 			<!-- input fields -->
 			<s:Group width="100%" height="124">
 				<s:Rect width="100%" height="100%" radiusX="12">
@@ -149,17 +146,17 @@
 			
 			<!-- weibo user login -->
 			<!--<components:FancyButton id="btnWeiboLogin" width="100%" height="68"
-									backgroundColor="#E81B13"
-									gap="20"
-									click="btnWeiboLogin_clickHandler(event)">
-				<components:content>
-					<s:BitmapImage source="@Embed('assets/Weibo_LOGO_48x48.png')" width="40" height="40"/>
-					<s:Label text="用新浪微博账号登录"
-							 styleName="captionText"
-							 color="#FFFFFF"
-							 />
-				</components:content>
+			backgroundColor="#E81B13"
+			gap="20"
+			click="btnWeiboLogin_clickHandler(event)">
+			<components:content>
+			<s:BitmapImage source="@Embed('assets/Weibo_LOGO_48x48.png')" width="40" height="40"/>
+			<s:Label text="用新浪微博账号登录"
+			styleName="captionText"
+			color="#FFFFFF"
+			/>
+			</components:content>
 			</components:FancyButton>-->
-		</s:Group>
+		</s:VGroup>
 	</s:Scroller>
 </s:View>
