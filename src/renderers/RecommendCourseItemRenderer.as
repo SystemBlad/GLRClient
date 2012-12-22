@@ -30,7 +30,7 @@ package renderers
 		override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void
 		{
 			super.updateDisplayList(unscaledWidth, unscaledHeight);
-			_bitmap.source = data.icon;
+			_bitmap.source = data.img_path;
 		}
 	}
 }

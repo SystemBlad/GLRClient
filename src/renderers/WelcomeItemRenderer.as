@@ -1,5 +1,7 @@
 package renderers
 {
+	import mx.core.FlexGlobals;
+	
 	import spark.components.supportClasses.ItemRenderer;
 	import spark.primitives.BitmapImage;
 	
@@ -22,8 +24,9 @@ package renderers
 		override protected function createChildren():void
 		{
 			_bitmap = new BitmapImage();
-			_bitmap.width = 640;
-			_bitmap.height = 960;
+			_bitmap.width = FlexGlobals.topLevelApplication.width;
+			_bitmap.height = FlexGlobals.topLevelApplication.height;
+			_bitmap.scaleMode = "stretch";
 			addElement(_bitmap);
 		}
 		

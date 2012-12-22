@@ -36,7 +36,7 @@
 				_vod.addEventListener("play_time_changed", updatePlaytime);
 				group.addElement(_vod);
 				
-				setTimeout(function():void{_vod.start(url);}, 500);
+				setTimeout(function():void{_vod.start(url, data.avatar);}, 500);
 			}
 			
 			private function initControlPanel(e:Event):void

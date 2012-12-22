@@ -50,6 +50,7 @@
 			[Bindable]
 			private var scaleFactor:Number;
 			
+			private var photoLoader:PhotoLoader;
 			
 			protected function creationCompleteHandler(event:FlexEvent):void
 			{
@@ -70,6 +71,8 @@
 				
 				loadingPage = new LoadingPage();
 				loadingPage.scaleX = loadingPage.scaleY = scaleFactor;
+				
+				photoLoader = new PhotoLoader();
 				
 				this.addElement(contentContainer);
 				
@@ -99,8 +102,10 @@
 				stage.addEventListener(StageOrientationEvent.ORIENTATION_CHANGE, orientationChanged);
 			}
 			
-			public function start(_url:String):void{
-				
+			private var _photoUrl:String;
+			
+			public function start(_url:String, photoUrl:String):void{
+				_photoUrl = photoUrl;
 				configProxy = new ConfigProxy(_url);
 				configProxy.loader.addEventListener(Event.COMPLETE, configLoaded);
 				
@@ -188,11 +193,22 @@
 				
 				
 				controlPanel = new ControlPanelUI(mediaProxy);
+				
+				photoLoader.load(new URLRequest(this._photoUrl));
+				
+				trace("url photot  " + this._photoUrl)
 				controlPanel.addEventListener("play_time_changed", onPlayTimeChange, false, 0, true);
 				uiComponent.addChild(controlPanel);
+				uiComponent.addChild(photoLoader);
 				controlPanel.visible = false;
 				//controlPanel.visible = false;
 				//controlPanel.alpha = 0.8;
+				//photoLoader.width = 48;
+				//photoLoader.height = 48;
+				
+				photoLoader.y =  height - controlPanel.realHeight - 48 - 20;
+				photoLoader.x = width - 48 -20	
+					
 				controlPanel.y = height - controlPanel.realHeight;
 				//controlPanel.width = width;
 				
@@ -237,6 +253,7 @@
 					if(controlPanel.y >= Math.floor(height))
 					{
 						// TweenLite.to(messageContainer, 0.3, {x:FlexGlobals.topLevelApplication.width-messageContainer.width});
+						photoLoader.visible = true;
 						messageBtn.visible = false;
 						isControlShow = true;
 						TweenLite.to(controlPanel, 0.3, {y:height - controlPanel.realHeight});
@@ -245,6 +262,7 @@
 					else
 					{
 						//TweenLite.to(messageContainer, 0.3, {x:FlexGlobals.topLevelApplication.width});
+						photoLoader.visible = false;
 						messageBtn.visible = true;
 						isControlShow = false;
 						TweenLite.to(controlPanel, 0.3, {y:height});

@@ -56,11 +56,12 @@ package classes
 			return (h == 768 || h == 1536);
 		}
 		
-		public function insertCourseHistory(subject:String, id:Number):void
+		public function insertCourseHistory(subject:String, id:Number, avatar:String):void
 		{
 			var course:Course = new Course();
 			course.subject = subject;
 			course.id = id;
+			course.avatar = avatar;
 			var date:Date = new Date();
 			course.viewTime = Math.floor(date.getTime()/1000);
 			

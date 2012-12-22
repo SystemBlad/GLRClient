@@ -53,7 +53,7 @@
 					list.validateNow();
 					delta = list.layout.getVerticalScrollPositionDelta(NavigationUnit.END);
 					list.layout.verticalScrollPosition += delta;
-					//trace('count='+count+', delta='+delta+', verticalScrollPosition='+list.layout.verticalScrollPosition);
+					trace('count='+count+', delta='+delta+', verticalScrollPosition='+list.layout.verticalScrollPosition);
 					if (delta == 0)
 						break;
 				}
@@ -68,7 +68,7 @@
 		]]>
 	</fx:Script>
 	
-	<s:VGroup width="330" height="100%" alpha="1" paddingTop="2" paddingBottom="2">
+	<s:VGroup width="330" height="100%" alpha="1" >
 		
 		<s:Group width="330" height="100%" alpha="1" >
 		
@@ -112,6 +112,7 @@
 			
 			<s:Spacer width="100%"/>
 		</s:HGroup>-->
+	
 	</s:VGroup>
 	
 	

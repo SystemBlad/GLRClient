@@ -50,7 +50,7 @@
 				else
 				{
 					var course:Course = list.selectedItem as Course;
-					DataManager.instance.insertCourseHistory(course.subject, course.id);
+					DataManager.instance.insertCourseHistory(course.subject, course.id, course.avatar);
 					
 					navigator.pushView(views.CoursePlayView, {courseId:course.id, subject:course.subject});
 				}

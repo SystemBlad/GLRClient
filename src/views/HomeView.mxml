@@ -43,7 +43,9 @@
 			
 			protected function pagedList_changeHandler(event:IndexChangeEvent):void
 			{
-				navigator.pushView(views.CourseDetailView, recommends.getItemAt(event.newIndex));
+				navigator.pushView(views.CourseDetailView, {kvideoid:recommends.getItemAt(event.newIndex).img_link,
+															pic:recommends.getItemAt(event.newIndex).img_path,
+															button_txt:"观看视频"});
 			}
 
 			protected function listService_resultHandler(event:ResultEvent):void
@@ -96,6 +98,11 @@
 				{
 					courseList.addItem({text:"loading..."});
 					getCourseList();
+				}
+				
+				if (recommends.length == 0)
+				{
+					recommendService.send();
 				}
 			}
 			
@@ -246,13 +253,23 @@
 				var course:Object = courseList.getItemAt(idx);
 				navigator.pushView(views.CourseDetailView, course);
 			}
+			
+			private function recommendService_resultHandler(event:ResultEvent):void
+			{
+				var json:String = String(event.result);
+				var obj:Object = JSON.parse(json);
+				for (var idx:Object in obj)
+				{
+					recommends.addItem(obj[idx]);
+				}
+			}
 		]]>
 	</fx:Script>
 	<fx:Declarations>
 		<s:HTTPService id="listService" url="http://www.glr.cn/appapi/app_course_list.php" resultFormat="text" result="listService_resultHandler(event)"/>
+		<s:HTTPService id="recommendService" url="http://www.glr.cn/appapi/app_img_ad.php" resultFormat="text" result="recommendService_resultHandler(event)"/>
 		<s:ArrayCollection id="courseList"/>
-		<fx:Model id="recommend" source="assets/recommends.xml"/>
-		<s:ArrayCollection id="recommends" source="{recommend.Course}"/>
+		<s:ArrayCollection id="recommends"/>
 		<s:ArrayCollection id="welcomes">
 			<fx:Object pic="assets/01.jpg"/>
 			<fx:Object pic="assets/02.jpg"/>

@@ -4,12 +4,15 @@ package com.components
 	import com.proxies.MediaProxy;
 	import com.utils.DataObjectEvent;
 	
+	import flash.display.Loader;
 	import flash.display.Sprite;
 	import flash.events.DataEvent;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.events.StageOrientationEvent;
 	import flash.geom.Rectangle;
+	import flash.net.URLRequest;
+	
 	import mx.core.FlexGlobals;
 	
 	
@@ -28,6 +31,8 @@ package com.components
 		private var scale:Number = 0.6;
 		
 		private var _mediaProxy:MediaProxy;
+		
+		
 		
 		//this should be added after parent be added
 		
@@ -84,7 +89,7 @@ package com.components
 			{
 				
 				_mediaProxy.pause();
-				controlPanel.playAndPause.gotoAndStop(2)
+				controlPanel.playAndPause.gotoAndStop(2);
 				return;
 			}
 			
@@ -127,7 +132,8 @@ package com.components
 			
 			this.controlPanel.drag.addEventListener(MouseEvent.MOUSE_DOWN, onStartDrag);
 			this.controlPanel.drag.addEventListener(MouseEvent.MOUSE_UP, onStopDrag);
-			
+		
+				
 			stage.addEventListener(StageOrientationEvent.ORIENTATION_CHANGE, orientationChanged, false, 0, true);
 			
 			
@@ -220,6 +226,8 @@ package com.components
 			
 			
 		}
+		
+	
 		
 		private function updateControlPanel(e:DataObjectEvent):void{
 			

@@ -14,7 +14,7 @@ package com.proxies
 	
 		public var flv_path:String;
 		public var action_path:String;
-		
+		public var photo_path:String;
 		
 		public function ConfigProxy(url:String)
 		{
@@ -42,6 +42,7 @@ package com.proxies
 			{
 				this.flv_path = obj.flv_path;
 				this.action_path = obj.action_path;
+				//this.photo_path = obj.
 			}
 			else 
 			{
