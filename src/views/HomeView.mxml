@@ -10,6 +10,8 @@
 		<![CDATA[
 			import classes.DataManager;
 			
+			import com.juankpro.ane.localnotif.NotificationManager;
+			
 			import events.TapEvent;
 			
 			import ie.jampot.nativeExtensions.Alert;
@@ -207,9 +209,14 @@
 			
 			protected function btnLogout_clickHandler(event:MouseEvent):void
 			{
-				var nativeAlert:Alert = new Alert();
-				nativeAlert.addEventListener(AlertEvent.ALERT_CLOSED, alertCloseHandler);
-				nativeAlert.showAlert("你确定要注销当前用户吗？", "", "否,是");
+				if (NotificationManager.isSupported) {
+					var nativeAlert:Alert = new Alert();
+					nativeAlert.addEventListener(AlertEvent.ALERT_CLOSED, alertCloseHandler);
+					nativeAlert.showAlert("你确定要注销当前用户吗？", "", "否,是");
+				}
+				else {
+					DataManager.instance.user.logout();
+				}
 			}
 			
 			private function alertCloseHandler(event:AlertEvent):void

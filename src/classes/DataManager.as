@@ -132,11 +132,15 @@ package classes
 			// schedule noti
 			courseNotificationIDsPool.addItem(kvideoid);
 			var desireDate:Date = new Date();
-			desireDate.setTime((Number(course.start_time) - diffSeconds) * 1000);
+			desireDate.setTime(Number(course.start_time) * 1000);
+			var fireDate:Date = new Date();
+			fireDate.setTime((Number(course.start_time) - diffSeconds) * 1000);
+			
 			
 			var df:DateFormatter = new DateFormatter();
-			df.formatString = "YY年MM月DD日 JJ:NN";
-			trace(course.subject + ' will fire at ' + df.format(desireDate));
+			df.formatString = "JJ:NN";
+			//trace(course.subject, 'fire at: ', df.format(fireDate));
+			//trace(course.subject, 'live on: ', df.format(desireDate));
 			
 			if (notificationManager)
 			{
@@ -144,7 +148,7 @@ package classes
 				var notification:Notification = new Notification();
 				notification.actionLabel = "OK";
 				notification.body = course.teacher_realname + "老师的" + course.subject + "将在" + df.format(desireDate) + "开始直播";
-				notification.fireDate = desireDate;
+				notification.fireDate = fireDate;
 				notification.numberAnnotation = 1;
 				notification.actionData = {sampleData:"Hello World!"};
 				

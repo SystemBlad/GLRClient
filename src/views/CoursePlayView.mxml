@@ -30,6 +30,7 @@
 				url += data.courseId;
 				url += "&token=";
 				url += DataManager.instance.user.token;
+				trace(url);
 				
 				_vod = new GLRVod();
 				_vod.addEventListener("ready_to_play", initControlPanel, false, 0, true);

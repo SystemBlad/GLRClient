@@ -5,70 +5,38 @@
 		backgroundColor="#cedfe7"
 		xmlns:components="components.*"
 		viewActivate="view1_viewActivateHandler(event)">
-	<fx:Style>
-		@namespace s "library://ns.adobe.com/flex/spark";
-		@namespace f "spark.skins.mobile.*";
-		
-		@media (os-platform: "IOS")
-		{
-			.loginButton
-			{
-				chromeColor: #319ED7;
-				color: #FFFFFF;
-				textShadowColor: #000000;
-			}
-		}
-	</fx:Style>
-	
-	
 	<fx:Script>
 		<![CDATA[
 			import classes.DataManager;
 			
+			import com.juankpro.ane.localnotif.NotificationManager;
 			import com.sina.microblog.MicroBlog;
 			import com.sina.microblog.events.MicroBlogErrorEvent;
 			import com.sina.microblog.events.MicroBlogEvent;
 			
 			import events.LoginEvent;
 			
+			import ie.jampot.nativeExtensions.Alert;
+			
 			import mx.core.FlexGlobals;
+			import mx.rpc.events.ResultEvent;
 			
 			import spark.events.ViewNavigatorEvent;
 			import spark.managers.PersistenceManager;
 			
-			private var _mb:MicroBlog;
-			
 			protected function btnLogin_clickHandler(event:MouseEvent):void
 			{
-				txtError.text = "";
-				txtError.includeInLayout = false;
 				DataManager.instance.user.login(txtUser.text, txtPwd.text);
 				busyIndicator.visible = busyIndicator.includeInLayout = true;
 			}
 			
-			protected function btnWeiboLogin_clickHandler(event:MouseEvent):void
-			{
-				_mb.addEventListener(MicroBlogEvent.LOGIN_RESULT, onLoginResult);
-				_mb.addEventListener(MicroBlogErrorEvent.LOGIN_ERROR, onErrorResult);
-				_mb.login(txtUser.text, txtPwd.text);
-			}
-			
-			private function onErrorResult(event:MicroBlogErrorEvent):void
-			{
-				trace(event);
-				trace(event.message);
-			}
-			
-			protected function onLoginResult(e:MicroBlogEvent):void
-			{
-				trace(e);
-				_mb.removeEventListener(MicroBlogEvent.LOGIN_RESULT, onLoginResult);
-				trace(e.result["access_token"] + "::" + e.result["expires_in"] + "::" + e.result["refresh_token"]);  
-			}
-			
 			private function loginHandler(event:LoginEvent):void
 			{
-				busyIndicator.visible = busyIndicator.includeInLayout = false;
+				if (busyIndicator)
+					busyIndicator.visible = busyIndicator.includeInLayout = false;
+				if (busyIndicator2)
+					busyIndicator2.visible = false;
+				
 				if (event.success) {
 					var pm:PersistenceManager = new PersistenceManager();
 					pm.setProperty("username", txtUser.text);
@@ -76,8 +44,13 @@
 					navigator.popView();
 				}
 				else {
-					txtError.text = event.error;
-					txtError.includeInLayout = true;
+					if (NotificationManager.isSupported) {
+						var alert:Alert = new Alert();
+						alert.showAlert(event.error, '');
+					}
+					else {
+						trace(event.error);
+					}
 				}
 			}
 			
@@ -91,14 +64,46 @@
 					txtUser.text = user;
 					txtPwd.text = pass;
 				}
-					
-				_mb = new MicroBlog();
-				_mb.source = "191889720"; //申请的App Key
-				_mb.consumerKey = "191889720"; //申请的App Key
-				_mb.consumerSecret = "b0fec1128d444802cfa237b569f0122e"; //申请的App Secrect
+			}
+			
+			protected function registerService_resultHandler(event:ResultEvent):void
+			{
+				busyIndicator2.visible = false;
+				var json:String = String(event.result);
+				var obj:Object = JSON.parse(json);
+				if (obj.register_result) {
+					DataManager.instance.user.login(regUser.text, regPwd.text);
+					busyIndicator2.visible = true;
+				}
+				else {
+					if (NotificationManager.isSupported) {
+						var alert:Alert = new Alert();
+						alert.showAlert(obj.error_string, '');
+					}
+					else {
+						trace(obj.error_string);
+					}
+				}
+			}
+			
+			protected function btnRegister_clickHandler(event:MouseEvent):void
+			{
+				var url:String = 'http://www.glr.cn/appapi/app_reg.php?reg_password=' + regPwd.text
+					+ '&password2=' + regPwdConfirm.text + '&username=' + regUser.text;
+				trace(url);
+				registerService.url = url;
+				registerService.send();
+				busyIndicator2.visible = true;
 			}
 		]]>
 	</fx:Script>
+	<s:states>
+		<s:State name="login"/>
+		<s:State name="register"/>
+	</s:states>
+	<fx:Declarations>
+		<s:HTTPService id="registerService" resultFormat="text" result="registerService_resultHandler(event)"/>
+	</fx:Declarations>
 	<s:creationComplete>
 		<![CDATA[
 		DataManager.instance.user.addEventListener(LoginEvent.name, loginHandler);
@@ -110,39 +115,78 @@
 				  paddingLeft="80" paddingRight="80" paddingTop="40" paddingBottom="20"
 				  gap="0">
 			<!-- logo -->
-			<s:Spacer height="60"/>
+			<s:Spacer height="10"/>
 			<s:BitmapImage source="@Embed(source='assets/icon-114.png')" width="114" height="114"/>
-			<s:Spacer height="60"/>
-			<!-- input fields -->
-			<s:Group width="100%" height="124">
-				<s:Rect width="100%" height="100%" radiusX="12">
-					<s:fill>
-						<s:SolidColor color="#FFFFFF" alpha="1"/>
-					</s:fill>
-				</s:Rect>
-				<s:Label backgroundColor="#95CDE7" width="100%" height="2" y="61"/>
-				<components:HintTextInput id="txtUser" textAlign="center" hint="用户名" width="100%" y="0"/>
-				<components:HintTextInput id="txtPwd" textAlign="center" displayAsPassword="true" hint="密码" width="100%" y="63"/>
-			</s:Group>
-			<s:Spacer height="20"/>
+			<s:Spacer height="40"/>
+			<s:VGroup width="100%" height="100%" horizontalAlign="center" gap="0" includeIn="login">
+				<!-- input fields -->
+				<s:Group width="100%" height="121">
+					<s:Rect width="100%" height="100%" radiusX="12">
+						<s:fill>
+							<s:SolidColor color="#FFFFFF" alpha="1"/>
+						</s:fill>
+					</s:Rect>
+					<s:Label backgroundColor="#95CDE7" width="100%" height="2" y="61"/>
+					<components:HintTextInput id="txtUser" textAlign="center" hint="用户名/邮箱" width="100%" height="60" y="0"/>
+					<components:HintTextInput id="txtPwd" textAlign="center" displayAsPassword="true" hint="密码" width="100%" height="60" y="61"/>
+				</s:Group>
+				<s:Spacer height="20"/>
+				
+				<!-- site user login -->
+				<components:FancyButton id="btnLogin" width="100%" height="68"
+										backgroundColor="#05b5ed"
+										click="btnLogin_clickHandler(event)">
+					<components:content>
+						<s:Label text="登录"
+								 styleName="captionText"
+								 color="#FFFFFF"
+								 />
+						<s:BusyIndicator id="busyIndicator" symbolColor="#0C3170" height="40" visible="false" includeInLayout="false" right="20" top="14"/>
+					</components:content>
+				</components:FancyButton>
+				<s:Spacer height="20"/>
+				<s:Label width="100%" height="60"
+						 textAlign="center" verticalAlign="middle"
+						 text="还没有账号？马上注册" styleName="linkText" click="title='注册';currentState='register';"/>
+			</s:VGroup>
 			
-			<!-- site user login -->
-			<components:FancyButton id="btnLogin" width="100%" height="68"
-									backgroundColor="#05b5ed"
-									click="btnLogin_clickHandler(event)">
-				<components:content>
-					<s:Label text="登录"
-							 styleName="captionText"
-							 color="#FFFFFF"
-							 />
-					<s:BusyIndicator id="busyIndicator" symbolColor="#0C3170" height="40" visible="false" includeInLayout="false" right="20" top="14"/>
-				</components:content>
-			</components:FancyButton>
-			<s:Spacer height="20"/>
-			<s:Label id="lblRegister" text="还没有账号？马上注册" click="navigateToURL(new URLRequest('http://www.glr.cn/'));"/>
-			<s:Spacer height="20"/>
-			<s:Label id="txtError" color="#ff0000" includeInLayout="false"/>
-			<s:Spacer height="20"/>
+			
+			<s:VGroup width="100%" height="100%" horizontalAlign="center" gap="0" includeIn="register">
+				<!-- input fields -->
+				<s:Group width="100%" height="182">
+					<s:Rect width="100%" height="100%" radiusX="12">
+						<s:fill>
+							<s:SolidColor color="#FFFFFF" alpha="1"/>
+						</s:fill>
+					</s:Rect>
+					<s:Label backgroundColor="#95CDE7" width="100%" height="2" y="61"/>
+					<s:Label backgroundColor="#95CDE7" width="100%" height="2" y="122"/>
+					<components:HintTextInput id="regUser" textAlign="center" hint="邮箱" width="100%" height="60" y="0"/>
+					<components:HintTextInput id="regPwd" textAlign="center" displayAsPassword="true" hint="密码" width="100%" height="60" y="61"/>
+					<components:HintTextInput id="regPwdConfirm" textAlign="center" displayAsPassword="true" hint="确认密码" width="100%" height="60" y="122"/>
+				</s:Group>
+				<s:Spacer height="20"/>
+				
+				<!-- site user register -->
+				<components:FancyButton id="btnRegister" width="100%" height="68"
+										backgroundColor="#05b5ed"
+										click="btnRegister_clickHandler(event)">
+					<components:content>
+						<s:Group width="100%" height="100%">
+							<s:Label text="注册"
+									 styleName="captionText"
+									 color="#FFFFFF"
+									 width="100%" height="100%"
+									 textAlign="center" verticalAlign="middle"/>
+							<s:BusyIndicator id="busyIndicator2" symbolColor="#0C3170" height="40" visible="false" right="150" top="14"/>
+						</s:Group>
+					</components:content>
+				</components:FancyButton>
+				<s:Spacer height="20"/>
+				<s:Label width="100%" height="60"
+						 textAlign="center" verticalAlign="middle"
+						 text="已经有账号，登录" styleName="linkText" click="title='登录';currentState='login';"/>
+			</s:VGroup>
 			
 			<!-- weibo user login -->
 			<!--<components:FancyButton id="btnWeiboLogin" width="100%" height="68"

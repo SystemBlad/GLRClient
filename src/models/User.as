@@ -1,12 +1,14 @@
 package models
 {
 	import classes.Constants;
+	import classes.DataManager;
 	
 	import events.LoginEvent;
 	import events.LogoutEvent;
 	
 	import flash.events.EventDispatcher;
 	
+	import mx.core.FlexGlobals;
 	import mx.rpc.events.ResultEvent;
 	import mx.rpc.http.HTTPService;
 
@@ -64,6 +66,11 @@ package models
 			_statusLevel= 0;
 			_avatarFile	= "";
 			_token		= "";
+			
+			// clear user & pwd
+			FlexGlobals.topLevelApplication.persistenceManager.setProperty("username", "");
+			FlexGlobals.topLevelApplication.persistenceManager.setProperty("password", "");
+			FlexGlobals.topLevelApplication.persistenceManager.save();
 			
 			var evt:LogoutEvent = new LogoutEvent();
 			dispatchEvent(evt);

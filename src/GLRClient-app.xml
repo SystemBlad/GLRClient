@@ -15,7 +15,7 @@
 
 	<!-- A universally unique application identifier. Must be unique across all AIR applications.
 	Using a reverse DNS-style name as the id is recommended. (Eg. com.example.ExampleApplication.) Required. -->
-	<id>com.bitrice.glr</id>
+	<id>cn.glr.gkk</id>
 
 	<!-- Used as the filename for the application. Required. -->
 	<filename>GLRClient</filename>
@@ -263,7 +263,6 @@
 			<key>UIDeviceFamily</key>
 			<array>
 				<string>1</string>
-				<string>2</string>
 			</array>
 		]]></InfoAdditions>
         <requestedDisplayResolution>high</requestedDisplayResolution>

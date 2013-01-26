@@ -82,6 +82,9 @@ renderers|StyledIconItemRenderer
 	fontSize: 30;
 	verticalAlign: bottom;
 }
+.linkText {
+	textDecoration: underline;
+}
 
 @media (application-dpi: 240)
 {
