@@ -65,7 +65,7 @@
 				}
 				else
 				{
-					if (data.courseId)
+					if (data.courseId && DataManager.instance.online)
 					{
 						subscribeService.send();
 						
@@ -168,7 +168,8 @@
 			
 			protected function view1_viewActivateHandler(event:ViewNavigatorEvent):void
 			{
-				detailService.send();
+				if (DataManager.instance.online)
+					detailService.send();
 			}
 			
 		]]>

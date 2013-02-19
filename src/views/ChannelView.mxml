@@ -48,7 +48,8 @@
 				}
 				else
 				{
-					listService.send();
+					if (DataManager.instance.online)
+						listService.send();
 				}
 			}
 			

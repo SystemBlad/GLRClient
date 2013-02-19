@@ -7,6 +7,8 @@
 		xmlns:renderers="renderers.*">
 	<fx:Script>
 		<![CDATA[
+			import classes.DataManager;
+			
 			import mx.events.PropertyChangeEvent;
 			import mx.rpc.events.ResultEvent;
 			
@@ -24,9 +26,11 @@
 			
 			private function getCourseList():void
 			{
-				_loadingCourses = true;
-				listService.url = "http://www.glr.cn/appapi/app_course_list.php?classtype=" + data.videoid + "&page=" + _currentPage;
-				listService.send();
+				if (DataManager.instance.online) {
+					_loadingCourses = true;
+					listService.url = "http://www.glr.cn/appapi/app_course_list.php?classtype=" + data.videoid + "&page=" + _currentPage;
+					listService.send();
+				}
 			}
 			
 			protected function listService_resultHandler(event:ResultEvent):void

@@ -28,12 +28,14 @@ package models
 		
 		public function login(name:String, password:String):void
 		{
-			var service:HTTPService = new HTTPService();
-			service.url = Constants.LOGIN_URL + "?username="+name+"&password="+password;
-			service.method = "GET";
-			service.resultFormat = "text";
-			service.addEventListener(ResultEvent.RESULT, resultListener);
-			service.send();
+			if (DataManager.instance.online) {
+				var service:HTTPService = new HTTPService();
+				service.url = Constants.LOGIN_URL + "?username="+name+"&password="+password;
+				service.method = "GET";
+				service.resultFormat = "text";
+				service.addEventListener(ResultEvent.RESULT, resultListener);
+				service.send();
+			}
 		}
 		
 		private function resultListener(event:ResultEvent):void {

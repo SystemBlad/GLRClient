@@ -32,9 +32,11 @@
 			
 			protected function view1_viewActivateHandler(event:ViewNavigatorEvent):void
 			{
-				listService.url = "http://www.glr.cn/appapi/app_course_list.php?perpage=100&keyword=" + data;
-				listService.send();
-				currentState = "default";
+				if (DataManager.instance.online) {
+					listService.url = "http://www.glr.cn/appapi/app_course_list.php?perpage=100&keyword=" + data;
+					listService.send();
+					currentState = "default";
+				}
 			}
 			
 		]]>

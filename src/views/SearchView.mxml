@@ -3,7 +3,7 @@
 		xmlns:s="library://ns.adobe.com/flex/spark"
 		title="搜索"
 		xmlns:components="components.*"
-		viewActivate="service.send()">
+		>
 	<fx:Script>
 		<![CDATA[
 			import classes.DataManager;
@@ -37,6 +37,12 @@
 		</s:HTTPService>
 		<s:ArrayCollection id="keywords"/>
 	</fx:Declarations>
+	<s:viewActivate>
+		<![CDATA[
+		if (DataManager.instance.online)
+			service.send()
+		]]>
+	</s:viewActivate>
 	<s:Group width="100%" height="100%">
 		<s:layout>
 			<s:MultiDPIVerticalLayout sourceDPI="320"

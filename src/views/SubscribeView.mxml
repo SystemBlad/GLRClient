@@ -10,7 +10,8 @@
 			import mx.rpc.events.ResultEvent;
 			protected function btnSubscribe_clickHandler(event:MouseEvent):void
 			{
-				tokenService.send();
+				if (DataManager.instance.online)
+					tokenService.send();
 			}
 			
 			protected function btnShare_clickHandler(event:MouseEvent):void

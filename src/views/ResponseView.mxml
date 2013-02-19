@@ -28,9 +28,11 @@
 			
 			protected function btnSend_clickHandler(event:MouseEvent):void
 			{
-				busyIndicator.visible = busyIndicator.includeInLayout = true;
-				btnSend.enabled = btnSend.mouseEnabled = false;
-				service.send();
+				if (DataManager.instance.online) {
+					busyIndicator.visible = busyIndicator.includeInLayout = true;
+					btnSend.enabled = btnSend.mouseEnabled = false;
+					service.send();
+				}
 			}
 		]]>
 	</fx:Script>

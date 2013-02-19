@@ -38,9 +38,11 @@
 			
 			private function getCourseList():void
 			{
-				_loadingCourses = true;
-				listService.url = "http://www.glr.cn/appapi/app_course_list.php?page=" + _currentPage;
-				listService.send();
+				if (DataManager.instance.online) {
+					_loadingCourses = true;
+					listService.url = "http://www.glr.cn/appapi/app_course_list.php?page=" + _currentPage;
+					listService.send();
+				}
 			}
 			
 			protected function pagedList_changeHandler(event:IndexChangeEvent):void
@@ -102,7 +104,7 @@
 					getCourseList();
 				}
 				
-				if (recommends.length == 0)
+				if (recommends.length == 0 && DataManager.instance.online)
 				{
 					recommendService.send();
 				}

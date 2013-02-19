@@ -88,12 +88,14 @@
 			
 			protected function btnRegister_clickHandler(event:MouseEvent):void
 			{
-				var url:String = 'http://www.glr.cn/appapi/app_reg.php?reg_password=' + regPwd.text
-					+ '&password2=' + regPwdConfirm.text + '&username=' + regUser.text;
-				trace(url);
-				registerService.url = url;
-				registerService.send();
-				busyIndicator2.visible = true;
+				if (DataManager.instance.online) {
+					var url:String = 'http://www.glr.cn/appapi/app_reg.php?reg_password=' + regPwd.text
+						+ '&password2=' + regPwdConfirm.text + '&username=' + regUser.text;
+					trace(url);
+					registerService.url = url;
+					registerService.send();
+					busyIndicator2.visible = true;
+				}
 			}
 		]]>
 	</fx:Script>

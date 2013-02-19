@@ -1,9 +1,15 @@
 package classes
 {
+	import air.net.URLMonitor;
+	
 	import com.juankpro.ane.localnotif.Notification;
 	import com.juankpro.ane.localnotif.NotificationEvent;
 	import com.juankpro.ane.localnotif.NotificationManager;
 	
+	import events.NetworkChangeEvent;
+	
+	import flash.events.StatusEvent;
+	import flash.net.URLRequest;
 	import flash.system.Capabilities;
 	
 	import models.Course;
@@ -23,6 +29,7 @@ package classes
 		
 		private var notificationManager:NotificationManager;
 		private var courseNotificationIDsPool:ArrayCollection;
+		private var monitor:URLMonitor;
 		
 		public function DataManager()
 		{
@@ -35,6 +42,21 @@ package classes
 				notificationManager.addEventListener(NotificationEvent.NOTIFICATION_ACTION, notificationActionHandler);
 				cancelAllNotifications();
 			}
+		}
+		
+		public function setupMonitor():void {
+			monitor = new URLMonitor(new URLRequest('http://www.glr.cn'));
+			monitor.addEventListener(StatusEvent.STATUS, handleMonitorChange);
+			monitor.start();
+		}
+		
+		private function handleMonitorChange(event:StatusEvent):void {
+			trace('monitor.available=', monitor.available);
+			EventManager.instance.dispatchEvent(new NetworkChangeEvent(monitor.available));
+		}
+		
+		public function get online():Boolean {
+			return (monitor && monitor.available);
 		}
 		
 		private function notificationActionHandler(event:NotificationEvent):void
