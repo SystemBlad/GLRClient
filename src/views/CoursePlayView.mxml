@@ -11,12 +11,15 @@
 			import classes.DataManager;
 			
 			import com.GLRVod;
+			import com.GLRLive;
+			import classes.Constants;
+			import classes.CourseStatus;
 			
 			import mx.core.UIComponent;
 			
 			import spark.events.ViewNavigatorEvent;
 			
-			private var _vod:GLRVod;
+			private var _vod;
 			
 			protected function view1_viewActivateHandler(event:ViewNavigatorEvent):void
 			{
@@ -26,16 +29,29 @@
 		        tabBarVisible = false;
 				 
 				
-				var url:String = "http://www.glr.cn/appapi/app_course_view.php?appid=";
-				url += data.courseId;
-				url += "&token=";
-				url += DataManager.instance.user.token;
-				trace(url);
+				if (data.courseStatus && data.courseStatus == CourseStatus.LIVE_OR_COMING)
+					_vod = new GLRLive();
+				else
+					_vod = new GLRVod();
 				
-				_vod = new GLRVod();
+			
 				_vod.addEventListener("ready_to_play", initControlPanel, false, 0, true);
 				_vod.addEventListener("play_time_changed", updatePlaytime);
 				group.addElement(_vod);
+				
+				
+				if(data.url)
+				{
+					url = data.url;
+				}
+				else
+				{
+					var url:String = "http://www.glr.cn/appapi/app_course_view.php?appid=";
+					url += data.courseid;
+					url += "&token=";
+					url += DataManager.instance.user.token;
+					trace(url);
+				}
 				
 				setTimeout(function():void{_vod.start(url, data.avatar);}, 500);
 			}
@@ -66,6 +82,12 @@
 			
 			protected function view1_viewDeactivateHandler(event:ViewNavigatorEvent):void
 			{
+				
+				var vod:GLRVod = _vod as GLRVod;
+				if (vod)
+					DataManager.instance.insertCourse(Constants.TYPE_HISTORY, data.subject, data.kvideoid, data.courseid, data.pic, data.avatar, vod.duration, vod.vodTime);
+
+				
 				if (_vod)
 					_vod.exit();
 				

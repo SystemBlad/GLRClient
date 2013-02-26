@@ -137,7 +137,7 @@
 							<![CDATA[
 								private function getMessage(item:Object):String
 								{
-									var date:Date = new Date();
+									/* var date:Date = new Date();
 									var diff:Number = Math.floor(date.getTime()/1000) - item.viewTime;
 									trace(diff);
 									var minutes:Number = Math.floor(diff/60);
@@ -148,7 +148,8 @@
 									else if (minutes < 60*24)
 										return Math.floor(minutes/60) + "小时前";
 									else
-										return Math.floor(minutes/(60*24)) + "天前";
+										return Math.floor(minutes/(60*24)) + "天前"; */
+									return "";
 								}
 							]]>
 						</fx:Script>
@@ -159,7 +160,15 @@
 		<s:Label text="您还没有任何课程观看记录" styleName="captionText" color="#666666" width="100%" height="80" verticalAlign="middle" textAlign="center"
 				 visible="{courseList.length==0}" includeInLayout="{courseList.length==0}"/>
 	</s:Group>
-	
+	<s:navigationContent>
+		<s:Button label="下载">
+			<s:click>
+				<![CDATA[
+				navigator.pushView(views.DownloadView);
+				]]>
+			</s:click>
+		</s:Button>
+	</s:navigationContent>
 	<s:actionContent>
 		<s:Button id="btnClear" label="清除" click="btnClear_clickHandler(event)" visible="{courseList.length>0}"/>
 	</s:actionContent>

@@ -189,6 +189,19 @@ package com.utils
             return;
         }
 
+        public function onClassFull(arg1:Object):void
+        {
+            this.callback.onData({"type":"onClassFull", "info":arg1});
+            return;
+        }
+		
+		public function onGetLatestChat(arg1:Object):void{
+			this.callback.onData({"type":"onGetLatestChat", "info":arg1});
+			return;
+			
+		}
+		
+
         internal var callback:Object;
     }
 }

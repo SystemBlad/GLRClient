@@ -4,7 +4,7 @@
 		title="课程详情"
 		viewActivate="view1_viewActivateHandler(event)"
 		viewDeactivate="detailService.cancel()" xmlns:components="components.*"
-		creationComplete="view1_creationCompleteHandler(event)" xmlns:renderers="renderers.*">
+		xmlns:renderers="renderers.*">
 	<fx:Script>
 		<![CDATA[
 			import classes.ButtonType;
@@ -44,6 +44,9 @@
 					data.courseCode = passwordConfirmation.password = obj.course_detail.course_code;
 					data.courseStatus = Number(obj.course_detail.course_status);
 					
+					// capacity service url
+					capacityService.url = 'http://www.glr.cn/appapi/app_course_class_online_num.php?course_id=' + data.courseid;
+					
 					updateDownloadButtonStatus();
 					
 					lblSubject.text = data.subject = Utils.getHtmlPlainText(obj.course_detail.subject);
@@ -63,13 +66,69 @@
 					// course status
 					switch (data.courseStatus) {
 						case CourseStatus.LIVE_OR_COMING:
+							btnEnter.visible = btnEnter.includeInLayout = true;
 							break;
 						case CourseStatus.CONVERTING:
 							break;
 						case CourseStatus.VOD:
+							btnPlay.visible = btnPlay.includeInLayout = true;
 							btnDownload.visible = btnDownload.includeInLayout = true;
 							break;
 					}
+				}
+			}
+			
+			protected function capacityService_resultHandler(event:ResultEvent):void
+			{
+				btnEnter.enabled = btnEnter.mouseEnabled = true;
+				var json:String = String(event.result);
+				var obj:Object = JSON.parse(json);
+				var numOnline:Number = Number(obj.course_online_num);
+				if (numOnline >= data.capacity) {
+					var alert:Alert = new Alert();
+					alert.showAlert('教室人数已满，您可以在课程结束后观看本课程录像', '');
+				}
+				else {
+					// enter classroom and watch live
+					if (data.courseCode) {
+						passwordConfirmation.showDialog();
+					}
+					else {
+						navigator.pushView(views.CoursePlayView, data);
+					}
+				}
+			}
+			
+			private function enterClassroom():void {
+				if (!data.subscribed) {
+					if (!DataManager.instance.user.loggedIn)
+					{
+						navigator.pushView(views.LoginView);
+						return;
+					}
+					else if (data.courseid && DataManager.instance.online)
+					{
+						subscribeService.send();
+					}
+				}
+				
+				var alert:Alert;
+				// available less than 10 mins to go
+				var date:Date = new Date();
+				var diffSeconds:Number = Number(data.start_time) - Math.floor(date.getTime()/1000);
+				if (diffSeconds > 10*60) {
+					alert = new Alert();
+					alert.showAlert('请于开课前10分钟进入教室', '');
+					return;
+				}
+				
+				if (!data.subscribed) {
+					alert = new Alert();
+					alert.showAlert('此课程需要报名才能观看', '');
+				}
+				else if (DataManager.instance.online) {
+					capacityService.send();
+					btnEnter.enabled = btnEnter.mouseEnabled = false;
 				}
 			}
 			
@@ -89,7 +148,7 @@
 				}
 			}
 			
-			protected function btnDownload_clickHandler(event:MouseEvent):void
+			protected function btnDownload_clickHandler():void
 			{
 				if (!DataManager.instance.user.loggedIn)
 					navigator.pushView(views.LoginView);
@@ -109,20 +168,8 @@
 				}
 			}
 			
-			protected function view1_creationCompleteHandler(event:FlexEvent):void
-			{
-				switch (data.button_txt)
-				{
-					case "观看视频":
-						currentState = "available";
-						break;
-					default:
-						currentState = "coming";
-						break;
-				}
-			}
-			
 			protected function btnSubscribe_clickHandler(event:MouseEvent):void
+
 			{
 				if (!DataManager.instance.user.loggedIn)
 				{
@@ -133,14 +180,18 @@
 					if (data.courseId)
 						navigator.pushView(views.SubscribeView, data);
 				}
+
 			}
 			
 			protected function lblSpeaker_clickHandler(event:MouseEvent):void
+
 			{
+
 				if (data.teacher_intro)
 				{
 					navigator.pushView(views.SpeakerView, data);
 				}
+
 			}
 			
 			[Bindable(event="subscribeStatusChangeEvent")]
@@ -185,9 +236,11 @@
 			}
 			
 			protected function view1_viewActivateHandler(event:ViewNavigatorEvent):void
+
 			{
 				if (DataManager.instance.online)
 					detailService.send();
+
 			}
 			
 			private function updateDownloadButtonStatus():void
@@ -222,13 +275,9 @@
 		<s:HTTPService id="subscribeService" resultFormat="text" result="subscribeService_resultHandler(event)">
 			<s:url>http://www.glr.cn/appapi/app_course_signup.php?kvideoid={data.kvideoid}&amp;token={DataManager.instance.user.token}</s:url>
 		</s:HTTPService>
+		<s:HTTPService id="capacityService" resultFormat="text" result="capacityService_resultHandler(event)"/>
 		<s:ArrayCollection id="recommends"/>
 	</fx:Declarations>
-	<s:states>
-		<s:State name="default"/>
-		<s:State name="coming"/>
-		<s:State name="available"/>
-	</s:states>
 	<s:Scroller width="100%" height="100%" verticalScrollPolicy="on">
 		<s:Group width="100%" height="100%">
 			<s:layout>
@@ -257,24 +306,30 @@
 				</s:VGroup>
 			</s:HGroup>
 			<s:HGroup width="100%" gap="20">
-				<!-- play button -->
-				<components:FancyButton id="btnLogin" width="180" height="60"
+				<!-- enter button -->
+				<components:FancyButton id="btnEnter" width="180" height="60"
 										backgroundColor="#82CB23"
-										enabled.coming="false" enabled.available="true"
-										mouseEnabled.coming="false" mouseEnabled.available="true"
+										visible="false" includeInLayout="false"
+										click="enterClassroom()">
+					<s:Label text="免费观看" color="#FFFFFF" textAlign="center" verticalAlign="middle"/>
+					<s:BitmapImage source="@Embed('assets/arrow-play.png')" width="26" height="26"/>
+				</components:FancyButton>
+				
+				<!-- play button -->
+				<components:FancyButton id="btnPlay" width="180" height="60"
+										backgroundColor="#82CB23"
+										visible="false" includeInLayout="false"
 										click="playMovie()">
 					<!--<s:Label text="{data.button_txt}"-->
-					<s:Label text="免费观看" color.available="#FFFFFF" color.coming="#FFFFFF" textAlign="center" verticalAlign="middle"/>
+					<s:Label text="免费观看" color="#FFFFFF" textAlign="center" verticalAlign="middle"/>
 					<s:BitmapImage source="@Embed('assets/arrow-play.png')" width="26" height="26"/>
 				</components:FancyButton>
 				
 				<!-- download button -->
 				<components:FancyButton id="btnDownload" width="180" height="60"
 										backgroundColor="#82CB23"
-										enabled.coming="false" enabled.available="true"
-										mouseEnabled.coming="false" mouseEnabled.available="true"
 										visible="false" includeInLayout="false"
-										click="playMovie()">
+										click="btnDownload_clickHandler()">
 					<s:Label id="btnDownloadLabel" text="下载" color="#FFFFFF"/>
 				</components:FancyButton>
 				

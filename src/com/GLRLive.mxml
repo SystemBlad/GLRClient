@@ -13,8 +13,8 @@
 			import com.components.HScrollView;
 			import com.greensock.TweenLite;
 			import com.proxies.ActionProxy;
-			import com.proxies.ConfigProxy;
-			import com.proxies.MediaProxy;
+			import com.proxies.LiveConfigProxy;
+			import com.proxies.LiveMediaProxy;
 			import com.utils.DataObjectEvent;
 			
 			import flash.display.Sprite;
@@ -30,9 +30,9 @@
 			
 			private var _url:String;
 			
-			private var configProxy:ConfigProxy;
+			private var liveConfigProxy:LiveConfigProxy;
 			private var actionProxy:ActionProxy;
-			private var mediaProxy:MediaProxy;
+			private var liveMediaProxy:LiveMediaProxy;
 			
 			
 			private var contentContainer:HScrollView;
@@ -43,10 +43,7 @@
 			
 			private var loadingPage:LoadingPage;
 			
-			public var controlPanel:ControlPanelUI;
-			public var duration:Number = 0;
-			public var vodTime:Number = 0;
-			
+			public var controlPanel:LiveControlPanelUI;
 			
 			private var uiComponent:UIComponent;
 			
@@ -54,6 +51,7 @@
 			private var scaleFactor:Number;
 			
 			private var photoLoader:PhotoLoader;
+			
 			
 			protected function creationCompleteHandler(event:FlexEvent):void
 			{
@@ -108,9 +106,10 @@
 			private var _photoUrl:String;
 			
 			public function start(_url:String, photoUrl:String):void{
+				
 				_photoUrl = photoUrl;
-				configProxy = new ConfigProxy(_url);
-				configProxy.loader.addEventListener(Event.COMPLETE, configLoaded);
+				liveConfigProxy = new LiveConfigProxy(_url);
+				liveConfigProxy.loader.addEventListener(Event.COMPLETE, configLoaded);
 				
 			}
 			
@@ -130,13 +129,33 @@
 				resetContentSize();
 				
 				dispatchEvent(new Event("ready_to_play"));
+				
+				controlPanel = new LiveControlPanelUI(liveMediaProxy);
+				
+			
+				controlPanel.addEventListener("play_time_changed", onPlayTimeChange, false, 0, true);
+				uiComponent.addChild(controlPanel);
+				
+				photoLoader.load(new URLRequest(this._photoUrl));
+				uiComponent.addChild(photoLoader);
+				
+				photoLoader.y =  height - 48 - 20;
+				photoLoader.x = width - 48 -20;	
+				
+				
+				controlPanel.visible = false;
+				//controlPanel.visible = false;
+				//controlPanel.alpha = 0.8;
+				controlPanel.y = height - controlPanel.realHeight;
+				
+				
 				controlPanel.visible = true;
 				messageContainer.visible = true;
 				messageContainer.x = width;
 				
 				pageContainer.addEventListener(MouseEvent.CLICK, showHideControls);
 				
-				//messageBtn.visible = true;
+				messageBtn.visible = false;
 				messageBtn.x = width - messageBtn.width + 5;
 				messageBtn.y = (height - messageBtn.height) / 2;
 				
@@ -186,32 +205,25 @@
 			
 			
 			private function configLoaded(e:Event):void{
-				actionProxy = new ActionProxy(configProxy.action_path);
-				actionProxy.loader.addEventListener(Event.COMPLETE, actionLoaded);
+				
+				liveMediaProxy = new LiveMediaProxy(liveConfigProxy, pageContainer, penContainer, messageContainer);
+
+				
 			}
 			
 			private function  actionLoaded(e:Event):void{
 				
-				mediaProxy = new MediaProxy(configProxy.flv_path, actionProxy, pageContainer, penContainer, messageContainer);
+				//mediaProxy = new MediaProxy(configProxy.flv_path, actionProxy, pageContainer, penContainer, messageContainer);
 				
 				
-				controlPanel = new ControlPanelUI(mediaProxy);
+				//controlPanel = new ControlPanelUI(mediaProxy);
 				
-				photoLoader.load(new URLRequest(this._photoUrl));
-				
-				trace("url photot  " + this._photoUrl)
+				//controlPanel.loadPhoto();
 				controlPanel.addEventListener("play_time_changed", onPlayTimeChange, false, 0, true);
 				uiComponent.addChild(controlPanel);
-				uiComponent.addChild(photoLoader);
 				controlPanel.visible = false;
 				//controlPanel.visible = false;
 				//controlPanel.alpha = 0.8;
-				//photoLoader.width = 48;
-				//photoLoader.height = 48;
-				
-				photoLoader.y =  height - controlPanel.realHeight - 48 - 20;
-				photoLoader.x = width - 48 -20	
-					
 				controlPanel.y = height - controlPanel.realHeight;
 				//controlPanel.width = width;
 				
@@ -256,7 +268,6 @@
 					if(controlPanel.y >= Math.floor(height))
 					{
 						// TweenLite.to(messageContainer, 0.3, {x:FlexGlobals.topLevelApplication.width-messageContainer.width});
-						photoLoader.visible = true;
 						messageBtn.visible = false;
 						isControlShow = true;
 						TweenLite.to(controlPanel, 0.3, {y:height - controlPanel.realHeight});
@@ -265,7 +276,6 @@
 					else
 					{
 						//TweenLite.to(messageContainer, 0.3, {x:FlexGlobals.topLevelApplication.width});
-						photoLoader.visible = false;
 						messageBtn.visible = true;
 						isControlShow = false;
 						TweenLite.to(controlPanel, 0.3, {y:height});
@@ -276,8 +286,8 @@
 			
 			public function exit():void{
 				
-				if(mediaProxy)	
-					mediaProxy.closeStream();
+				if(liveMediaProxy)	
+					liveMediaProxy.closeStream();
 				
 				if(actionProxy)
 					if(actionProxy.loader)
