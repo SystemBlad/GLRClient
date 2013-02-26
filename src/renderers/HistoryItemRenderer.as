@@ -1,6 +1,10 @@
 package renderers
 {
 	import classes.DataManager;
+	import classes.EventManager;
+	import classes.Utils;
+	
+	import events.CourseItemEvent;
 	
 	import flash.events.MouseEvent;
 	
@@ -54,11 +58,14 @@ package renderers
 		
 		override protected function btnDelete_mouseDownHandler(event:MouseEvent):void
 		{
-			var courseId:Number = Course(data).id;
+			var evt:CourseItemEvent = new CourseItemEvent(CourseItemEvent.Delete);
+			evt.courseid = Number(data.courseid);
+			evt.kvidoeid = Number(data.kvideoid);
+			evt.pic = data.picUrl;
+			evt.subject = Utils.getHtmlPlainText(data.subject);
+			EventManager.instance.dispatchEvent(evt);
 			
 			super.btnDelete_mouseDownHandler(event);
-			
-			DataManager.instance.deleteCourseHistoryById(courseId);
 		}
 	}
 }

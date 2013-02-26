@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		xmlns:s="library://ns.adobe.com/flex/spark"
-		title="播放历史"
+		title="下载"
 		xmlns:renderers="renderers.*">
 	<fx:Script>
 		<![CDATA[
@@ -18,6 +18,7 @@
 			import ie.jampot.nativeExtensions.AlertEvent;
 			
 			import models.Course;
+			import models.Download;
 			
 			import mx.core.FlexGlobals;
 			import mx.events.PropertyChangeEvent;
@@ -43,52 +44,86 @@
 				}
 				else
 				{
-					var course:Course = list.selectedItem as Course;
-					var evt:CourseItemEvent = new CourseItemEvent(CourseItemEvent.Play);
-					evt.kvidoeid = course.kvideoid;
-					evt.courseid = course.courseid;
-					evt.pic = course.picUrl;
-					evt.subject = course.subject;
-					evt.avatar = course.avatarUrl;
-					evt.watchSpot = course.watchSpot;
-					EventManager.instance.dispatchEvent(evt);
 				}
+			}
+			
+			private function clearDownloads():void
+			{
+				while (items.length > 0) {
+					if (items.getItemAt(0) is Download)
+						(items.getItemAt(0) as Download).cancel();
+					
+					// delete storage content
+					var directory:File = File.documentsDirectory.resolvePath(String(items.getItemAt(0).courseid));
+					directory.deleteDirectory(true);
+					
+					// delete ui element
+					items.removeItemAt(0);
+				}
+				
+				DataManager.instance.clearCourse(Constants.TYPE_DOWNLOAD);
 			}
 			
 			protected function btnClear_clickHandler(event:MouseEvent):void
 			{
+				DataManager
 				if (NotificationManager.isSupported) {
 					var nativeAlert:Alert = new Alert();
 					nativeAlert.addEventListener(AlertEvent.ALERT_CLOSED, alertCloseHandler);
-					nativeAlert.showAlert("确定要清空所有听课历史记录吗？", "", "否,是");
+					nativeAlert.showAlert("确定要清空所有下载课程吗？", "", "否,是");
 				}
 				else {
-					DataManager.instance.clearCourse(Constants.TYPE_HISTORY);
-					courseList.removeAll();
+					clearDownloads();
 				}
 			}
 			
 			private function alertCloseHandler(event:AlertEvent):void
 			{
 				if (event.label == "是") {
-					DataManager.instance.clearCourse(Constants.TYPE_HISTORY);
-					courseList.removeAll();
+					clearDownloads();
 				}
 			}
 			
-			private function playCourseItem(event:CourseItemEvent):void
+			private function go2DetailPage(event:CourseItemEvent):void
 			{
-				var obj:Object = {kvideoid:event.kvidoeid, courseid:event.courseid, subject:event.subject, avatar:event.avatar, pic:event.pic, watchspot:event.watchSpot};
-				navigator.pushView(views.CoursePlayView, obj);
+				var obj:Object;
+				for (var i:int=0; i<items.length; i++) {
+					if (items.getItemAt(i).kvideoid == event.kvidoeid) {
+						obj = items.getItemAt(i);
+						break;
+					}
+				}
+				
+				var directory:File = File.documentsDirectory.resolvePath(obj.courseid.toString());
+				var configurl:String = directory.url + "/" + "config.txt";
+				
+				if (obj is Course) {
+					var item:Course = obj as Course;
+					navigator.pushView(views.CoursePlayView, {url:configurl,kvideoid:item.kvideoid, courseid:item.courseid, subject:item.subject, avatar:item.avatarUrl, pic:item.picUrl});
+				}
+				else if (obj is Download) {
+					var down:Download = obj as Download;
+					navigator.pushView(views.CoursePlayView, {url:configurl,kvideoid:down.kvideoid, courseid:down.courseid, subject:down.subject, avatar:down.avatarUrl, pic:down.picUrl});
+				}
 			}
 			
-			private function deleteCourseItem(event:CourseItemEvent):void
+			private function deleteItem(event:CourseItemEvent):void
 			{
-				DataManager.instance.deleteCourseById(Constants.TYPE_HISTORY, event.courseid);
+				// delete from persistency
+				DataManager.instance.deleteCourseById(Constants.TYPE_DOWNLOAD, event.courseid);
 				
-				for (var i:int=0; i<courseList.length; i++) {
-					if (courseList.getItemAt(i).courseid == event.courseid) {
-						courseList.removeItemAt(i);
+				for (var i:int=0; i<items.length; i++) {
+					if (items.getItemAt(i).courseid == event.courseid) {
+						// cancel downloading
+						if (items.getItemAt(i) is Download)
+							(items.getItemAt(i) as Download).cancel();
+						
+						// delete storage content
+						var directory:File = File.documentsDirectory.resolvePath(String(event.courseid));
+						directory.deleteDirectory(true);
+						
+						// delete ui element
+						items.removeItemAt(i);
 						break;
 					}
 				}
@@ -96,43 +131,36 @@
 		]]>
 	</fx:Script>
 	<fx:Declarations>
-		<s:ArrayList id="courseList"/>
+		<s:ArrayCollection id="items"/>
 	</fx:Declarations>
 	<s:viewActivate>
 		<![CDATA[
 		// event binding
-		EventManager.instance.addEventListener(CourseItemEvent.Play, playCourseItem);
-		EventManager.instance.addEventListener(CourseItemEvent.Delete, deleteCourseItem);
+		EventManager.instance.addEventListener(CourseItemEvent.Detail, go2DetailPage);
+		EventManager.instance.addEventListener(CourseItemEvent.Delete, deleteItem);
 		
 		// data binding
-		courseList.removeAll();
-		var courses:Vector.<Course> =  DataManager.instance.getCoursesByType(Constants.TYPE_HISTORY);
-		if (courses)
-		{
-			for (var i:int=courses.length-1; i>=0; i--) {
-				courseList.addItem(courses[i]);
-			}
-		}
+		items = DataManager.instance.downloads;
 		]]>
 	</s:viewActivate>
 	<s:viewDeactivate>
 		<![CDATA[
-		EventManager.instance.removeEventListener(CourseItemEvent.Detail, playCourseItem);
-		EventManager.instance.removeEventListener(CourseItemEvent.Delete, deleteCourseItem);
+		EventManager.instance.removeEventListener(CourseItemEvent.Detail, go2DetailPage);
+		EventManager.instance.removeEventListener(CourseItemEvent.Delete, deleteItem);
 		]]>
 	</s:viewDeactivate>
 	<s:Group width="100%" height="100%">
-		<s:List id="list" width="100%" height="100%" dataProvider="{courseList}"
-				visible="{courseList.length>0}" includeInLayout="{courseList.length>0}"
+		<s:List id="list" width="100%" height="100%" dataProvider="{items}"
+				visible="{items.length>0}" includeInLayout="{items.length>0}"
 				creationComplete="list.dataGroup.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, onPropertyChange)"
 				changing="list.dispatchEvent(new ScrollingEvent(ScrollingEvent.SCROLLING_STARTED))"
 				change="list_changeHandler(event)">
 			<s:itemRenderer>
 				<fx:Component>
 					<renderers:HistoryItemRenderer labelField="subject"
-										messageFunction="getMessage"
-										messageStyleName="historyMessage"
-										decorator="@Embed('assets/decorator-arrow.png')">
+												   messageFunction="getMessage"
+												   messageStyleName="historyMessage"
+												   decorator="@Embed('assets/decorator-arrow.png')">
 						<fx:Script>
 							<![CDATA[
 								private function getMessage(item:Object):String
@@ -157,10 +185,10 @@
 			</s:itemRenderer>
 		</s:List>
 		<s:Label text="您还没有任何课程观看记录" styleName="captionText" color="#666666" width="100%" height="80" verticalAlign="middle" textAlign="center"
-				 visible="{courseList.length==0}" includeInLayout="{courseList.length==0}"/>
+				 visible="{items.length==0}" includeInLayout="{items.length==0}"/>
 	</s:Group>
 	
 	<s:actionContent>
-		<s:Button id="btnClear" label="清除" click="btnClear_clickHandler(event)" visible="{courseList.length>0}"/>
+		<s:Button id="btnClear" label="清除" click="btnClear_clickHandler(event)" visible="{items.length>0}"/>
 	</s:actionContent>
 </s:View>

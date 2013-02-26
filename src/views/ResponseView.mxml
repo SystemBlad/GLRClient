@@ -67,13 +67,8 @@
 			<components:FancyButton id="btnSend" width="100%" height="68"
 									backgroundColor="#05b5ed"
 									click="btnSend_clickHandler(event)">
-				<components:content>
-					<s:Label text="发送反馈"
-							 styleName="captionText"
-							 color="#FFFFFF"
-							 />
-					<s:BusyIndicator id="busyIndicator" symbolColor="#0C3170"  height="40" visible="false" includeInLayout="false" right="20" top="14"/>
-				</components:content>
+				<s:Label text="发送反馈" styleName="captionText" color="#FFFFFF"/>
+				<s:BusyIndicator id="busyIndicator" symbolColor="#0C3170"  height="40" visible="false" includeInLayout="false" right="20" top="14"/>
 			</components:FancyButton>
 		</s:HGroup>
 		<s:HGroup width="100%" height="300">

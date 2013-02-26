@@ -101,11 +101,7 @@
 			<components:FancyButton id="btnDelete" width="80" height="60"
 									backgroundColor="#FF0000"
 									mouseDown="btnDelete_mouseDownHandler(event)">
-				<components:content>
-					<s:Label text="删除"
-							 color="#FFFFFF"
-							 />
-				</components:content>
+				<s:Label text="删除" color="#FFFFFF"/>
 			</components:FancyButton>
 		</s:HGroup>
 	</fx:Declarations>

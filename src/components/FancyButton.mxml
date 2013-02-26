@@ -8,6 +8,9 @@
 	<fx:Script>
 		<![CDATA[
 			import mx.core.IVisualElement;
+			
+			import spark.components.Label;
+			
 			[ArrayElementType("mx.core.IVisualElement")]
 			public var content:Array;
 			
@@ -22,9 +25,15 @@
 			}
 		]]>
 	</fx:Script>
+	<fx:Metadata>
+		[DefaultProperty("content")]
+	</fx:Metadata>
 	<components:initialize>
 		<![CDATA[
 			for (var i:int=0; i<content.length; i++) {
+				if (content[i] is Label) {
+					content[i].filters = [new spark.filters.DropShadowFilter(2, 90, 0xFFFFFF, .27, 0, .5)];
+				}
 				hgroup.addElement(content[i]);
 			}
 		]]>
@@ -36,6 +45,9 @@
 		<fx:Number id="cornerRadius">8</fx:Number>
 		<fx:Number id="gap">10</fx:Number>
 	</fx:Declarations>
+	<components:filters>
+		<s:DropShadowFilter distance="2" color="#000000" alpha=".4"/>
+	</components:filters>
 	<s:Rect width="100%" height="100%" radiusX="{cornerRadius}">
 		<s:fill>
 			<s:SolidColor color="{backgroundColor}"/>

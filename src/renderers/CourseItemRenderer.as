@@ -90,7 +90,7 @@ package renderers
 			{
 				lblSpeaker.text = "主讲人："+data.teacher_realname;
 				lblPopularity.text = data.viewnum;
-				lblButton.text = data.button_txt;
+				lblButton.text = data.button_txt == '观看视频' ? '免费观看' : data.button_txt;
 				
 				var date:Date = new Date();
 				date.setTime(Number(data.start_time)*1000);
