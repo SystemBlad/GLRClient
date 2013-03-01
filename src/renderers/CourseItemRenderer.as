@@ -4,6 +4,7 @@ package renderers
 	
 	import mx.controls.Spacer;
 	import mx.formatters.DateFormatter;
+	import mx.graphics.BitmapScaleMode;
 	
 	import spark.components.HGroup;
 	import spark.components.IconItemRenderer;
@@ -17,6 +18,7 @@ package renderers
 		private var lblSpeaker:Label;
 		private var lblPopularity:Label;
 		private var lblButton:Label;
+		private var lblStatus:Label;
 		
 		[Embed(source="assets/small-icon-popularity.png")]
 		private var pIcon:Class;
@@ -48,6 +50,7 @@ package renderers
 			
 			var picon:BitmapImage = new BitmapImage();
 			picon.source = pIcon;
+			picon.scaleMode = mx.graphics.BitmapScaleMode.STRETCH;
 			hgroup.addElement(picon);
 			
 			lblPopularity = new Label();
@@ -55,9 +58,22 @@ package renderers
 			lblPopularity.percentHeight = 100;
 			hgroup.addElement(lblPopularity);
 			
+			hgroup = new HGroup();
+			hgroup.percentWidth = 100;
+			vgroup.addElement(hgroup);
+			
 			lblButton = new Label();
 			lblButton.styleName = "courseListItemMessage";
-			vgroup.addElement(lblButton);
+			hgroup.addElement(lblButton);
+			
+			spacer = new Spacer();
+			spacer.percentWidth = 100;
+			hgroup.addElement(spacer);
+			
+			lblStatus = new Label();
+			lblStatus.styleName = "courseListItemMessage";
+			lblStatus.setStyle("color", "#FF0000");
+			hgroup.addElement(lblStatus);
 		}
 		
 		override protected function layoutContents(unscaledWidth:Number, unscaledHeight:Number):void
@@ -91,6 +107,7 @@ package renderers
 				lblSpeaker.text = "主讲人："+data.teacher_realname;
 				lblPopularity.text = data.viewnum;
 				lblButton.text = data.button_txt == '观看视频' ? '免费观看' : data.button_txt;
+				lblStatus.text = (data.button_txt == '观看视频' ? '' : data.button_txt);
 				
 				var date:Date = new Date();
 				date.setTime(Number(data.start_time)*1000);
